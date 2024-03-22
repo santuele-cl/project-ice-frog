@@ -1,4 +1,4 @@
-import { Gender, Role, Department } from "@prisma/client";
+import { Gender, Role, Department, AppointmentStatus } from "@prisma/client";
 import { z } from "zod";
 
 export const RegisterSchema = z.object({
@@ -36,8 +36,7 @@ export const RegisterSchema = z.object({
 
 export const AppointmentSchema = z.object({
   title: z.string().min(1, "Required field"),
-  // status: z.nativeEnum(AppointmentStatus),
-
+  status: z.nativeEnum(AppointmentStatus),
   room: z.string().min(1, "Required field"),
   reason: z.string().min(1, "Required field"),
   startDate: z.coerce.date(),
