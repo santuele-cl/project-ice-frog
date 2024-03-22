@@ -32,7 +32,7 @@ const SideLogo = () => {
           sx={{ textDecoration: "none", color: "common.black" }}
           fontWeight={900}
         >
-          Salus
+          Synxchronize
         </Typography>
       </Stack>
       <Box>
