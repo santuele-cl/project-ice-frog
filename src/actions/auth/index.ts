@@ -184,11 +184,13 @@ export async function createUser(registerData: z.infer<typeof RegisterSchema>) {
     },
   });
 
-  const verificationToken = await generateVerficationToken(email);
+  if (!user) return { error: "Database error. User not created!" };
 
-  await sendVerificationEmail(verificationToken.email, verificationToken.token);
+  // const verificationToken = await generateVerficationToken(email);
 
-  return { success: "Confirmation email sent." };
+  // await sendVerificationEmail(verificationToken.email, verificationToken.token);
+
+  return { success: "User created successfully." };
 }
 
 export async function verify(token: string) {

@@ -25,6 +25,7 @@ import { createUser } from "@/actions/auth";
 import FormStatusText from "../FormStatusText";
 import Consent from "./Consent";
 import { z } from "zod";
+import AutoComplete from "../../AutoComplete";
 
 const MultiStepForm = () => {
   const [pending, setPending] = useState(false);
@@ -44,7 +45,7 @@ const MultiStepForm = () => {
     reset,
     control,
     getValues,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
   });
@@ -93,7 +94,6 @@ const MultiStepForm = () => {
     <Paper
       elevation={3}
       sx={{
-        // border: "1px solid orange",
         height: "100%",
       }}
     >
@@ -119,10 +119,6 @@ const MultiStepForm = () => {
           spacing={2}
           flexGrow="1"
           flexShrink="1"
-          // sx={{
-          // overflowY: "auto",
-          // }}
-          // overflowY="auto"
           height="450px"
           justifyContent="space-between"
         >
@@ -148,29 +144,14 @@ const MultiStepForm = () => {
                     if (type === "select") {
                       return (
                         <Grid2 xs={12} sm={6} key={id}>
-                          <TextField
-                            select
-                            label={label}
-                            {...register(id)}
-                            error={errors[id] ? true : false}
-                            helperText={errors[id]?.message as string}
-                            placeholder={placeholder}
-                            InputProps={{
-                              style: { textTransform: "capitalize" },
-                            }}
-                            fullWidth
-                          >
-                            {options &&
-                              options?.map(({ label, value }, i) => (
-                                <MenuItem
-                                  value={value}
-                                  key={i}
-                                  defaultChecked={i === 0}
-                                >
-                                  {label}
-                                </MenuItem>
-                              ))}
-                          </TextField>
+                          <AutoComplete
+                            control={control}
+                            name={id}
+                            fieldLabel={label}
+                            labelIdentifier="label"
+                            valueIdentifier="value"
+                            options={options}
+                          />
                         </Grid2>
                       );
                     } else if (type === "date") {
