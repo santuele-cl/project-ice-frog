@@ -104,12 +104,12 @@ export default function DnDCalendar() {
         />
       )}
       <DragAndDropCalendar
-        onSelectSlot={handleEventSelect}
-        selectable={true}
+        // onSelectSlot={handleEventSelect}
+        // selectable={true}
         onEventDrop={handleEventDrop}
         onEventResize={handleEventResize}
-        timeslots={timeSlots}
-        step={step}
+        timeslots={4}
+        step={30}
         components={components}
         localizer={localizer}
         events={appointments}
