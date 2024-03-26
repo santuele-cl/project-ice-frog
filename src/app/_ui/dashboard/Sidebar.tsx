@@ -86,7 +86,7 @@ export default function Sidebar({ children }: { children?: React.ReactNode }) {
     <List
       sx={{
         height: "100%",
-        width: 330,
+        width: 250,
 
         p: 2,
       }}

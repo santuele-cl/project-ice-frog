@@ -79,7 +79,8 @@ model Schedule {
   projectId String?
   startDate DateTime
   endDate   DateTime
-  employees User[]
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
 }
 
 model TwoFactorConfirmation {

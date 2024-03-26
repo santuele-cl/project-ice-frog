@@ -12,8 +12,8 @@ export function getWeek(week = dayjs().week()) {
   const date = dayjs().year(year).week(week).day(0);
   const month = date.month();
 
-  const weekDates = new Array(8).fill(null).map((_, i) => {
-    return i === 0 ? week : dayjs().year(year).month(month).week(week).day(i);
+  const weekDates = new Array(7).fill(null).map((_, i) => {
+    return dayjs().year(year).month(month).week(week).day(i);
   });
 
   console.log(
