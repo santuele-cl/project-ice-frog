@@ -4,11 +4,11 @@ import { db } from "@/app/_lib/db";
 import { Department } from "@prisma/client";
 import { unstable_noStore as noStore } from "next/cache";
 
-export async function getUser(department: Department) {
+export async function getEmployeesByDepartment(department: Department) {
   noStore();
 
   const users = await db.user.findMany({
-    include: { schedules: true },
+    include: { schedules: true, profile: true },
     where: { profile: { department } },
   });
   if (!users) {

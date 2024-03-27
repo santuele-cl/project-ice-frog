@@ -1,4 +1,3 @@
-"use client";
 import { getWeek } from "@/app/test-route/weekly-calendar/_utils/utils";
 import {
   Button,
@@ -14,32 +13,24 @@ import {
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
-import { useState } from "react";
+import utc from "dayjs/plugin/utc";
+import { getEmployeesByDepartment } from "@/actions/users/users-action";
+import Date from "./Date";
+import ScheduleTableHeader from "./ScheduleTableHeader";
+
+dayjs.extend(utc);
 
 interface ScheduleTableProps {
-  weekDates: dayjs.Dayjs[];
-  data: any;
+  week: string;
 }
 
-export default function ScheduleTable() {
-  const [week, setWeek] = useState(dayjs().week());
-  const weekDates = getWeek(week);
+export default async function ScheduleTable({ week }: ScheduleTableProps) {
+  const employees = await getEmployeesByDepartment("TECHNOLOGY");
+  const weekDates = getWeek(Number(week));
+
   return (
     <Stack sx={{ p: 2 }}>
-      <Stack
-        sx={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Typography sx={{ fontWeight: 600 }}>{`Week ${week}`}</Typography>
-        <ButtonGroup>
-          <Button onClick={() => setWeek((prev) => prev - 1)}>Prev</Button>
-          <Button onClick={() => setWeek(dayjs().week())}>Today</Button>
-          <Button onClick={() => setWeek((prev) => prev + 1)}>Next</Button>
-        </ButtonGroup>
-      </Stack>
+      <ScheduleTableHeader week={week} />
       <Divider sx={{ my: 2 }} />
       <TableContainer>
         <Table
@@ -49,74 +40,70 @@ export default function ScheduleTable() {
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 600, fontSize: "0.9rem" }}>
+                No
+              </TableCell>
+              <TableCell sx={{ fontWeight: 600, fontSize: "0.9rem" }}>
                 Employee
               </TableCell>
               {weekDates.map((date) => (
-                <TableCell sx={{ fontSize: "0.8rem" }} align="left">
+                <TableCell
+                  sx={{
+                    fontSize: "0.8rem",
+                    textAlign: "center",
+                    minWidth: 220,
+                  }}
+                  key={date.toString()}
+                  height={150}
+                >
                   {date.format("ddd, MMM D")}
                 </TableCell>
               ))}
             </TableRow>
           </TableHead>
-          {/* <TableBody>
-              {response && response.data && response.data.length ? (
-                response.data.map((clinicalDepartment) => {
-                  const { id, description, createdAt, updatedAt, head, name } =
-                    clinicalDepartment;
-                  return (
-                    <TableRow
-                      key={id}
-                      sx={{
-                        "&:last-child td, &:last-child th": { border: 0 },
-                      }}
-                    >
-                      <TableCell component="th" scope="row">
-                        {id}
+          <TableBody>
+            {employees && employees.data && employees.data.length ? (
+              employees.data.map((employee, i) => {
+                const { id, email, schedules, profile } = employee;
+                return (
+                  <TableRow
+                    key={id}
+                    sx={{
+                      "&:last-child td, &:last-child th": { border: 0 },
+                    }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {i + 1}
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      <Typography>{`${profile?.fname} ${profile?.lname}`}</Typography>
+                    </TableCell>
+                    {weekDates.map((date) => (
+                      <TableCell align="left" height={150} width={270}>
+                        <Date
+                          employeeId={id}
+                          endDate={date.utcOffset(0).endOf("date").toDate()}
+                          startDate={date.utcOffset(0).startOf("date").toDate()}
+                        />
                       </TableCell>
-                      <TableCell align="left">{name}</TableCell>
-                      <TableCell align="left">{head}</TableCell>
-                      <TableCell align="left">{description}</TableCell>
-                      <TableCell align="left">{`${dayjs(createdAt).format(
-                        "MMMM d, YYYY"
-                      )}`}</TableCell>
-                      <TableCell align="left">{`${dayjs(updatedAt).format(
-                        "MMMM d, YYYY"
-                      )}`}</TableCell>
-                      <TableCell align="right">
-                        <Stack
-                          sx={{
-                            flexDirection: "row",
-                            justifyContent: "flex-end",
-                            gap: 1,
-                          }}
-                        >
-                          <DeleteClinicalDepartment
-                            clinicalDepartmentId={id}
-                            clinicalDepartmentName={name}
-                          />
-                          <EditClinicalDepartmentFormModal
-                            clinicalDepartment={clinicalDepartment}
-                          />
-                        </Stack>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              ) : (
-                <TableRow
-                  sx={{
-                    "&:last-child td, &:last-child th": { border: 0, p: 0 },
-                  }}
-                >
-                  <TableCell component="th" scope="row"></TableCell>
-                  <TableCell align="right"></TableCell>
-                  <TableCell align="right"></TableCell>
-                  <TableCell align="right"></TableCell>
-                  <TableCell align="right"></TableCell>
-                  <TableCell align="right"></TableCell>
-                </TableRow>
-              )}
-            </TableBody> */}
+                    ))}
+                  </TableRow>
+                );
+              })
+            ) : (
+              <TableRow
+                sx={{
+                  "&:last-child td, &:last-child th": { border: 0, p: 0 },
+                }}
+              >
+                <TableCell component="th" scope="row"></TableCell>
+                <TableCell align="right"></TableCell>
+                <TableCell align="right"></TableCell>
+                <TableCell align="right"></TableCell>
+                <TableCell align="right"></TableCell>
+                <TableCell align="right"></TableCell>
+              </TableRow>
+            )}
+          </TableBody>
         </Table>
       </TableContainer>
     </Stack>
