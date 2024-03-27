@@ -1,8 +1,9 @@
 import { getSchedulesByDate } from "@/actions/schedules/schedule-action";
-import { Stack, Typography } from "@mui/material";
+import { IconButton, Stack, Typography } from "@mui/material";
 import dayjs from "dayjs";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
-
+import AddIcon from "@mui/icons-material/Add";
+import AddScheduleFormModal from "./AddScheduleFormModal";
 interface DateProps {
   employeeId: string;
   endDate: Date;
@@ -18,7 +19,7 @@ export default async function Date({
 
   return (
     <Stack sx={{ justifyContent: "center", alignItems: "center" }}>
-      {!schedules.data && <EventBusyIcon sx={{ color: "rgba(0,0,0,0.2)" }} />}
+      {!schedules.data && <AddScheduleFormModal />}
       {schedules.data &&
         schedules.data.map((schedule) => {
           const { startDate, endDate, project } = schedule;
@@ -26,9 +27,10 @@ export default async function Date({
             <Stack
               sx={{
                 p: 2,
-                height: 150,
-                width: 220,
-                bgcolor: "rgba(255, 0, 0, 0.1)",
+                minHeight: 150,
+                minWidth: 220,
+                bgcolor: "rgba(255, 255, 0, 0.4)",
+                borderRadius: 2,
               }}
             >
               <Typography variant="h6">{project?.name}</Typography>

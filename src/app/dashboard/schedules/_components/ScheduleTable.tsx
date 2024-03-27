@@ -39,10 +39,22 @@ export default async function ScheduleTable({ week }: ScheduleTableProps) {
         >
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 600, fontSize: "0.9rem" }}>
+              <TableCell
+                sx={{
+                  fontWeight: 600,
+                  fontSize: "0.9rem",
+                  minHeight: 150,
+                }}
+              >
                 No
               </TableCell>
-              <TableCell sx={{ fontWeight: 600, fontSize: "0.9rem" }}>
+              <TableCell
+                sx={{
+                  fontWeight: 600,
+                  fontSize: "0.9rem",
+                  minHeight: 150,
+                }}
+              >
                 Employee
               </TableCell>
               {weekDates.map((date) => (
@@ -51,9 +63,9 @@ export default async function ScheduleTable({ week }: ScheduleTableProps) {
                     fontSize: "0.8rem",
                     textAlign: "center",
                     minWidth: 220,
+                    minHeight: 150,
                   }}
                   key={date.toString()}
-                  height={150}
                 >
                   {date.format("ddd, MMM D")}
                 </TableCell>
@@ -69,6 +81,7 @@ export default async function ScheduleTable({ week }: ScheduleTableProps) {
                     key={id}
                     sx={{
                       "&:last-child td, &:last-child th": { border: 0 },
+                      minHeight: 150,
                     }}
                   >
                     <TableCell component="th" scope="row">
@@ -78,7 +91,7 @@ export default async function ScheduleTable({ week }: ScheduleTableProps) {
                       <Typography>{`${profile?.fname} ${profile?.lname}`}</Typography>
                     </TableCell>
                     {weekDates.map((date) => (
-                      <TableCell align="left" height={150} width={270}>
+                      <TableCell align="left" height={150} width={220}>
                         <Date
                           employeeId={id}
                           endDate={date.utcOffset(0).endOf("date").toDate()}
