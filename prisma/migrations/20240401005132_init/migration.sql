@@ -65,6 +65,7 @@ CREATE TABLE "Schedule" (
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3) NOT NULL,
     "userId" TEXT NOT NULL,
+    "notes" TEXT,
 
     CONSTRAINT "Schedule_pkey" PRIMARY KEY ("id")
 );
