@@ -27,13 +27,15 @@ export default async function Date({
             <Stack
               sx={{
                 p: 2,
-                minHeight: 150,
-                minWidth: 220,
+                minHeight: 100,
+                minWidth: 210,
                 bgcolor: "rgba(255, 255, 0, 0.4)",
                 borderRadius: 2,
+                marginBottom: "5px",
+                fontSize: "0.8rem",
               }}
             >
-              <Typography variant="h6">{project?.name}</Typography>
+              <Typography sx={{ fontWeight: 600}}>{project?.name}</Typography>
               <Typography sx={{ fontStyle: "italic" }} noWrap>
                 {project?.location}
               </Typography>
