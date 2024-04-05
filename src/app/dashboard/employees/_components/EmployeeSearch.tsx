@@ -4,34 +4,16 @@ import { useDebouncedCallback } from "use-debounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { LoadingButton } from "@mui/lab";
 import EmployeeDepartmentSelect from "./EmployeeDepartmentSelect";
-
-const options = ["Option 1", "Option 2"];
+import EmployeeSearchByEmail from "./EmployeeSearchByEmail";
 
 export default function EmployeeSearch() {
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   const pathname = usePathname();
-  const params = new URLSearchParams(searchParams);
-
-  const handleSearch = useDebouncedCallback((term: string) => {
-    params.set("page", "1");
-
-    if (term) {
-      params.set("query", term);
-    } else {
-      params.delete("query");
-    }
-    replace(`${pathname}?${params.toString()}`);
-  }, 300);
-
-  const handleEmailFilter = useDebouncedCallback((email: string) => {
-    if (email) params.set("email", email);
-    else params.delete("email");
-
-    replace(`${pathname}?${params.toString()}`);
-  }, 300);
 
   const handleStatusChange = (status: string) => {
+    const params = new URLSearchParams(searchParams);
+
     if (status) params.set("status", status);
     else params.delete("status");
 
@@ -40,7 +22,7 @@ export default function EmployeeSearch() {
 
   return (
     <Stack
-      component="form"
+      // component="form"
       // onSubmit={(e) => handleSearch(e)}
       direction="row"
       spacing={2}
@@ -50,12 +32,7 @@ export default function EmployeeSearch() {
       }}
     >
       <EmployeeDepartmentSelect />
-      <TextField
-        onChange={(e) => handleEmailFilter(e.target.value)}
-        value={searchParams.get("query")?.toString()}
-        label="Email"
-      />
-
+      <EmployeeSearchByEmail />
       {/* <FormControl sx={{ width: 300 }}>
         <InputLabel id="department-label">Department</InputLabel>
         <Select

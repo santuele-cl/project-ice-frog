@@ -8,15 +8,18 @@ export default function EmployeeDepartmentSelect() {
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   const pathname = usePathname();
-  const params = new URLSearchParams(searchParams);
   const [departments, setDepartments] = useState<string[]>([]);
 
   const hanldeDepartmentChange = (department: any) => {
+    const params = new URLSearchParams(searchParams);
+
     if (department && !!department.length)
       params.set("department", department.toString());
     else params.delete("department");
     replace(`${pathname}?${params.toString()}`);
   };
+
+  console.log(searchParams.get("department")?.split(","));
 
   useEffect(() => {
     async function fetchDepartments() {
@@ -31,7 +34,6 @@ export default function EmployeeDepartmentSelect() {
       multiple
       limitTags={2}
       filterSelectedOptions
-      id="checkboxes-tags-demo"
       options={departments}
       loading={departments.length < 0}
       disableCloseOnSelect
@@ -40,6 +42,7 @@ export default function EmployeeDepartmentSelect() {
           ? searchParams.get("department")?.split(",") ?? []
           : []
       }
+      // defaultValue={searchParams.get("department")?.split(",") ?? undefined}
       onChange={(e, value) => {
         console.log("new value : ", value);
         console.log("string value : ", value.toString());
