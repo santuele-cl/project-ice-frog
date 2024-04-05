@@ -171,6 +171,34 @@ const seed = async () => {
         endDate: "2024-03-30T17:00:00Z",
         userId: "EMPLOYEE3",
       },
+      {
+        id: "s7",
+        projectId: "p1",
+        startDate: "2024-03-30T09:00:00Z",
+        endDate: "2024-03-30T17:00:00Z",
+        userId: "EMPLOYEE1",
+      },
+      {
+        id: "s8",
+        projectId: "p2",
+        startDate: "2024-03-30T09:00:00Z",
+        endDate: "2024-03-30T17:00:00Z",
+        userId: "EMPLOYEE1",
+      },
+      {
+        id: "s9",
+        projectId: "p1",
+        startDate: "2024-03-26T09:00:00Z",
+        endDate: "2024-03-26T17:00:00Z",
+        userId: "EMPLOYEE1",
+      },
+      {
+        id: "s22",
+        projectId: "p2",
+        startDate: "2024-03-27T10:00:00Z",
+        endDate: "2024-03-27T18:00:00Z",
+        userId: "EMPLOYEE1",
+      },
     ],
   });
 };

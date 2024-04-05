@@ -9,7 +9,7 @@ export async function getEmployeesByDepartment(department: Department) {
 
   const users = await db.user.findMany({
     include: { schedules: true, profile: true },
-    where: { profile: { department } },
+    // where: { profile: { department } },
   });
   if (!users) {
     const error = "Database error. Users fetch unsuccessful!";
