@@ -1,8 +1,13 @@
 import { Stack, Typography } from "@mui/material";
 import EmployeeSearch from "./EmployeeSearch";
 import EmployeeAdd from "./EmployeeAdd";
+import React from "react";
 
-export default function EmployeeTableHeader() {
+export default function EmployeeTableHeader({
+  children,
+}: {
+  children?: React.ReactNode;
+}) {
   return (
     <Stack sx={{ gap: 2 }}>
       <Stack
@@ -13,17 +18,7 @@ export default function EmployeeTableHeader() {
           justifyContent: "space-between",
         }}
       >
-        {/* <Stack>
-          <Typography variant="h6" gap={0}>
-            Employees
-          </Typography>
-          <Typography variant="body1" sx={{ mt: "-4px" }}>
-            Details and schedules
-          </Typography>
-        </Stack> */}
-        <EmployeeSearch />
-
-        <EmployeeAdd />
+        {children}
       </Stack>
     </Stack>
   );

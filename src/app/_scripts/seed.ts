@@ -3,6 +3,14 @@ import { PrismaClient } from "@prisma/client";
 const db = new PrismaClient();
 
 const seed = async () => {
+  const ROLES = await db.department.createMany({
+    data: [
+      { id: "D1001", name: "CUSTOMIZED", head: "Ara Buena" },
+      { id: "D1002", name: "TECHONOLOGY", head: "Princess FU" },
+      { id: "D1003", name: "SYSTEMS", head: "Chris Tope" },
+    ],
+  });
+
   const ADMIN1 = await db.user.upsert({
     where: { id: "ADMIN1" },
     update: {},
@@ -22,7 +30,7 @@ const seed = async () => {
           bdate: "1995-11-28T00:00:00Z",
           age: 29,
           contactNumber: "+1555123456",
-          department: "CUSTOMIZED",
+          departmentId: "D1001",
           occupation: "Financial Analyst",
         },
       },
@@ -49,7 +57,7 @@ const seed = async () => {
           bdate: "1990-05-15T00:00:00Z",
           age: 31,
           contactNumber: "+1234567890",
-          department: "TECHNOLOGY",
+          departmentId: "D1002",
           occupation: "Software Engineer",
         },
       },
@@ -75,7 +83,7 @@ const seed = async () => {
           bdate: "1985-09-20T00:00:00Z",
           age: 36,
           contactNumber: "+1987654321",
-          department: "SYSTEMS",
+          departmentId: "D1003",
           occupation: "HR Manager",
         },
       },
@@ -101,7 +109,7 @@ const seed = async () => {
           bdate: "1982-03-10T00:00:00Z",
           age: 42,
           contactNumber: "+1122334455",
-          department: "CUSTOMIZED",
+          departmentId: "D1003",
           occupation: "Marketing Analyst",
         },
       },

@@ -32,7 +32,7 @@ export default async function EmployeeTable({
   const response = await findUser({
     ...(email && { email }),
     ...(page && { page }),
-    ...(department && { department: department as Department }),
+    ...(department && { department }),
   });
 
   console.log("data ", response.data);
@@ -67,7 +67,9 @@ export default async function EmployeeTable({
                   </TableCell>
                   <TableCell align="left">{`${profile?.fname} ${profile?.lname}`}</TableCell>
                   <TableCell align="left">{email}</TableCell>
-                  <TableCell align="left">{profile?.department}</TableCell>
+                  <TableCell align="left">
+                    {profile?.department?.name}
+                  </TableCell>
                   <TableCell align="left">
                     {isActive ? "active" : "inactive"}
                   </TableCell>

@@ -1,19 +1,9 @@
 "use client";
-import {
-  Autocomplete,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-} from "@mui/material";
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import { Stack, TextField } from "@mui/material";
 import { useDebouncedCallback } from "use-debounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { LoadingButton } from "@mui/lab";
 import EmployeeDepartmentSelect from "./EmployeeDepartmentSelect";
-import { useState } from "react";
 
 const options = ["Option 1", "Option 2"];
 
@@ -41,21 +31,12 @@ export default function EmployeeSearch() {
     replace(`${pathname}?${params.toString()}`);
   }, 300);
 
-  const hanldeDepartmentChange = (department: string) => {
-    if (department) params.set("department", department);
-    else params.delete("department");
-
-    replace(`${pathname}?${params.toString()}`);
-  };
   const handleStatusChange = (status: string) => {
     if (status) params.set("status", status);
     else params.delete("status");
 
     replace(`${pathname}?${params.toString()}`);
   };
-
-  const [value, setValue] = useState<string | null>(options[0]);
-  const [inputValue, setInputValue] = useState("");
 
   return (
     <Stack
@@ -68,13 +49,14 @@ export default function EmployeeSearch() {
         // justifyContent: "center",
       }}
     >
+      <EmployeeDepartmentSelect />
       <TextField
         onChange={(e) => handleEmailFilter(e.target.value)}
         value={searchParams.get("query")?.toString()}
         label="Email"
-        // size="small"
       />
-      <FormControl sx={{ width: 300 }}>
+
+      {/* <FormControl sx={{ width: 300 }}>
         <InputLabel id="department-label">Department</InputLabel>
         <Select
           labelId="department-label"
@@ -89,8 +71,8 @@ export default function EmployeeSearch() {
           <MenuItem value="TECHONOLOGY">TECHNOLOGY</MenuItem>
           <MenuItem value="CUSTOMIZED">CUSTOMIZED</MenuItem>
         </Select>
-      </FormControl>
-      <FormControl sx={{ width: 300 }}>
+      </FormControl> */}
+      {/* <FormControl sx={{ width: 300 }}>
         <InputLabel id="department-label">Status</InputLabel>
         <Select
           labelId="department-label"
@@ -105,9 +87,9 @@ export default function EmployeeSearch() {
           <MenuItem value="active">Active</MenuItem>
           <MenuItem value="inactive">Inactive</MenuItem>
         </Select>
-      </FormControl>
+      </FormControl> */}
 
-      <LoadingButton
+      {/* <LoadingButton
         //   loading={isSearching}
         // type="submit"
         variant="outlined"
@@ -116,7 +98,7 @@ export default function EmployeeSearch() {
         // onClick={handleSearch}
       >
         Search
-      </LoadingButton>
+      </LoadingButton> */}
     </Stack>
   );
 }
