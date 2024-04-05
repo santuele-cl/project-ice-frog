@@ -5,6 +5,27 @@ import shadows from "@mui/material/styles/shadows";
 import dayjs from "dayjs";
 import { unstable_noStore as noStore } from "next/cache";
 
+export async function getScheduleByEmployeeId(employeeId: string) {
+  noStore();
+
+  const schedules = await db.schedule.findMany({
+    where: {
+      userId: employeeId,
+    },
+    include: { project: true },
+  });
+
+  if (!schedules) {
+    return { error: "Database error. Schedules fetch unsuccessful!" };
+  }
+
+  if (schedules.length < 1) {
+    return { error: "Empty" };
+  }
+
+  return { success: "Schedules fetch successul!", data: schedules };
+}
+
 export async function getSchedulesByDate(
   employeeId: string,
   startDate: Date,
