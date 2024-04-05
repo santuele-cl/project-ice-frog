@@ -1,7 +1,24 @@
-"use client";
-import DnDCalendar from "./_components/DnDCalendar";
+import { Paper } from "@mui/material";
+import { Fragment, Suspense } from "react";
+import dayjs from "dayjs";
+import ScheduleTable from "./_components/ScheduleTable";
+import ScheduleTab from "./_components/ScheduleTab";
 
-const AppointmentPage = () => {
-  return <DnDCalendar />;
-};
-export default AppointmentPage;
+export default function AppointmentPage({
+  searchParams: { week = dayjs().week().toString() },
+}: {
+  searchParams: {
+    week?: string;
+  };
+}) {
+  return (
+    <Fragment>
+      {/* <ScheduleTab /> */}
+      <Paper>
+        <Suspense key={"schedules"} fallback={<h1>Loading</h1>}>
+          <ScheduleTable week={week} />
+        </Suspense>
+      </Paper>
+    </Fragment>
+  );
+}

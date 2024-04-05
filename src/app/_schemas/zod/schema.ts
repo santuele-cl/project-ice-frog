@@ -34,6 +34,14 @@ export const RegisterSchema = z.object({
   }),
 });
 
+export const ScheduleSchema = z.object({
+  projectId: z.string().min(1, "Required field"),
+  userId: z.string().min(1, "Required field"),
+  notes: z.string().optional(),
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date(),
+});
+
 export const AppointmentSchema = z.object({
   title: z.string().min(1, "Required field"),
   // status: z.nativeEnum(AppointmentStatus),

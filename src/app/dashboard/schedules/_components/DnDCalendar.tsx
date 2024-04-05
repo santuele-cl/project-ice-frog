@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { Calendar, ToolbarProps, dayjsLocalizer } from "react-big-calendar";
-import { Appointments } from "@prisma/client";
+import { Schedule } from "@prisma/client";
 import { Box } from "@mui/material";
 
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
@@ -27,7 +27,7 @@ export default function DnDCalendar() {
     useState(false);
   const [step, setStep] = useState(30);
   const [timeSlots, setTimeSlots] = useState(2);
-  const [appointments, setAppointments] = useState<Appointments[]>([]);
+  const [appointments, setAppointments] = useState<Schedule[]>([]);
 
   const fetchAppointments = async () => {
     const response = await getAppointments();
@@ -104,12 +104,12 @@ export default function DnDCalendar() {
         />
       )}
       <DragAndDropCalendar
-        onSelectSlot={handleEventSelect}
-        selectable={true}
+        // onSelectSlot={handleEventSelect}
+        // selectable={true}
         onEventDrop={handleEventDrop}
         onEventResize={handleEventResize}
-        timeslots={timeSlots}
-        step={step}
+        timeslots={4}
+        step={30}
         components={components}
         localizer={localizer}
         events={appointments}
