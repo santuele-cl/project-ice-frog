@@ -28,6 +28,8 @@ export default async function EmployeeSchedulesTable({
 }) {
   const response = await getScheduleByEmployeeId(employeeId);
 
+  if (response.error) throw new Error(response.error);
+
   console.log("data ", response.data);
 
   return (
@@ -58,9 +60,12 @@ export default async function EmployeeSchedulesTable({
                   <TableCell component="th" scope="row" align="left">
                     {i + 1}
                   </TableCell>
-                  <TableCell align="left">{`${JSON.stringify(
-                    project
-                  )}`}</TableCell>
+                  <TableCell align="left">
+                    {`${JSON.stringify(project)}`}
+                    <Link href={`/dashboard/projects/${project?.id}`}>
+                      {project?.id}
+                    </Link>
+                  </TableCell>
                   <TableCell align="left">
                     {dayjs(startDate).format("MMMM DD, YYYY hh:mm a")}
                   </TableCell>

@@ -8,6 +8,10 @@ import { unstable_noStore as noStore } from "next/cache";
 export async function getScheduleByEmployeeId(employeeId: string) {
   noStore();
 
+  const isExisting = await db.user.findUnique({ where: { id: employeeId } });
+
+  if (!isExisting) return { error: "Employee does not exist." };
+
   const schedules = await db.schedule.findMany({
     where: {
       userId: employeeId,
@@ -19,9 +23,9 @@ export async function getScheduleByEmployeeId(employeeId: string) {
     return { error: "Database error. Schedules fetch unsuccessful!" };
   }
 
-  if (schedules.length < 1) {
-    return { error: "Empty" };
-  }
+  // if (schedules.length < 1) {
+  //   return { error: "Empty" };
+  // }
 
   return { success: "Schedules fetch successul!", data: schedules };
 }

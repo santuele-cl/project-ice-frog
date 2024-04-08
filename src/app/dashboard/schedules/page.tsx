@@ -13,7 +13,6 @@ export default function AppointmentPage({
 }) {
   return (
     <Fragment>
-      {/* <ScheduleTab /> */}
       <Paper>
         <Suspense key={"schedules"} fallback={<h1>Loading</h1>}>
           <ScheduleTable week={week} />
