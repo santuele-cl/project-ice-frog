@@ -1,3 +1,4 @@
+import { getScheduleByEmployeeId } from "@/actions/schedules/schedule-action";
 import { findUser } from "@/actions/users/users";
 import {
   Box,
@@ -15,26 +16,19 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import EmployeeTablePagination from "./EmployeeTablePagination";
+// import EmployeeTablePagination from "./EmployeeTablePagination";
 import { Department } from "@prisma/client";
+import dayjs from "dayjs";
 import Link from "next/link";
 
-export default async function EmployeeTable({
-  email,
-  page = 1,
-  department,
-  status,
+export default async function EmployeeSchedulesTable({
+  employeeId,
 }: {
-  email: string;
-  page: number;
-  department: string;
-  status: string;
+  employeeId: string;
 }) {
-  const response = await findUser({
-    ...(email && { email }),
-    ...(page && { page }),
-    ...(department && { department }),
-  });
+  const response = await getScheduleByEmployeeId(employeeId);
+
+  if (response.error) throw new Error(response.error);
 
   console.log("data ", response.data);
 
@@ -43,37 +37,46 @@ export default async function EmployeeTable({
       <Table sx={{ minWidth: 650, overflow: "auto" }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell align="left">ID</TableCell>
-            <TableCell align="left">Name</TableCell>
-            <TableCell align="left">Email</TableCell>
-            <TableCell align="left">Department</TableCell>
-            <TableCell align="left">Status</TableCell>
+            <TableCell align="left">No</TableCell>
+            <TableCell align="left">Project</TableCell>
+            <TableCell align="left">Location</TableCell>
+            <TableCell align="left">Start</TableCell>
+            <TableCell align="left">End</TableCell>
+            <TableCell align="left">Notes</TableCell>
             <TableCell align="right">Details</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {response.data && response.data.length ? (
-            response.data.map((employee) => {
-              const { id, email, isActive, profile } = employee;
+            response.data.map((schedule, i) => {
+              const { project, endDate, startDate, notes } = schedule;
               //   const { id, email, isActive, ,emailVerified, role } = employee;
               return (
                 <TableRow
-                  key={id}
+                  key={i}
                   sx={{
                     "&:last-child td, &:last-child th": { border: 0 },
                   }}
                 >
                   <TableCell component="th" scope="row" align="left">
-                    {id}
-                  </TableCell>
-                  <TableCell align="left">{`${profile?.fname} ${profile?.lname}`}</TableCell>
-                  <TableCell align="left">{email}</TableCell>
-                  <TableCell align="left">
-                    {profile?.department?.name}
+                    {i + 1}
                   </TableCell>
                   <TableCell align="left">
-                    {isActive ? "active" : "inactive"}
+                    <Link href={`/dashboard/projects/${project?.id}`}>
+                      {project?.name}
+                    </Link>
+                    <Typography>{project?.jobOrder}</Typography>
                   </TableCell>
+                  <TableCell component="th" scope="row" align="left">
+                    {project?.location}
+                  </TableCell>
+                  <TableCell align="left">
+                    {dayjs(startDate).format("MMMM DD, YYYY hh:mm a")}
+                  </TableCell>
+                  <TableCell align="left">
+                    {dayjs(endDate).format("MMMM DD, YYYY hh:mm a")}
+                  </TableCell>
+                  <TableCell align="left">{notes}</TableCell>
 
                   <TableCell align="right">
                     <Stack
@@ -83,10 +86,10 @@ export default async function EmployeeTable({
                     >
                       <Button
                         variant="contained"
-                        LinkComponent={Link}
-                        href={`/dashboard/schedules/${id}`}
+                        // LinkComponent={Link}
+                        // href={`/dashboard/schedules/${id}`}
                       >
-                        View Schedules
+                        Edit
                       </Button>
                       {/* <Button
                         variant="outlined"

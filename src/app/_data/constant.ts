@@ -36,9 +36,9 @@ export const STEPS: Step[] = [
         label: "Department",
         type: "select",
         options: [
-          { value: Department.CUSTOMIZED, label: "Customized Department" },
-          { value: Department.TECHNOLOGY, label: "Technology Department" },
-          { value: Department.SYSTEMS, label: "Systems Department" },
+          { value: "CUSTOMIZED", label: "Customized Department" },
+          { value: "TECHNOLOGY", label: "Technology Department" },
+          { value: "SYSTEMS", label: "Systems Department" },
         ],
       },
       {

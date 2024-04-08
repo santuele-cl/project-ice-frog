@@ -18,7 +18,7 @@ import {
   Typography,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, Suspense, useEffect, useState } from "react";
 import { findPatient, getTotalPatientsCount } from "@/actions/patients";
 // import { Patient, User } from "@prisma/client";
 import Link from "next/link";
@@ -29,6 +29,9 @@ import PersonAddAltOutlinedIcon from "@mui/icons-material/PersonAddAltOutlined";
 import EmployeeTableHeader from "./_components/EmployeeTableHeader";
 import EmployeeTable from "./_components/EmployeeTable";
 import EmployeeTablePagination from "./_components/EmployeeTablePagination";
+import EmployeeAdd from "./_components/EmployeeAdd";
+import EmployeeSearch from "./_components/EmployeeSearch";
+import TableSkeleton from "@/app/_ui/TableSkeleton";
 // import EmployeeSearch from "../_components/EmployeeSearch";
 // import EmployeeAdd from "../_components/EmployeeAdd";
 // import EmployeeTable from "../_components/EmployeeTable";
@@ -50,14 +53,20 @@ export default async function page({
 }) {
   return (
     <Paper elevation={1} sx={{ p: 2 }}>
-      <EmployeeTableHeader />
+      <EmployeeTableHeader>
+        <EmployeeSearch />
+        <EmployeeAdd />
+      </EmployeeTableHeader>
       <Divider sx={{ my: 1 }} />
-      <EmployeeTable
-        email={email}
-        page={Number(page)}
-        department={department}
-        status={status}
-      />
+      <Suspense fallback={<TableSkeleton />}>
+        <EmployeeTable
+          email={email}
+          page={Number(page)}
+          department={department}
+          status={status}
+        />
+      </Suspense>
+
       <Divider sx={{ my: 1 }} />
       <EmployeeTablePagination />
     </Paper>

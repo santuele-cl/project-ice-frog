@@ -1,6 +1,6 @@
 import { Stack, Typography } from "@mui/material";
-import EmployeeSearch from "./EmployeeSearch";
-import EmployeeAdd from "./EmployeeAdd";
+import ProjectsSearch from "./ProjectsSearch";
+import ProjectsAdd from "./ProjectsAdd";
 import React from "react";
 
 export default function EmployeeTableHeader({

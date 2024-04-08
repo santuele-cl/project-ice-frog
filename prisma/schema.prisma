@@ -35,10 +35,19 @@ enum Gender {
   FEMALE
 }
 
-enum Department {
-  CUSTOMIZED
-  TECHNOLOGY
-  SYSTEMS
+// enum Department {
+//   CUSTOMIZED
+//   TECHNOLOGY
+//   SYSTEMS
+// }
+
+model Department {
+  id        String    @id @default(nanoid(8))
+  name      String
+  head      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Profile   Profile[]
 }
 
 model Profile {
@@ -53,11 +62,11 @@ model Profile {
   bdate         DateTime
   age           Int
   contactNumber String
-  department    Department
   occupation    String
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String @unique
+  department    Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  departmentId  String
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String     @unique
 }
 
 model Project {

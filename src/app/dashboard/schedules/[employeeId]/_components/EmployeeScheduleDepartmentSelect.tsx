@@ -31,7 +31,6 @@ export default function EmployeeDepartmentSelect() {
 
   return (
     <Autocomplete
-      multiple
       limitTags={2}
       filterSelectedOptions
       options={departments}

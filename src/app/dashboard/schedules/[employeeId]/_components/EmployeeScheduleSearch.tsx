@@ -3,10 +3,8 @@ import { Stack, TextField } from "@mui/material";
 import { useDebouncedCallback } from "use-debounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { LoadingButton } from "@mui/lab";
-import EmployeeDepartmentSelect from "./EmployeeDepartmentSelect";
-import EmployeeSearchByEmail from "./EmployeeSearchByEmail";
 
-export default function EmployeeSearch() {
+export default function EmployeeScheduleSearch() {
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   const pathname = usePathname();
@@ -31,8 +29,9 @@ export default function EmployeeSearch() {
         // justifyContent: "center",
       }}
     >
-      <EmployeeDepartmentSelect />
-      <EmployeeSearchByEmail />
+      <TextField size="small" label="Search" />
+      {/* <EmployeeDepartmentSelect /> */}
+      {/* <EmployeeSearchByEmail /> */}
       {/* <FormControl sx={{ width: 300 }}>
         <InputLabel id="department-label">Department</InputLabel>
         <Select

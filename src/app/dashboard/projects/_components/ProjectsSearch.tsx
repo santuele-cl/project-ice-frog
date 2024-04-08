@@ -3,8 +3,8 @@ import { Stack, TextField } from "@mui/material";
 import { useDebouncedCallback } from "use-debounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { LoadingButton } from "@mui/lab";
-import EmployeeDepartmentSelect from "./EmployeeDepartmentSelect";
-import EmployeeSearchByEmail from "./EmployeeSearchByEmail";
+import ProjectsDepartmentSelect from "./ProjectsDepartmentSelect";
+import ProjectsSearchByEmail from "./ProjectsSearchByEmail";
 
 export default function EmployeeSearch() {
   const searchParams = useSearchParams();
@@ -31,8 +31,8 @@ export default function EmployeeSearch() {
         // justifyContent: "center",
       }}
     >
-      <EmployeeDepartmentSelect />
-      <EmployeeSearchByEmail />
+      <ProjectsDepartmentSelect />
+      <ProjectsSearchByEmail />
       {/* <FormControl sx={{ width: 300 }}>
         <InputLabel id="department-label">Department</InputLabel>
         <Select

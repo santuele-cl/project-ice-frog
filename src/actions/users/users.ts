@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/app/_lib/db";
-import { Department, Profile, User } from "@prisma/client";
+import { Profile, User } from "@prisma/client";
 import { unstable_noStore as noStore } from "next/cache";
 
 type Sort = Record<keyof User, "asc" | "desc">;
@@ -24,17 +24,17 @@ export async function findUser({
 }: {
   page?: number;
   email?: string;
-  department?: Department;
+  department?: string;
   sort?: Sort[];
   active?: boolean;
 }) {
   noStore();
-
+  console.log("department search : ", department?.split(","));
   try {
     const users = await db.user.findMany({
       where: {
         email: { contains: email },
-        profile: { department: { equals: department } },
+        profile: { department: { name: { in: department?.split(",") } } },
         isActive: { equals: active },
       },
       orderBy: sort,

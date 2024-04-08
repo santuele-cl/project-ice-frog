@@ -24,7 +24,7 @@ export default function EmployeeDepartmentSelect() {
   useEffect(() => {
     async function fetchDepartments() {
       const res = await getDepartments();
-      if (res?.data) setDepartments(res.data.map((dept) => dept.name));
+      // if (res?.data) setDepartments(res.data.map((dept) => dept.name));
     }
     fetchDepartments();
   }, []);

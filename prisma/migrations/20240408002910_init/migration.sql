@@ -4,9 +4,6 @@ CREATE TYPE "Role" AS ENUM ('ADMIN', 'EMPLOYEE');
 -- CreateEnum
 CREATE TYPE "Gender" AS ENUM ('MALE', 'FEMALE');
 
--- CreateEnum
-CREATE TYPE "Department" AS ENUM ('CUSTOMIZED', 'TECHNOLOGY', 'SYSTEMS');
-
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -24,6 +21,17 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
+CREATE TABLE "Department" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "head" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Department_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Profile" (
     "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -36,8 +44,8 @@ CREATE TABLE "Profile" (
     "bdate" TIMESTAMP(3) NOT NULL,
     "age" INTEGER NOT NULL,
     "contactNumber" TEXT NOT NULL,
-    "department" "Department" NOT NULL,
     "occupation" TEXT NOT NULL,
+    "departmentId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
 
     CONSTRAINT "Profile_pkey" PRIMARY KEY ("id")
@@ -155,6 +163,9 @@ CREATE UNIQUE INDEX "TwoFactorToken_token_key" ON "TwoFactorToken"("token");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "TwoFactorToken_email_token_key" ON "TwoFactorToken"("email", "token");
+
+-- AddForeignKey
+ALTER TABLE "Profile" ADD CONSTRAINT "Profile_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES "Department"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Profile" ADD CONSTRAINT "Profile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

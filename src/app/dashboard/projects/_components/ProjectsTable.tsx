@@ -15,9 +15,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import EmployeeTablePagination from "./EmployeeTablePagination";
+import ProjectsTablePagination from "./ProjectsTablePagination";
 import { Department } from "@prisma/client";
 import Link from "next/link";
+import { getProjects } from "@/actions/projects/projects-action";
+import dayjs from "dayjs";
 
 export default async function EmployeeTable({
   email,
@@ -30,11 +32,10 @@ export default async function EmployeeTable({
   department: string;
   status: string;
 }) {
-  const response = await findUser({
-    ...(email && { email }),
-    ...(page && { page }),
-    ...(department && { department }),
-  });
+
+  const response = await getProjects();
+
+  if(response.error) throw new Error(response.error)
 
   console.log("data ", response.data);
 
@@ -44,18 +45,20 @@ export default async function EmployeeTable({
         <TableHead>
           <TableRow>
             <TableCell align="left">ID</TableCell>
-            <TableCell align="left">Name</TableCell>
-            <TableCell align="left">Email</TableCell>
-            <TableCell align="left">Department</TableCell>
-            <TableCell align="left">Status</TableCell>
-            <TableCell align="right">Details</TableCell>
+            <TableCell align="left">Project</TableCell>
+            <TableCell align="left">Job Order</TableCell>
+            <TableCell align="left">Location</TableCell>
+            <TableCell align="left">Notes</TableCell>
+            <TableCell align="left">Created At</TableCell>
+            <TableCell align="left">Last Updated</TableCell>
+            <TableCell align="right">View Schedules</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {response.data && response.data.length ? (
-            response.data.map((employee) => {
-              const { id, email, isActive, profile } = employee;
-              //   const { id, email, isActive, ,emailVerified, role } = employee;
+            response.data.map((project) => {
+              const {id, name, jobOrder, location, notes, createdAt, updatedAt} = project;
+                // const { id, email, isActive, ,emailVerified, role } = employee;
               return (
                 <TableRow
                   key={id}
@@ -66,13 +69,21 @@ export default async function EmployeeTable({
                   <TableCell component="th" scope="row" align="left">
                     {id}
                   </TableCell>
-                  <TableCell align="left">{`${profile?.fname} ${profile?.lname}`}</TableCell>
-                  <TableCell align="left">{email}</TableCell>
                   <TableCell align="left">
-                    {profile?.department?.name}
+                    {name}
+                    </TableCell>
+                  <TableCell align="left">{jobOrder}</TableCell>
+                  <TableCell align="left">
+                    {location}
                   </TableCell>
                   <TableCell align="left">
-                    {isActive ? "active" : "inactive"}
+                    {notes}
+                  </TableCell>
+                  <TableCell>
+                    {dayjs(createdAt).format("MMM DD, YYYY hh:mm a")} 
+                  </TableCell>
+                  <TableCell>
+                    {dayjs(updatedAt).format("MMM DD, YYYY hh:mm a")} 
                   </TableCell>
 
                   <TableCell align="right">
