@@ -8,7 +8,7 @@ import { z } from "zod";
 export async function getProjects() {
   noStore();
 
-  const projects = await db.project.findMany();
+  const projects = await db.project.findMany({orderBy: {createdAt: "desc"}});
 
   if (!projects) return { error: "Database error. Fetch unsuccessful!" };
 
