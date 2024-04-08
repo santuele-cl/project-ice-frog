@@ -1,9 +1,41 @@
 "use server";
 
 import { db } from "@/app/_lib/db";
+import { ScheduleSchema, SchedulesSchema } from "@/app/_schemas/zod/schema";
 import shadows from "@mui/material/styles/shadows";
+import { Schedule } from "@prisma/client";
 import dayjs from "dayjs";
-import { unstable_noStore as noStore } from "next/cache";
+import { unstable_noStore as noStore, revalidatePath } from "next/cache";
+import { z } from "zod";
+
+export async function addMultipleScheduleByEmployeeId(
+  employeeId: string,
+  schedules: z.infer<typeof SchedulesSchema>
+) {
+  const isExisting = await db.user.findUnique({ where: { id: employeeId } });
+
+  if (!isExisting) return { error: "Employee does not exist." };
+
+  const parse = SchedulesSchema.safeParse(schedules);
+
+  if (!parse.success) return { error: "Parse error. Invalid data input!" };
+
+  const schedulesWithUserId = parse.data.projects.map((proj) => ({
+    ...proj,
+    userId: employeeId,
+  }));
+
+  const createdSchedules = await db.schedule.createMany({
+    data: [...schedulesWithUserId],
+  });
+
+  if (!createdSchedules) {
+    return { error: "Database error. Schedules not added!" };
+  }
+
+  revalidatePath("/dashboard/schedules");
+  return { success: "Schedule(s) added!", data: schedules };
+}
 
 export async function getScheduleByEmployeeId(employeeId: string) {
   noStore();
@@ -16,6 +48,7 @@ export async function getScheduleByEmployeeId(employeeId: string) {
     where: {
       userId: employeeId,
     },
+    orderBy: { createdAt: "desc" },
     include: { project: true },
   });
 

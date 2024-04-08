@@ -47,7 +47,7 @@ export const SchedulesSchema = z.object({
   projects: z.array(
     z.object({
       projectId: z.string().min(1, "Required field"),
-      userId: z.string().min(1, "Required field"),
+      // userId: z.string().min(1, "Required field"),
       notes: z.string().optional(),
       startDate: z.coerce.date(),
       endDate: z.coerce.date(),

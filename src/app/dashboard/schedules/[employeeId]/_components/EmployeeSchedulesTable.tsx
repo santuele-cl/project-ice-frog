@@ -39,6 +39,7 @@ export default async function EmployeeSchedulesTable({
           <TableRow>
             <TableCell align="left">No</TableCell>
             <TableCell align="left">Project</TableCell>
+            <TableCell align="left">Location</TableCell>
             <TableCell align="left">Start</TableCell>
             <TableCell align="left">End</TableCell>
             <TableCell align="left">Notes</TableCell>
@@ -61,10 +62,13 @@ export default async function EmployeeSchedulesTable({
                     {i + 1}
                   </TableCell>
                   <TableCell align="left">
-                    {`${JSON.stringify(project)}`}
                     <Link href={`/dashboard/projects/${project?.id}`}>
-                      {project?.id}
+                      {project?.name}
                     </Link>
+                    <Typography>{project?.jobOrder}</Typography>
+                  </TableCell>
+                  <TableCell component="th" scope="row" align="left">
+                    {project?.location}
                   </TableCell>
                   <TableCell align="left">
                     {dayjs(startDate).format("MMMM DD, YYYY hh:mm a")}
