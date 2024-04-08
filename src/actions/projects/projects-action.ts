@@ -8,11 +8,44 @@ import { z } from "zod";
 export async function getProjects() {
   noStore();
 
-  const projects = await db.project.findMany({orderBy: {createdAt: "desc"}});
+  const projects = await db.project.findMany({
+    orderBy: { createdAt: "desc" },
+  });
 
   if (!projects) return { error: "Database error. Fetch unsuccessful!" };
 
   return { success: "Success!", data: projects };
+}
+
+export async function getProjectById(id: string) {
+  noStore();
+
+  const project = await db.project.findUnique({
+    where: { id },
+    include: {
+      schedules: {
+        include: {
+          user: {
+            select: {
+              profile: {
+                select: {
+                  contactNumber: true,
+                  fname: true,
+                  lname: true,
+                  department: true,
+                  occupation: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!project) return { error: "Fetch failed." };
+
+  return { success: "Success!", data: project };
 }
 
 // export async function addRole(roleData: z.infer<typeof RoleSchema>) {

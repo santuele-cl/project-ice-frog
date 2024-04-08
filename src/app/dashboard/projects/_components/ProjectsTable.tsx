@@ -32,10 +32,9 @@ export default async function EmployeeTable({
   department: string;
   status: string;
 }) {
-
   const response = await getProjects();
 
-  if(response.error) throw new Error(response.error)
+  if (response.error) throw new Error(response.error);
 
   console.log("data ", response.data);
 
@@ -51,14 +50,22 @@ export default async function EmployeeTable({
             <TableCell align="left">Notes</TableCell>
             <TableCell align="left">Created At</TableCell>
             <TableCell align="left">Last Updated</TableCell>
-            <TableCell align="right">View Schedules</TableCell>
+            <TableCell align="right">Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {response.data && response.data.length ? (
             response.data.map((project) => {
-              const {id, name, jobOrder, location, notes, createdAt, updatedAt} = project;
-                // const { id, email, isActive, ,emailVerified, role } = employee;
+              const {
+                id,
+                name,
+                jobOrder,
+                location,
+                notes,
+                createdAt,
+                updatedAt,
+              } = project;
+              // const { id, email, isActive, ,emailVerified, role } = employee;
               return (
                 <TableRow
                   key={id}
@@ -69,21 +76,15 @@ export default async function EmployeeTable({
                   <TableCell component="th" scope="row" align="left">
                     {id}
                   </TableCell>
-                  <TableCell align="left">
-                    {name}
-                    </TableCell>
+                  <TableCell align="left">{name}</TableCell>
                   <TableCell align="left">{jobOrder}</TableCell>
-                  <TableCell align="left">
-                    {location}
-                  </TableCell>
-                  <TableCell align="left">
-                    {notes}
+                  <TableCell align="left">{location}</TableCell>
+                  <TableCell align="left">{notes}</TableCell>
+                  <TableCell>
+                    {dayjs(createdAt).format("MMM DD, YYYY hh:mm a")}
                   </TableCell>
                   <TableCell>
-                    {dayjs(createdAt).format("MMM DD, YYYY hh:mm a")} 
-                  </TableCell>
-                  <TableCell>
-                    {dayjs(updatedAt).format("MMM DD, YYYY hh:mm a")} 
+                    {dayjs(updatedAt).format("MMM DD, YYYY hh:mm a")}
                   </TableCell>
 
                   <TableCell align="right">
@@ -95,9 +96,9 @@ export default async function EmployeeTable({
                       <Button
                         variant="contained"
                         LinkComponent={Link}
-                        href={`/dashboard/schedules/${id}`}
+                        href={`/dashboard/projects/${id}`}
                       >
-                        View Schedules
+                        View Details
                       </Button>
                       {/* <Button
                         variant="outlined"
