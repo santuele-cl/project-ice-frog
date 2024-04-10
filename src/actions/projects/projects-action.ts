@@ -4,6 +4,7 @@ import { db } from "@/app/_lib/db";
 import { RoleSchema } from "@/app/_schemas/zod/schema";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import { z } from "zod";
+import { getErrorMessage } from "../action-utils";
 
 export async function getProjects() {
   noStore();
@@ -20,32 +21,34 @@ export async function getProjects() {
 export async function getProjectById(id: string) {
   noStore();
 
-  const project = await db.project.findUnique({
-    where: { id },
-    include: {
-      schedules: {
-        include: {
-          user: {
-            select: {
-              profile: {
-                select: {
-                  contactNumber: true,
-                  fname: true,
-                  lname: true,
-                  department: true,
-                  occupation: true,
+  try {
+    const project = await db.project.findUnique({
+      where: { id },
+      include: {
+        schedules: {
+          include: {
+            user: {
+              select: {
+                profile: {
+                  select: {
+                    contactNumber: true,
+                    fname: true,
+                    lname: true,
+                    department: true,
+                    occupation: true,
+                  },
                 },
               },
             },
           },
         },
       },
-    },
-  });
-
-  if (!project) return { error: "Fetch failed." };
-
-  return { success: "Success!", data: project };
+    });
+    if (!project) return { error: "Project does not exist!" };
+    return { success: "Success!", data: project };
+  } catch (error) {
+    return { error: getErrorMessage(error) };
+  }
 }
 
 // export async function addRole(roleData: z.infer<typeof RoleSchema>) {
