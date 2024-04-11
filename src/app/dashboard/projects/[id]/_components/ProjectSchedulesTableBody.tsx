@@ -1,3 +1,4 @@
+import { getScheduleByEmployeeId } from "@/actions/schedules/schedule-action";
 import { findUser } from "@/actions/users/users";
 import {
   Box,
@@ -15,77 +16,75 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import ProjectsTablePagination from "./ProjectsTablePagination";
-import { Department } from "@prisma/client";
-import Link from "next/link";
-import { getProjects } from "@/actions/projects/projects-action";
+// import EmployeeTablePagination from "./EmployeeTablePagination";
+import { Department, Prisma, Schedule } from "@prisma/client";
 import dayjs from "dayjs";
+import Link from "next/link";
 
-export default async function EmployeeTable({
-  email,
-  page = 1,
-  department,
-  status,
+type UserWithProfile = Prisma.ScheduleGetPayload<{
+  include: {
+    user: {
+      select: {
+        profile: {
+          select: {
+            contactNumber: true;
+            fname: true;
+            lname: true;
+            department: true;
+            occupation: true;
+          };
+        };
+      };
+    };
+  };
+}>;
+
+export default async function ProjectSchedulesTableBody({
+  schedules,
 }: {
-  email: string;
-  page: number;
-  department: string;
-  status: string;
+  schedules: UserWithProfile[];
 }) {
-  const response = await getProjects();
-
-  if (response.error) throw new Error(response.error);
-
-  console.log("data ", response.data);
-
   return (
     <TableContainer>
       <Table sx={{ minWidth: 650, overflow: "auto" }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell align="left">ID</TableCell>
-            <TableCell align="left">Project</TableCell>
-            <TableCell align="left">Job Order</TableCell>
-            <TableCell align="left">Location</TableCell>
+            <TableCell align="left">No</TableCell>
+            <TableCell align="left">Employee</TableCell>
+            <TableCell align="left">Start Date</TableCell>
+            <TableCell align="left">End Date</TableCell>
             <TableCell align="left">Notes</TableCell>
-            <TableCell align="left">Created At</TableCell>
-            <TableCell align="left">Last Updated</TableCell>
             <TableCell align="right">Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {response.data && response.data.length ? (
-            response.data.map((project) => {
-              const {
-                id,
-                name,
-                jobOrder,
-                location,
-                notes,
-                createdAt,
-                updatedAt,
-              } = project;
-              // const { id, email, isActive, ,emailVerified, role } = employee;
+          {schedules && schedules.length ? (
+            schedules.map((schedule, i) => {
+              const { id, user, userId, startDate, endDate, notes } = schedule;
+              //   const { id, email, isActive, ,emailVerified, role } = employee;
               return (
                 <TableRow
-                  key={id}
+                  key={i}
                   sx={{
                     "&:last-child td, &:last-child th": { border: 0 },
                   }}
                 >
                   <TableCell component="th" scope="row" align="left">
-                    {id}
+                    {i + 1}
                   </TableCell>
-                  <TableCell align="left">{name}</TableCell>
-                  <TableCell align="left">{jobOrder}</TableCell>
-                  <TableCell align="left">{location}</TableCell>
+                  <TableCell align="left">
+                    <Link href={`/dashboard/employee/${userId}`}>
+                      {`${user?.profile?.fname} ${user?.profile?.lname}`}
+                    </Link>
+                  </TableCell>
+
+                  <TableCell align="left">
+                    {dayjs(startDate).format("MMMM DD, YYYY hh:mm a")}
+                  </TableCell>
+                  <TableCell align="left">
+                    {dayjs(endDate).format("MMMM DD, YYYY hh:mm a")}
+                  </TableCell>
                   <TableCell align="left">{notes}</TableCell>
-                  <TableCell>
-                    {dayjs(createdAt).format("MMM DD, YYYY hh:mm a")}
-                  </TableCell>
-                  <TableCell>
-                    {dayjs(updatedAt).format("MMM DD, YYYY hh:mm a")}
-                  </TableCell>
 
                   <TableCell align="right">
                     <Stack
@@ -95,10 +94,10 @@ export default async function EmployeeTable({
                     >
                       <Button
                         variant="contained"
-                        LinkComponent={Link}
-                        href={`/dashboard/projects/${id}`}
+                        // LinkComponent={Link}
+                        // href={`/dashboard/schedules/${id}`}
                       >
-                        View Details
+                        Edit
                       </Button>
                       {/* <Button
                         variant="outlined"
