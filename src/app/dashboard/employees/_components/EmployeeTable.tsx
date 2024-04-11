@@ -84,10 +84,18 @@ export default async function EmployeeTable({
                       <Button
                         variant="contained"
                         LinkComponent={Link}
+                        href={`/dashboard/employees/${id}`}
+                      >
+                        View Details
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        LinkComponent={Link}
                         href={`/dashboard/schedules/${id}`}
                       >
                         View Schedules
                       </Button>
+
                       {/* <Button
                         variant="outlined"
                         //   LinkComponent={Link}

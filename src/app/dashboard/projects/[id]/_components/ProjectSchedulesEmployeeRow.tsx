@@ -67,7 +67,7 @@ export default async function ProjectSchedulesEmployeeRow({
       </TableCell>
       <TableCell align="left">
         <Typography>
-          <Link href={`/dashboard/employee/${data[0].userId}`}>
+          <Link href={`/dashboard/employees/${data[0].userId}`}>
             {`${data[0].user.profile?.fname} ${data[0].user.profile?.lname}`}
           </Link>
         </Typography>
