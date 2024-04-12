@@ -1,19 +1,40 @@
-import { getProjectById } from "@/actions/projects/projects-action";
+import {
+  getProjectById,
+  getProjectScheduleGroupByUserId,
+} from "@/actions/projects/projects-action";
 import { Paper, Stack, Typography } from "@mui/material";
 import ProjectSchedulesTableHeader from "./_components/ProjectSchedulesTableHeader";
 import ProjectSchedulesTableBody from "./_components/ProjectSchedulesTableBody";
+
+import ErrorComponent from "@/app/_ui/ErrorComponent";
 
 export default async function ProjectId({
   params: { id },
 }: {
   params: { id: string };
 }) {
-  const res = await getProjectById(id);
+  const project = await getProjectById(id);
 
-  if (res.error || !res.data) throw new Error(res.error);
+  if (project.error || !project.data)
+    return (
+      <Paper
+        elevation={1}
+        sx={{ p: 2, position: "relative", height: "100%", weight: "100%" }}
+      >
+        <ErrorComponent errMessage={String(project.error)} />
+      </Paper>
+    );
+
+  const employeeIds = await getProjectScheduleGroupByUserId(id);
+
+  if (employeeIds.error || !employeeIds.data)
+    return (
+      <Paper elevation={1} sx={{ p: 2 }}>
+        <ErrorComponent errMessage={String(employeeIds.error)} />
+      </Paper>
+    );
 
   const {
-    schedules,
     id: projectId,
     jobOrder,
     location,
@@ -21,7 +42,7 @@ export default async function ProjectId({
     notes,
     createdAt,
     updatedAt,
-  } = res.data;
+  } = project.data;
 
   return (
     <Paper elevation={1} sx={{ p: 2 }}>
@@ -31,9 +52,10 @@ export default async function ProjectId({
           <Typography>{jobOrder}</Typography>
           <Typography>{location}</Typography>
         </ProjectSchedulesTableHeader>
-        <ProjectSchedulesTableBody schedules={schedules} />
-        {/* {`Project ${id}`}
-      <pre>{JSON.stringify(res.data, null, 2)}</pre> */}
+        <ProjectSchedulesTableBody
+          employeeIds={employeeIds.data}
+          projectId={id}
+        />
       </Stack>
     </Paper>
   );

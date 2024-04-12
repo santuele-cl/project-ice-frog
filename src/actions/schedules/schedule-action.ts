@@ -7,6 +7,43 @@ import { Schedule } from "@prisma/client";
 import dayjs from "dayjs";
 import { unstable_noStore as noStore, revalidatePath } from "next/cache";
 import { z } from "zod";
+import { getErrorMessage } from "../action-utils";
+
+export async function getSchedulesByUserIdAndProjectId({
+  userId,
+  projectId,
+}: {
+  userId: string;
+  projectId: string;
+}) {
+  noStore();
+
+  try {
+    const schedules = await db.schedule.findMany({
+      where: { projectId, userId },
+      orderBy: { startDate: "asc" },
+      include: {
+        user: {
+          select: {
+            profile: {
+              select: {
+                contactNumber: true,
+                fname: true,
+                lname: true,
+                department: true,
+                occupation: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!schedules) return { error: "No schedules" };
+    return { success: "Success!", data: schedules };
+  } catch (error: unknown) {
+    return { error: getErrorMessage(error) };
+  }
+}
 
 export async function addMultipleScheduleByEmployeeId(
   employeeId: string,

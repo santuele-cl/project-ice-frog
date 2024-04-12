@@ -18,31 +18,25 @@ export async function getProjects() {
   return { success: "Success!", data: projects };
 }
 
+export async function getProjectScheduleGroupByUserId(projectId: string) {
+  noStore();
+
+  const projects = await db.schedule.groupBy({
+    by: ["userId"],
+    where: { projectId },
+  });
+
+  if (!projects) return { error: "Database error. Fetch unsuccessful!" };
+
+  return { success: "Success!", data: projects };
+}
+
 export async function getProjectById(id: string) {
   noStore();
 
   try {
     const project = await db.project.findUnique({
       where: { id },
-      include: {
-        schedules: {
-          include: {
-            user: {
-              select: {
-                profile: {
-                  select: {
-                    contactNumber: true,
-                    fname: true,
-                    lname: true,
-                    department: true,
-                    occupation: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
     });
     if (!project) return { error: "Project does not exist!" };
     return { success: "Success!", data: project };

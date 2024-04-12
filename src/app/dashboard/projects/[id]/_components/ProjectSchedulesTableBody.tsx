@@ -1,49 +1,22 @@
-import { getScheduleByEmployeeId } from "@/actions/schedules/schedule-action";
-import { findUser } from "@/actions/users/users";
 import {
-  Box,
-  Button,
-  Divider,
-  Pagination,
-  Paper,
-  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
-  Typography,
 } from "@mui/material";
-// import EmployeeTablePagination from "./EmployeeTablePagination";
-import { Department, Prisma, Schedule } from "@prisma/client";
-import dayjs from "dayjs";
-import Link from "next/link";
+import ProjectSchedulesEmployeeRow from "./ProjectSchedulesEmployeeRow";
 
-type UserWithProfile = Prisma.ScheduleGetPayload<{
-  include: {
-    user: {
-      select: {
-        profile: {
-          select: {
-            contactNumber: true;
-            fname: true;
-            lname: true;
-            department: true;
-            occupation: true;
-          };
-        };
-      };
-    };
-  };
-}>;
+type Props = {
+  employeeIds: { userId: string }[];
+  projectId: string;
+};
 
 export default async function ProjectSchedulesTableBody({
-  schedules,
-}: {
-  schedules: UserWithProfile[];
-}) {
+  employeeIds,
+  projectId,
+}: Props) {
   return (
     <TableContainer>
       <Table sx={{ minWidth: 650, overflow: "auto" }} aria-label="simple table">
@@ -51,67 +24,20 @@ export default async function ProjectSchedulesTableBody({
           <TableRow>
             <TableCell align="left">No</TableCell>
             <TableCell align="left">Employee</TableCell>
-            <TableCell align="left">Start Date</TableCell>
-            <TableCell align="left">End Date</TableCell>
-            <TableCell align="left">Notes</TableCell>
+            <TableCell align="left">Schedules</TableCell>
+            {/* <TableCell align="left">Notes</TableCell> */}
             <TableCell align="right">Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {schedules && schedules.length ? (
-            schedules.map((schedule, i) => {
-              const { id, user, userId, startDate, endDate, notes } = schedule;
-              //   const { id, email, isActive, ,emailVerified, role } = employee;
-              return (
-                <TableRow
-                  key={i}
-                  sx={{
-                    "&:last-child td, &:last-child th": { border: 0 },
-                  }}
-                >
-                  <TableCell component="th" scope="row" align="left">
-                    {i + 1}
-                  </TableCell>
-                  <TableCell align="left">
-                    <Link href={`/dashboard/employee/${userId}`}>
-                      {`${user?.profile?.fname} ${user?.profile?.lname}`}
-                    </Link>
-                  </TableCell>
-
-                  <TableCell align="left">
-                    {dayjs(startDate).format("MMMM DD, YYYY hh:mm a")}
-                  </TableCell>
-                  <TableCell align="left">
-                    {dayjs(endDate).format("MMMM DD, YYYY hh:mm a")}
-                  </TableCell>
-                  <TableCell align="left">{notes}</TableCell>
-
-                  <TableCell align="right">
-                    <Stack
-                      spacing={2}
-                      direction="row-reverse"
-                      sx={{ width: "100%" }}
-                    >
-                      <Button
-                        variant="contained"
-                        // LinkComponent={Link}
-                        // href={`/dashboard/schedules/${id}`}
-                      >
-                        Edit
-                      </Button>
-                      {/* <Button
-                        variant="outlined"
-                        //   LinkComponent={Link}
-                        //   href={`${pathname}/${id}`}
-                        // onClick={async () => await toggleUserIsActive(id)}
-                      >
-                        {isActive ? "Deactivate" : "Activate"}
-                      </Button> */}
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              );
-            })
+          {employeeIds && !!employeeIds.length ? (
+            employeeIds.map((employee, index) => (
+              <ProjectSchedulesEmployeeRow
+                index={index}
+                userId={employee.userId}
+                projectId={projectId}
+              />
+            ))
           ) : (
             <TableRow
               sx={{
@@ -128,20 +54,6 @@ export default async function ProjectSchedulesTableBody({
               <TableCell align="left">-</TableCell>
             </TableRow>
           )}
-          {/* <TableRow
-            sx={{
-              "&:last-child td, &:last-child th": { border: 0 },
-            }}
-          >
-            <TableCell component="th" scope="row">
-              -
-            </TableCell>
-            <TableCell align="left">-</TableCell>
-            <TableCell align="left">-</TableCell>
-            <TableCell align="left">-</TableCell>
-            <TableCell align="left">-</TableCell>
-            <TableCell align="left">-</TableCell>
-          </TableRow> */}
         </TableBody>
       </Table>
     </TableContainer>
