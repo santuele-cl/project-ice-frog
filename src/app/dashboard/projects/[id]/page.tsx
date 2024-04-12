@@ -7,6 +7,7 @@ import ProjectSchedulesTableHeader from "./_components/ProjectSchedulesTableHead
 import ProjectSchedulesTableBody from "./_components/ProjectSchedulesTableBody";
 
 import ErrorComponent from "@/app/_ui/ErrorComponent";
+import AddProjectSchedulesFormModal from "./_components/AddProjectSchedulesFormModal";
 
 export default async function ProjectId({
   params: { id },
@@ -45,18 +46,22 @@ export default async function ProjectId({
   } = project.data;
 
   return (
-    <Paper elevation={1} sx={{ p: 2 }}>
-      <Stack>
+    <Stack sx={{ gap: 2 }}>
+      <Typography variant="h4">{`${jobOrder}-99-JobOrder`}</Typography>
+      <Paper elevation={1} sx={{ p: 2 }}>
         <ProjectSchedulesTableHeader>
           <Typography>{name}</Typography>
           <Typography>{jobOrder}</Typography>
           <Typography>{location}</Typography>
         </ProjectSchedulesTableHeader>
+      </Paper>
+      <Paper elevation={1} sx={{ p: 2 }}>
         <ProjectSchedulesTableBody
           employeeIds={employeeIds.data}
           projectId={id}
         />
-      </Stack>
-    </Paper>
+        <AddProjectSchedulesFormModal />
+      </Paper>
+    </Stack>
   );
 }

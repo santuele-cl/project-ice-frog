@@ -44,15 +44,17 @@ export const ScheduleSchema = z.object({
 });
 
 export const SchedulesSchema = z.object({
-  projects: z.array(
-    z.object({
-      projectId: z.string().min(1, "Required field"),
-      // userId: z.string().min(1, "Required field"),
-      notes: z.string().optional(),
-      startDate: z.coerce.date(),
-      endDate: z.coerce.date(),
-    })
-  ),
+  schedules: z.array(ScheduleSchema),
+});
+
+export const ProjectSchema = z.object({
+  name: z.string().min(1, "Required field"),
+  jobOrder: z.string().min(1, "Required field"),
+  location: z.string().min(1, "Required field"),
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date(),
+  notes: z.string().optional(),
+  schedules: z.array(ScheduleSchema.omit({ projectId: true })).optional(),
 });
 
 // export const SchedulesSchema = z.object({

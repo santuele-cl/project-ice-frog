@@ -33,6 +33,7 @@ export default async function ProjectSchedulesTableBody({
           {employeeIds && !!employeeIds.length ? (
             employeeIds.map((employee, index) => (
               <ProjectSchedulesEmployeeRow
+                key={index}
                 index={index}
                 userId={employee.userId}
                 projectId={projectId}

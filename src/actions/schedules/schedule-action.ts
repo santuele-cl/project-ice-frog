@@ -45,6 +45,29 @@ export async function getSchedulesByUserIdAndProjectId({
   }
 }
 
+export async function addMultipleScheduleByProject(
+  schedules: z.infer<typeof SchedulesSchema>
+) {
+  const parse = SchedulesSchema.safeParse(schedules);
+
+  if (!parse.success) return { error: "Parse error. Invalid data input!" };
+
+  try {
+    const createdSchedules = await db.schedule.createMany({
+      data: parse.data.schedules,
+    });
+
+    if (!createdSchedules) {
+      return { error: "Database error. Schedules not added!" };
+    }
+
+    revalidatePath("/dashboard/schedules");
+    return { success: "Schedule(s) added!", data: schedules };
+  } catch (error: unknown) {
+    return { error: getErrorMessage(error) };
+  }
+}
+
 export async function addMultipleScheduleByEmployeeId(
   employeeId: string,
   schedules: z.infer<typeof SchedulesSchema>
@@ -57,13 +80,8 @@ export async function addMultipleScheduleByEmployeeId(
 
   if (!parse.success) return { error: "Parse error. Invalid data input!" };
 
-  const schedulesWithUserId = parse.data.projects.map((proj) => ({
-    ...proj,
-    userId: employeeId,
-  }));
-
   const createdSchedules = await db.schedule.createMany({
-    data: [...schedulesWithUserId],
+    data: parse.data.schedules,
   });
 
   if (!createdSchedules) {
