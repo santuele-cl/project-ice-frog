@@ -1,6 +1,17 @@
 import { Gender, Role, Department } from "@prisma/client";
 import { z } from "zod";
 
+export const DepartmentSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Department name is required!")
+    .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
+  head: z
+    .string()
+    .min(1, "Department head is required!")
+    .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
+});
+
 export const RegisterSchema = z.object({
   // PROFILE
   fname: z
