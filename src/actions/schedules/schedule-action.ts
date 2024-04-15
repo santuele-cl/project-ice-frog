@@ -72,24 +72,52 @@ export async function addMultipleScheduleByEmployeeId(
   employeeId: string,
   schedules: z.infer<typeof SchedulesSchema>
 ) {
-  const isExisting = await db.user.findUnique({ where: { id: employeeId } });
+  // const isExisting = await db.user.findUnique({ where: { id: employeeId } });
 
-  if (!isExisting) return { error: "Employee does not exist." };
+  // if (!isExisting) return { error: "Employee does not exist." };
 
-  const parse = SchedulesSchema.safeParse(schedules);
+  // const parse = SchedulesSchema.safeParse(schedules);
 
-  if (!parse.success) return { error: "Parse error. Invalid data input!" };
+  // if (!parse.success) return { error: "Parse error. Invalid data input!" };
 
-  const createdSchedules = await db.schedule.createMany({
-    data: parse.data.schedules,
+  // // const check = await db.schedule.
+  console.log(schedules);
+  const overlap: Schedule[] = [];
+
+  const check = schedules.schedules.forEach(async (schedule) => {
+    try {
+      const isScheduleExisting = await db.schedule.findFirst({
+        where: {
+          userId: employeeId,
+          AND: [
+            {
+              startDate: { lt: schedule.endDate },
+              endDate: { gt: schedule.startDate },
+            },
+          ],
+        },
+      });
+      console.log("isScheduleExisting", isScheduleExisting);
+      if (isScheduleExisting) overlap.push(isScheduleExisting);
+    } catch (error: unknown) {
+      return { error: getErrorMessage(error) };
+    }
   });
 
-  if (!createdSchedules) {
-    return { error: "Database error. Schedules not added!" };
-  }
+  if (overlap.length)
+    return { error: "Schedule overlap. Schedules not saved.", overlap };
 
-  revalidatePath("/dashboard/schedules");
-  return { success: "Schedule(s) added!", data: schedules };
+  return { success: "asdf", overlap, schedules };
+  // const createdSchedules = await db.schedule.createMany({
+  //   data: parse.data.schedules,
+  // });
+
+  // if (!createdSchedules) {
+  //   return { error: "Database error. Schedules not added!" };
+  // }
+
+  // revalidatePath("/dashboard/schedules");
+  // return { success: "Schedule(s) added!", data: schedules };
 }
 
 export async function getScheduleByEmployeeId(employeeId: string) {
@@ -103,7 +131,7 @@ export async function getScheduleByEmployeeId(employeeId: string) {
     where: {
       userId: employeeId,
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { startDate: "desc" },
     include: { project: true },
   });
 

@@ -38,6 +38,7 @@ export default async function EmployeeSchedulesTable({
         <TableHead>
           <TableRow>
             <TableCell align="left">No</TableCell>
+            <TableCell align="left">Schedule ID</TableCell>
             <TableCell align="left">Project</TableCell>
             <TableCell align="left">Location</TableCell>
             <TableCell align="left">Start</TableCell>
@@ -49,7 +50,7 @@ export default async function EmployeeSchedulesTable({
         <TableBody>
           {response.data && response.data.length ? (
             response.data.map((schedule, i) => {
-              const { project, endDate, startDate, notes } = schedule;
+              const { id, project, endDate, startDate, notes } = schedule;
               //   const { id, email, isActive, ,emailVerified, role } = employee;
               return (
                 <TableRow
@@ -60,6 +61,9 @@ export default async function EmployeeSchedulesTable({
                 >
                   <TableCell component="th" scope="row" align="left">
                     {i + 1}
+                  </TableCell>
+                  <TableCell component="th" scope="row" align="left">
+                    {id}
                   </TableCell>
                   <TableCell align="left">
                     <Link href={`/dashboard/projects/${project?.id}`}>

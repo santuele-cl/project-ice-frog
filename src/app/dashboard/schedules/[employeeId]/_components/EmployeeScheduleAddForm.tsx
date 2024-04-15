@@ -47,6 +47,7 @@ export default function EmployeeScheduleAddForm({
     formState: { errors, isSubmitting },
     reset,
     control,
+    trigger,
   } = useForm<z.infer<typeof SchedulesSchema>>({
     resolver: zodResolver(SchedulesSchema),
     defaultValues: {
@@ -86,14 +87,15 @@ export default function EmployeeScheduleAddForm({
         data
       );
 
-      if (res?.error) {
-        reset();
-        setError(res.error);
-      }
-      if (res?.success) {
-        reset();
-        setSuccess(res.success);
-      }
+      console.log(res);
+      // if (res?.error) {
+      //   reset();
+      //   setError(res.error);
+      // }
+      // if (res?.success) {
+      //   reset();
+      //   setSuccess(res.success);
+      // }
     } catch {
       setError("Something went wrong!");
     } finally {
@@ -202,10 +204,11 @@ export default function EmployeeScheduleAddForm({
                 <Controller
                   control={control}
                   name={`schedules.${index}.startDate`}
-                  rules={{ required: true }}
+                  // rules={{ required: true }}
                   render={({ field }) => {
                     return (
                       <DateTimePicker
+                        minDate={dayjs()}
                         slotProps={{
                           textField: {
                             error:
@@ -225,6 +228,8 @@ export default function EmployeeScheduleAddForm({
                         inputRef={field.ref}
                         onChange={(date) => {
                           field.onChange(date?.toDate());
+                          trigger(`schedules.${index}.endDate`);
+                          trigger(`schedules.${index}.startDate`);
                         }}
                       />
                     );
@@ -237,6 +242,7 @@ export default function EmployeeScheduleAddForm({
                   render={({ field }) => {
                     return (
                       <DateTimePicker
+                        minDate={dayjs()}
                         slotProps={{
                           textField: {
                             error:
@@ -256,6 +262,8 @@ export default function EmployeeScheduleAddForm({
                         inputRef={field.ref}
                         onChange={(date) => {
                           field.onChange(date?.toDate());
+                          trigger(`schedules.${index}.endDate`);
+                          trigger(`schedules.${index}.startDate`);
                         }}
                       />
                     );
