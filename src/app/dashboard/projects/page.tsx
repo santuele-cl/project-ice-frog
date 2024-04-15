@@ -32,6 +32,7 @@ import ProjectsTablePagination from "./_components/ProjectsTablePagination";
 import ProjectsAdd from "./_components/ProjectsAdd";
 import ProjectsSearch from "./_components/ProjectsSearch";
 import TableSkeleton from "@/app/_ui/TableSkeleton";
+import ProjectAddFormModal from "./_components/ProjectAddFormModal";
 // import EmployeeSearch from "../_components/EmployeeSearch";
 // import EmployeeAdd from "../_components/EmployeeAdd";
 // import EmployeeTable from "../_components/EmployeeTable";
@@ -55,7 +56,7 @@ export default async function page({
     <Paper elevation={1} sx={{ p: 2 }}>
       <ProjectsTableHeader>
         <ProjectsSearch />
-        <ProjectsAdd />
+        <ProjectAddFormModal />
       </ProjectsTableHeader>
       <Divider sx={{ my: 1 }} />
       <Suspense fallback={<TableSkeleton />}>

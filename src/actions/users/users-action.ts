@@ -5,6 +5,25 @@ import { Department } from "@prisma/client";
 import { unstable_noStore as noStore } from "next/cache";
 import { getErrorMessage } from "../action-utils";
 
+export async function getEmployeeIds() {
+  noStore();
+
+  try {
+    const user = await db.user.findMany({
+      select: {
+        id: true,
+        profile: { select: { fname: true, lname: true } },
+      },
+    });
+
+    if (!user) return { error: "Employee does not exist!" };
+
+    return { success: "Success!", data: user };
+  } catch (error) {
+    return { error: getErrorMessage(error) };
+  }
+}
+
 export async function getEmployeeById(id: string) {
   noStore();
 

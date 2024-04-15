@@ -22,15 +22,26 @@ import FormStatusText from "@/app/_ui/auth/FormStatusText";
 import dayjs from "dayjs";
 import { SchedulesSchema } from "@/app/_schemas/zod/schema";
 import { useParams } from "next/navigation";
-import { Department, Project } from "@prisma/client";
+import { Department, Prisma, Project, User } from "@prisma/client";
 import { getDepartments } from "@/actions/departments/department";
 import { getProjects } from "@/actions/projects/projects-action";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { DateTimePicker } from "@mui/x-date-pickers";
-import { addMultipleScheduleByEmployeeId } from "@/actions/schedules/schedule-action";
+import {
+  addMultipleScheduleByEmployeeId,
+  addMultipleScheduleByProject,
+} from "@/actions/schedules/schedule-action";
+import { getEmployeeIds } from "@/actions/users/users-action";
 
-export default function EmployeeScheduleAddForm({
+type UserWithName = Prisma.UserGetPayload<{
+  select: {
+    id: true;
+    profile: { select: { fname: true; lname: true } };
+  };
+}>;
+
+export default function AddProjectSchedulesForm({
   setShow,
 }: {
   setShow: Dispatch<SetStateAction<boolean>>;
@@ -52,8 +63,8 @@ export default function EmployeeScheduleAddForm({
     defaultValues: {
       schedules: [
         {
-          projectId: "",
-          userId: params.employeeId as string,
+          projectId: params.id as string,
+          userId: "",
           startDate: dayjs().toDate(),
           endDate: dayjs().add(8, "hour").toDate(),
           notes: "",
@@ -70,7 +81,7 @@ export default function EmployeeScheduleAddForm({
   console.log("form erros : ", errors);
 
   const onSubmit = async (data: z.infer<typeof SchedulesSchema>) => {
-    // console.log("data", data);
+    console.log("data", data);
     // const res = await addMultipleScheduleByEmployeeId(
     //   params?.employeeId as string,
     //   data
@@ -81,10 +92,7 @@ export default function EmployeeScheduleAddForm({
     setError("");
     setSuccess("");
     try {
-      const res = await addMultipleScheduleByEmployeeId(
-        params?.employeeId as string,
-        data
-      );
+      const res = await addMultipleScheduleByProject(data);
 
       if (res?.error) {
         reset();
@@ -101,14 +109,14 @@ export default function EmployeeScheduleAddForm({
     }
   };
 
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [employees, setEmployees] = useState<UserWithName[]>([]);
 
   useEffect(() => {
-    async function fetchProjects() {
-      const res = await getProjects();
-      if (res?.data) setProjects(res.data);
+    async function fetchEmployees() {
+      const res = await getEmployeeIds();
+      if (res?.data) setEmployees(res.data);
     }
-    fetchProjects();
+    fetchEmployees();
   }, []);
 
   return (
@@ -135,7 +143,7 @@ export default function EmployeeScheduleAddForm({
             sx={{ fontWeight: 700 }}
             color="secondary"
           >
-            Roy Castro
+            {params?.employeeId}
           </Typography>
         </Typography>
         {/* <IconButton onClick={() => setShow(false)} color="error" size="small">
@@ -161,7 +169,7 @@ export default function EmployeeScheduleAddForm({
                 </Typography>
                 <Controller
                   control={control}
-                  name={`schedules.${index}.projectId`}
+                  name={`schedules.${index}.userId`}
                   rules={{
                     required: "required field",
                   }}
@@ -174,11 +182,13 @@ export default function EmployeeScheduleAddForm({
                         //     option[valueIdentifier] === defaultValueId
                         // )}
                         sx={{ width: 250 }}
-                        getOptionLabel={(option) => option.name}
-                        options={projects}
+                        getOptionLabel={(option) =>
+                          `${option.profile?.fname} ${option.profile?.lname}`
+                        }
+                        options={employees}
                         value={
                           value
-                            ? projects.find(
+                            ? employees.find(
                                 (option: any) => option.id === value
                               ) ?? null
                             : null
@@ -189,7 +199,7 @@ export default function EmployeeScheduleAddForm({
                         renderInput={(params) => (
                           <TextField
                             {...params}
-                            label="Project"
+                            label="Employee"
                             inputRef={ref}
                             helperText={error?.message}
                             error={!!error}
@@ -288,8 +298,8 @@ export default function EmployeeScheduleAddForm({
         <Button
           onClick={() =>
             append({
-              projectId: "",
-              userId: params.employeeId as string,
+              projectId: params.id as string,
+              userId: "",
               notes: "",
               startDate: dayjs().toDate(),
               endDate: dayjs().add(8, "hour").toDate(),

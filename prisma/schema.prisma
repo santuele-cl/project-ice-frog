@@ -76,7 +76,9 @@ model Project {
   name      String
   jobOrder  String
   location  String
-  notes     String
+  startDate DateTime
+  endDate   DateTime
+  notes     String?
   schedules Schedule[]
 }
 

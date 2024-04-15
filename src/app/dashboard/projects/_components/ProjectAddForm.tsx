@@ -8,7 +8,6 @@ import {
   FormHelperText,
   IconButton,
   Paper,
-  Snackbar,
   Stack,
   TextField,
   Typography,
@@ -20,17 +19,26 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import FormStatusText from "@/app/_ui/auth/FormStatusText";
 import dayjs from "dayjs";
-import { SchedulesSchema } from "@/app/_schemas/zod/schema";
+import { ProjectSchema } from "@/app/_schemas/zod/schema";
 import { useParams } from "next/navigation";
-import { Department, Project } from "@prisma/client";
+import { Department, Prisma, Project, User } from "@prisma/client";
 import { getDepartments } from "@/actions/departments/department";
-import { getProjects } from "@/actions/projects/projects-action";
+import { addProject, getProjects } from "@/actions/projects/projects-action";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { addMultipleScheduleByEmployeeId } from "@/actions/schedules/schedule-action";
+import { getEmployeeIds } from "@/actions/users/users-action";
+import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 
-export default function EmployeeScheduleAddForm({
+type UserWithName = Prisma.UserGetPayload<{
+  select: {
+    id: true;
+    profile: { select: { fname: true; lname: true } };
+  };
+}>;
+
+export default function ProjectAddForm({
   setShow,
 }: {
   setShow: Dispatch<SetStateAction<boolean>>;
@@ -47,18 +55,16 @@ export default function EmployeeScheduleAddForm({
     formState: { errors, isSubmitting },
     reset,
     control,
-  } = useForm<z.infer<typeof SchedulesSchema>>({
-    resolver: zodResolver(SchedulesSchema),
+  } = useForm<z.infer<typeof ProjectSchema>>({
+    resolver: zodResolver(ProjectSchema),
     defaultValues: {
-      schedules: [
-        {
-          projectId: "",
-          userId: params.employeeId as string,
-          startDate: dayjs().toDate(),
-          endDate: dayjs().add(8, "hour").toDate(),
-          notes: "",
-        },
-      ],
+      name: "",
+      jobOrder: "",
+      location: "",
+      notes: "",
+      // startDate: undefined,
+      // endDate: undefined,
+      schedules: [],
     },
   });
 
@@ -67,24 +73,16 @@ export default function EmployeeScheduleAddForm({
     name: "schedules",
   });
 
-  console.log("form erros : ", errors);
+  console.log("project add form errors : ", errors);
 
-  const onSubmit = async (data: z.infer<typeof SchedulesSchema>) => {
-    // console.log("data", data);
-    // const res = await addMultipleScheduleByEmployeeId(
-    //   params?.employeeId as string,
-    //   data
-    // );
-    // console.log(res);
+  const onSubmit = async (data: z.infer<typeof ProjectSchema>) => {
+    console.log("project add data", data);
 
     setPending(true);
     setError("");
     setSuccess("");
     try {
-      const res = await addMultipleScheduleByEmployeeId(
-        params?.employeeId as string,
-        data
-      );
+      const res = await addProject(data);
 
       if (res?.error) {
         reset();
@@ -101,25 +99,18 @@ export default function EmployeeScheduleAddForm({
     }
   };
 
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [employees, setEmployees] = useState<UserWithName[]>([]);
 
   useEffect(() => {
-    async function fetchProjects() {
-      const res = await getProjects();
-      if (res?.data) setProjects(res.data);
+    async function fetchEmployees() {
+      const res = await getEmployeeIds();
+      if (res?.data) setEmployees(res.data);
     }
-    fetchProjects();
+    fetchEmployees();
   }, []);
 
   return (
     <Paper sx={{ p: 3 }}>
-      {/* <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        message="Note archived"
-        action={action}
-      /> */}
       <Stack
         sx={{
           flexDirection: "row",
@@ -127,17 +118,7 @@ export default function EmployeeScheduleAddForm({
           alignItems: "flex-start",
         }}
       >
-        <Typography variant="h6">
-          New Schedule for{" "}
-          <Typography
-            component="span"
-            variant="h6"
-            sx={{ fontWeight: 700 }}
-            color="secondary"
-          >
-            Roy Castro
-          </Typography>
-        </Typography>
+        <Typography variant="h6">New Project</Typography>
         {/* <IconButton onClick={() => setShow(false)} color="error" size="small">
           <CloseOutlinedIcon fontSize="medium" />
         </IconButton> */}
@@ -145,7 +126,131 @@ export default function EmployeeScheduleAddForm({
 
       <Divider sx={{ my: 2 }} />
       <Stack component="form" onSubmit={handleSubmit(onSubmit)} sx={{ gap: 2 }}>
+        <Typography variant="h6" sx={{ textTransform: "uppercase" }}>
+          Project Details
+        </Typography>
+        <Grid2 container spacing={3} sx={{ maxWidth: 1290 }}>
+          <Grid2 xs={12} sm={6}>
+            <TextField
+              label="Project Name"
+              {...register("name")}
+              error={errors.name ? true : false}
+              helperText={errors.name?.message}
+              disabled={pending}
+              fullWidth
+            />
+          </Grid2>
+          <Grid2 xs={12} sm={6}>
+            <TextField
+              label="Job Order"
+              {...register("jobOrder")}
+              error={errors.jobOrder ? true : false}
+              helperText={errors.jobOrder?.message}
+              disabled={pending}
+              fullWidth
+            />
+          </Grid2>
+          <Grid2 xs={12} sm={6}>
+            <TextField
+              label="Location"
+              {...register("location")}
+              error={errors.location ? true : false}
+              helperText={errors.location?.message}
+              disabled={pending}
+              fullWidth
+            />
+          </Grid2>
+          <Grid2 xs={12} sm={6}>
+            <TextField
+              label="Notes"
+              {...register("notes")}
+              error={errors.notes ? true : false}
+              helperText={errors.notes?.message}
+              disabled={pending}
+              fullWidth
+            />
+          </Grid2>
+          <Grid2 xs={12} sm={6}>
+            <Controller
+              control={control}
+              name="startDate"
+              // rules={{ required: true }}
+              render={({ field }) => {
+                return (
+                  <DateTimePicker
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+
+                        error: !!errors && !!errors.startDate,
+                        helperText: (
+                          <FormHelperText sx={{ margin: 0 }}>
+                            {!!errors &&
+                              !!errors.startDate &&
+                              errors.startDate?.message}
+                          </FormHelperText>
+                        ),
+                      },
+                    }}
+                    format="MMM DD, YYYY hh:mm a"
+                    label="Projected Start Date"
+                    value={field.value ? dayjs(field.value) ?? null : null}
+                    inputRef={field.ref}
+                    onChange={(date) => {
+                      field.onChange(date?.toDate());
+                    }}
+                  />
+                );
+              }}
+            />
+          </Grid2>
+          <Grid2 xs={12} sm={6}>
+            <Controller
+              control={control}
+              name="endDate"
+              // rules={{ required: true }}
+              render={({ field }) => {
+                return (
+                  <DateTimePicker
+                    // slotProps={{
+                    //   textField: {
+                    //     // size: "small",
+                    //     fullWidth: true,
+                    //   },
+                    // }}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+
+                        error: !!errors && !!errors.endDate,
+                        helperText: (
+                          <FormHelperText sx={{ margin: 0 }}>
+                            {!!errors &&
+                              !!errors.endDate &&
+                              errors.endDate?.message}
+                          </FormHelperText>
+                        ),
+                      },
+                    }}
+                    label="Projected End Date"
+                    format="MMM DD, YYYY hh:mm a"
+                    value={field.value ? dayjs(field.value) ?? null : null}
+                    inputRef={field.ref}
+                    onChange={(date) => {
+                      field.onChange(date?.toDate());
+                    }}
+                  />
+                );
+              }}
+            />
+          </Grid2>
+        </Grid2>
+
         <Stack sx={{ maxHeight: 350, overflowY: "auto", gap: 2, p: 2 }}>
+          <Typography variant="h6" sx={{ textTransform: "uppercase" }}>
+            Assign Employees
+          </Typography>
+
           {fields.map((field, index) => {
             return (
               <Stack
@@ -161,7 +266,7 @@ export default function EmployeeScheduleAddForm({
                 </Typography>
                 <Controller
                   control={control}
-                  name={`schedules.${index}.projectId`}
+                  name={`schedules.${index}.userId`}
                   rules={{
                     required: "required field",
                   }}
@@ -174,11 +279,13 @@ export default function EmployeeScheduleAddForm({
                         //     option[valueIdentifier] === defaultValueId
                         // )}
                         sx={{ width: 250 }}
-                        getOptionLabel={(option) => option.name}
-                        options={projects}
+                        getOptionLabel={(option) =>
+                          `${option.profile?.fname} ${option.profile?.lname}`
+                        }
+                        options={employees}
                         value={
                           value
-                            ? projects.find(
+                            ? employees.find(
                                 (option: any) => option.id === value
                               ) ?? null
                             : null
@@ -189,7 +296,7 @@ export default function EmployeeScheduleAddForm({
                         renderInput={(params) => (
                           <TextField
                             {...params}
-                            label="Project"
+                            label="Employee"
                             inputRef={ref}
                             helperText={error?.message}
                             error={!!error}
@@ -221,6 +328,7 @@ export default function EmployeeScheduleAddForm({
                           },
                         }}
                         label="Start Date"
+                        format="MMM DD, YYYY hh:mm a"
                         value={dayjs(field.value)}
                         inputRef={field.ref}
                         onChange={(date) => {
@@ -252,6 +360,7 @@ export default function EmployeeScheduleAddForm({
                           },
                         }}
                         label="End Date"
+                        format="MMM DD, YYYY hh:mm a"
                         value={dayjs(field.value)}
                         inputRef={field.ref}
                         onChange={(date) => {
@@ -276,11 +385,11 @@ export default function EmployeeScheduleAddForm({
                   }
                   disabled={isSubmitting}
                 />
-                {index !== 0 && (
-                  <Button onClick={() => remove(index)}>
-                    <DeleteOutlinedIcon color="error" />
-                  </Button>
-                )}
+                {/* {index !== 0 && ( */}
+                <Button onClick={() => remove(index)}>
+                  <DeleteOutlinedIcon color="error" />
+                </Button>
+                {/* )} */}
               </Stack>
             );
           })}
@@ -288,16 +397,15 @@ export default function EmployeeScheduleAddForm({
         <Button
           onClick={() =>
             append({
-              projectId: "",
-              userId: params.employeeId as string,
+              userId: "",
               notes: "",
               startDate: dayjs().toDate(),
               endDate: dayjs().add(8, "hour").toDate(),
             })
           }
-          sx={{ bgcolor: "rgba(0,0,255,0.1)" }}
+          sx={{ bgcolor: "rgba(0,0,255,0.1)", fontSize: 14 }}
         >
-          <AddOutlinedIcon />
+          <AddOutlinedIcon /> Add Employee
         </Button>
         {error && <FormStatusText message={error} status="error" />}
         {success && <FormStatusText message={success} status="success" />}

@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import dayjs from "dayjs";
 
 const db = new PrismaClient();
 
@@ -123,6 +124,8 @@ const seed = async () => {
         name: "Website Redesign",
         jobOrder: "JO123",
         location: "New York",
+        startDate: dayjs().toDate(),
+        endDate: dayjs().add(2, "day").toDate(),
         notes: "Client wants a modern and responsive design.",
       },
       {
@@ -130,6 +133,8 @@ const seed = async () => {
         name: "Mobile App Development",
         jobOrder: "JO456",
         location: "San Francisco",
+        startDate: dayjs().toDate(),
+        endDate: dayjs().add(2, "day").toDate(),
         notes: "Building a cross-platform app for iOS and Android.",
       },
     ],
