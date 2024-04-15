@@ -1,8 +1,54 @@
 "use server";
 
 import { db } from "@/app/_lib/db";
+import { DepartmentSchema } from "@/app/_schemas/zod/schema";
 import { Department } from "@prisma/client";
-import { unstable_noStore as noStore } from "next/cache";
+import { unstable_noStore as noStore, revalidatePath } from "next/cache";
+import { z } from "zod";
+import { getErrorMessage } from "../action-utils";
+
+type Sort = Record<keyof Department, "asc" | "desc">;
+
+const ITEMS_PER_PAGE = 2;
+
+export async function findDepartment({
+  page = 1,
+  email,
+  department,
+  sort,
+  active,
+}: {
+  page?: number;
+  email?: string;
+  department?: string;
+  sort?: Sort[];
+  active?: boolean;
+}) {
+  noStore();
+
+  try {
+    const departments = await db.department.findMany({
+      where: {
+        // email: { contains: email },
+        // profile: { department: { name: { in: department?.split(",") } } },
+        // isActive: { equals: active },
+      },
+      orderBy: sort,
+      // take: ITEMS_PER_PAGE,
+      // skip: (Number(page) - 1) * ITEMS_PER_PAGE,
+    });
+
+    console.log("departments : ", departments);
+
+    if (!departments || departments.length < 1) {
+      return { error: "No departments found!" };
+    } else {
+      return { success: "Departments found!", data: departments };
+    }
+  } catch (error) {
+    return { error: "Something went wrong!" };
+  }
+}
 
 export async function getDepartments() {
   noStore();
@@ -14,4 +60,33 @@ export async function getDepartments() {
     return { error };
   }
   return { success: "Departments fetch successul!", data: departments };
+}
+
+export async function addDepartment({
+  data,
+}: {
+  data: z.infer<typeof DepartmentSchema>;
+}) {
+  if (!data) return { error: "Missing data" };
+
+  const parse = DepartmentSchema.safeParse(data);
+
+  if (!parse.success) return { error: "Parse error!" };
+
+  try {
+    const newDeparment = await db.department.create({
+      data,
+    });
+
+    if (!newDeparment) return { error: "Database error" };
+
+    revalidatePath("/dashboard/deparments");
+
+    return {
+      success: `${newDeparment.name} department added!`,
+      data: newDeparment,
+    };
+  } catch (error: unknown) {
+    return { error: getErrorMessage(error) };
+  }
 }

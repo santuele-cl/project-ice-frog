@@ -29,7 +29,7 @@ export async function findUser({
   active?: boolean;
 }) {
   noStore();
-  console.log("department search : ", department?.split(","));
+
   try {
     const users = await db.user.findMany({
       where: {
