@@ -33,6 +33,7 @@ export default function EmployeeScheduleAddForm({
   setShow: Dispatch<SetStateAction<boolean>>;
 }) {
   const params = useParams();
+  console.log("params", params);
   const [pending, setPending] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -51,7 +52,7 @@ export default function EmployeeScheduleAddForm({
       schedules: [
         {
           projectId: "",
-          userId: params.employeeId as string,
+          userId: params.id as string,
           startDate: dayjs().toDate(),
           endDate: dayjs().add(8, "hour").toDate(),
           notes: "",
@@ -74,7 +75,7 @@ export default function EmployeeScheduleAddForm({
 
     try {
       const res = await addMultipleScheduleByEmployeeId(
-        params?.employeeId as string,
+        params?.id as string,
         data
       );
 
@@ -119,7 +120,7 @@ export default function EmployeeScheduleAddForm({
             sx={{ fontWeight: 700 }}
             color="secondary"
           >
-            Roy Castro
+            Christia "Roy" Sarguet-Castro
           </Typography>
         </Typography>
         {/* <IconButton onClick={() => setShow(false)} color="error" size="small">
@@ -281,7 +282,7 @@ export default function EmployeeScheduleAddForm({
           onClick={() =>
             append({
               projectId: "",
-              userId: params.employeeId as string,
+              userId: params.id as string,
               notes: "",
               startDate: dayjs().toDate(),
               endDate: dayjs().add(8, "hour").toDate(),

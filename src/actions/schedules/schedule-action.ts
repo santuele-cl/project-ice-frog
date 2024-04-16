@@ -7,6 +7,27 @@ import { db } from "@/app/_lib/db";
 import { SchedulesSchema } from "@/app/_schemas/zod/schema";
 import { getErrorMessage } from "../action-utils";
 
+// async function filterAsyncArray(array: any, employeeId: string) {
+//   const filteredResults = await Promise.all(
+//     array.map(async (schedule: any) => {
+//       const isEven = await db.schedule.findMany({
+//         where: {
+//           userId: employeeId,
+//           AND: [
+//             {
+//               startDate: { lt: schedule.endDate },
+//               endDate: { gt: schedule.startDate },
+//             },
+//           ],
+//         },
+//       });;
+//       return isEven ? schedule : null;
+//     })
+//   );
+
+//   return filteredResults.filter((result) => result !== null);
+// }
+
 export async function getSchedulesByUserIdAndProjectId({
   userId,
   projectId,
@@ -78,31 +99,42 @@ export async function addMultipleScheduleByEmployeeId(
 
   if (!parse.success) return { error: "Parse error. Invalid data input!" };
 
-  const overlap = parse.data.schedules.filter(async (schedule) => {
-    try {
-      const existingSchedules = await db.schedule.findMany({
-        where: {
-          userId: employeeId,
-          AND: [
-            {
-              startDate: { lt: schedule.endDate },
-              endDate: { gt: schedule.startDate },
-            },
-          ],
-        },
-      });
+  // const hasOverlap = parse.data.schedules.every(async (schedule) => {
+  //   try {
+  //     const existingSchedules = await db.schedule.findMany({
+  //       where: {
+  //         userId: employeeId,
+  //         AND: [
+  //           {
+  //             startDate: { lt: schedule.endDate },
+  //             endDate: { gt: schedule.startDate },
+  //           },
+  //         ],
+  //       },
+  //     });
+  //     console.log("existing sched", existingSchedules);
+  //     console.log(
+  //       "existing sched check",
+  //       existingSchedules && !!existingSchedules.length
+  //     );
+  //     if (existingSchedules && existingSchedules.length > 0) {
+  //       return false;
+  //     } else {
+  //       return true;
+  //     }
+  //   } catch (error: unknown) {
+  //     console.log("error : ", error);
+  //     return false;
+  //   }
+  // });
 
-      if (existingSchedules && existingSchedules.length > 0) return true;
-      else return false;
-    } catch (error: unknown) {
-      return true;
-    }
-  });
+  // console.log("overlaps : ", hasOverlap);
 
-  if (overlap && overlap.length > 0)
-    return { error: "Schedule overlap. Schedules not saved.", overlap };
+  // if (hasOverlap)
+  //   return { error: "Schedule overlap. Schedules not saved.", hasOverlap };
 
   try {
+    // TODO: loop thru schedules then use create instead of create many
     const createdSchedules = await db.schedule.createMany({
       data: parse.data.schedules,
     });
