@@ -81,7 +81,7 @@ export default function AddProjectSchedulesForm({
   console.log("form erros : ", errors);
 
   const onSubmit = async (data: z.infer<typeof SchedulesSchema>) => {
-    console.log("data", data);
+    // console.log("data", data);
     // const res = await addMultipleScheduleByEmployeeId(
     //   params?.employeeId as string,
     //   data

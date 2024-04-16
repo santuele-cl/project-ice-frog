@@ -1,4 +1,5 @@
 import { Gender, Role, Department } from "@prisma/client";
+import dayjs from "dayjs";
 import { z } from "zod";
 
 export const DepartmentSchema = z.object({
@@ -46,16 +47,37 @@ export const RegisterSchema = z.object({
   }),
 });
 
+// const isEndDateGreateeThanStartDate = ({ createdAt }: { createdAt: Date }) => createdAt < new Date();
+
 export const ScheduleSchema = z.object({
   projectId: z.string().min(1, "Required field"),
   userId: z.string().min(1, "Required field"),
   notes: z.string().optional(),
-  startDate: z.coerce.date(),
-  endDate: z.coerce.date(),
+  startDate: z.date(),
+  endDate: z.date(),
+});
+
+export const ScheduleSchemaWithoutProjectId = ScheduleSchema.omit({
+  projectId: true,
+}).refine((data) => data.endDate > data.startDate, {
+  message: "End date must be greater than start date.",
+  path: ["endDate"],
+});
+
+export const ScheduleSchemaWithDateRefine = ScheduleSchema.refine(
+  (data) =>
+    data.startDate >= new Date(dayjs().year(), dayjs().month(), dayjs().day()),
+  {
+    message: "Cannot set past date as start date",
+    path: ["startDate"],
+  }
+).refine((data) => data.endDate > data.startDate, {
+  message: "End date must be greater than start date.",
+  path: ["endDate"],
 });
 
 export const SchedulesSchema = z.object({
-  schedules: z.array(ScheduleSchema),
+  schedules: z.array(ScheduleSchemaWithDateRefine),
 });
 
 export const ProjectSchema = z.object({
@@ -65,7 +87,7 @@ export const ProjectSchema = z.object({
   startDate: z.coerce.date(),
   endDate: z.coerce.date(),
   notes: z.string().optional(),
-  schedules: z.array(ScheduleSchema.omit({ projectId: true })).optional(),
+  schedules: z.array(ScheduleSchemaWithoutProjectId).optional(),
 });
 
 // export const SchedulesSchema = z.object({
