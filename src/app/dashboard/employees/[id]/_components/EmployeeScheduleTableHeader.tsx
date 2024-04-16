@@ -1,7 +1,4 @@
 import { Stack, Typography } from "@mui/material";
-// import EmployeeSearch from "./EmployeeSearch";
-// import EmployeeAdd from "./EmployeeAdd";
-import React from "react";
 
 export default function EmployeeScheduleTableHeader({
   children,

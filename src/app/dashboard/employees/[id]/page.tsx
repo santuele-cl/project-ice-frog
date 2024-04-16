@@ -1,6 +1,20 @@
 import { getEmployeeById } from "@/actions/users/users-action";
 import ErrorComponent from "@/app/_ui/ErrorComponent";
-import { Paper } from "@mui/material";
+import {
+  Avatar,
+  Divider,
+  Paper,
+  Stack,
+  SxProps,
+  Typography,
+} from "@mui/material";
+import EmployeeScheduleTableHeader from "./_components/EmployeeScheduleTableHeader";
+import EmployeeScheduleSearch from "./_components/EmployeeScheduleSearch";
+import EmployeeScheduleAddFormModal from "./_components/EmployeeScheduleAddFormModal";
+import EmployeeSchedulesTable from "./_components/EmployeeSchedulesTable";
+import { Suspense } from "react";
+import TableSkeleton from "@/app/_ui/TableSkeleton";
+import EmployeeDetails from "../../schedules/_components/EmployeeDetails";
 
 export default async function EmployeeDetailsPage({
   params: { id },
@@ -30,5 +44,24 @@ export default async function EmployeeDetailsPage({
     createdAt,
   } = employee.data;
 
-  return <pre>{JSON.stringify(employee.data, null, 2)}</pre>;
+  return (
+    <Stack sx={{ gap: 2 }}>
+      <Paper elevation={1} sx={{ p: 2 }}>
+        {profile && <EmployeeDetails profile={profile} />}
+      </Paper>
+      <Paper elevation={1} sx={{ p: 2 }}>
+        <EmployeeScheduleTableHeader>
+          <EmployeeScheduleSearch />
+          <EmployeeScheduleAddFormModal />
+        </EmployeeScheduleTableHeader>
+        <Divider sx={{ my: 1 }} />
+        <Suspense fallback={<TableSkeleton />}>
+          <EmployeeSchedulesTable employeeId={employeeId} />
+        </Suspense>
+
+        {/* <Divider sx={{ my: 1 }} />
+      <EmployeeTablePagination /> */}
+      </Paper>
+    </Stack>
+  );
 }

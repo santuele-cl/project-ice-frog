@@ -1,12 +1,12 @@
 import { Divider, Paper } from "@mui/material";
-import EmployeeSchedulesTable from "./_components/EmployeeSchedulesTable";
+import EmployeeSchedulesTable from "../../employees/[id]/_components/EmployeeSchedulesTable";
 import { Suspense } from "react";
 import TableSkeleton from "@/app/_ui/TableSkeleton";
-import EmployeeScheduleTableHeader from "./_components/EmployeeScheduleTableHeader";
+import EmployeeScheduleTableHeader from "../../employees/[id]/_components/EmployeeScheduleTableHeader";
 import EmployeeSearch from "../../employees/_components/EmployeeSearch";
 import EmployeeAdd from "../../employees/_components/EmployeeAdd";
-import EmployeeScheduleSearch from "./_components/EmployeeScheduleSearch";
-import EmployeeScheduleAddFormModal from "./_components/EmployeeScheduleAddFormModal";
+import EmployeeScheduleSearch from "../../employees/[id]/_components/EmployeeScheduleSearch";
+import EmployeeScheduleAddFormModal from "../../employees/[id]/_components/EmployeeScheduleAddFormModal";
 
 export default function page({
   params: { employeeId },

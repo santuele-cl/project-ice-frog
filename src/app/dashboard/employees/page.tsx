@@ -32,14 +32,6 @@ import EmployeeTablePagination from "./_components/EmployeeTablePagination";
 import EmployeeAdd from "./_components/EmployeeAdd";
 import EmployeeSearch from "./_components/EmployeeSearch";
 import TableSkeleton from "@/app/_ui/TableSkeleton";
-// import EmployeeSearch from "../_components/EmployeeSearch";
-// import EmployeeAdd from "../_components/EmployeeAdd";
-// import EmployeeTable from "../_components/EmployeeTable";
-// import EmployeeTableHeader from "../_components/EmployeeTableHeader";
-// import EmployeeTablePagination from "../_components/EmployeeTablePagination";
-// import { findUser, toggleUserIsActive } from "@/actions/users/users";
-// import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-// import AddEmployeeFormModal from "./AddEmployeeFormModal";
 
 export default async function page({
   searchParams: { email, page, department, status },

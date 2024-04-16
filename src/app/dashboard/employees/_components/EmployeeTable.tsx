@@ -47,7 +47,6 @@ export default async function EmployeeTable({
           {response.data && response.data.length ? (
             response.data.map((employee) => {
               const { id, email, isActive, profile } = employee;
-              //   const { id, email, isActive, ,emailVerified, role } = employee;
               return (
                 <TableRow
                   key={id}
@@ -80,22 +79,6 @@ export default async function EmployeeTable({
                       >
                         View Details
                       </Button>
-                      <Button
-                        variant="outlined"
-                        LinkComponent={Link}
-                        href={`/dashboard/schedules/${id}`}
-                      >
-                        View Schedules
-                      </Button>
-
-                      {/* <Button
-                        variant="outlined"
-                        //   LinkComponent={Link}
-                        //   href={`${pathname}/${id}`}
-                        // onClick={async () => await toggleUserIsActive(id)}
-                      >
-                        {isActive ? "Deactivate" : "Activate"}
-                      </Button> */}
                     </Stack>
                   </TableCell>
                 </TableRow>
@@ -117,20 +100,6 @@ export default async function EmployeeTable({
               <TableCell align="left">-</TableCell>
             </TableRow>
           )}
-          {/* <TableRow
-            sx={{
-              "&:last-child td, &:last-child th": { border: 0 },
-            }}
-          >
-            <TableCell component="th" scope="row">
-              -
-            </TableCell>
-            <TableCell align="left">-</TableCell>
-            <TableCell align="left">-</TableCell>
-            <TableCell align="left">-</TableCell>
-            <TableCell align="left">-</TableCell>
-            <TableCell align="left">-</TableCell>
-          </TableRow> */}
         </TableBody>
       </Table>
     </TableContainer>
