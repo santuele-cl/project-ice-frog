@@ -61,7 +61,7 @@ CREATE TABLE "Project" (
     "location" TEXT NOT NULL,
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3) NOT NULL,
-    "notes" TEXT NOT NULL,
+    "notes" TEXT,
 
     CONSTRAINT "Project_pkey" PRIMARY KEY ("id")
 );

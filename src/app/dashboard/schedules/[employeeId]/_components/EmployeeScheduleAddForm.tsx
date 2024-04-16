@@ -1,34 +1,31 @@
 "use client";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { useParams } from "next/navigation";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import dayjs from "dayjs";
+
 import {
   Autocomplete,
-  Box,
   Button,
   Divider,
   FormHelperText,
-  IconButton,
   Paper,
-  Snackbar,
   Stack,
   TextField,
   Typography,
-  formControlClasses,
 } from "@mui/material";
-import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import FormStatusText from "@/app/_ui/auth/FormStatusText";
-import dayjs from "dayjs";
-import { SchedulesSchema } from "@/app/_schemas/zod/schema";
-import { useParams } from "next/navigation";
-import { Department, Project } from "@prisma/client";
-import { getDepartments } from "@/actions/departments/department";
-import { getProjects } from "@/actions/projects/projects-action";
-import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { DateTimePicker } from "@mui/x-date-pickers";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+
+import { SchedulesSchema } from "@/app/_schemas/zod/schema";
+import { Project } from "@prisma/client";
+
+import { getProjects } from "@/actions/projects/projects-action";
 import { addMultipleScheduleByEmployeeId } from "@/actions/schedules/schedule-action";
+import FormStatusText from "@/app/_ui/auth/FormStatusText";
 
 export default function EmployeeScheduleAddForm({
   setShow,
@@ -36,7 +33,6 @@ export default function EmployeeScheduleAddForm({
   setShow: Dispatch<SetStateAction<boolean>>;
 }) {
   const params = useParams();
-  console.log("params", params);
   const [pending, setPending] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -48,6 +44,7 @@ export default function EmployeeScheduleAddForm({
     reset,
     control,
     trigger,
+    setError: setFormError,
   } = useForm<z.infer<typeof SchedulesSchema>>({
     resolver: zodResolver(SchedulesSchema),
     defaultValues: {
@@ -71,31 +68,23 @@ export default function EmployeeScheduleAddForm({
   console.log("form erros : ", errors);
 
   const onSubmit = async (data: z.infer<typeof SchedulesSchema>) => {
-    // console.log("data", data);
-    // const res = await addMultipleScheduleByEmployeeId(
-    //   params?.employeeId as string,
-    //   data
-    // );
-    // console.log(res);
-
     setPending(true);
     setError("");
     setSuccess("");
+
     try {
       const res = await addMultipleScheduleByEmployeeId(
         params?.employeeId as string,
         data
       );
 
-      console.log(res);
-      // if (res?.error) {
-      //   reset();
-      //   setError(res.error);
-      // }
-      // if (res?.success) {
-      //   reset();
-      //   setSuccess(res.success);
-      // }
+      if (res?.error) {
+        setFormError("root", { type: "Custom", message: res.error });
+      }
+      if (res?.success) {
+        reset();
+        setSuccess(res.success);
+      }
     } catch {
       setError("Something went wrong!");
     } finally {
@@ -115,13 +104,6 @@ export default function EmployeeScheduleAddForm({
 
   return (
     <Paper sx={{ p: 3 }}>
-      {/* <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        message="Note archived"
-        action={action}
-      /> */}
       <Stack
         sx={{
           flexDirection: "row",
@@ -224,6 +206,7 @@ export default function EmployeeScheduleAddForm({
                           },
                         }}
                         label="Start Date"
+                        format="MMM DD, YYYY hh:mm a"
                         value={dayjs(field.value)}
                         inputRef={field.ref}
                         onChange={(date) => {
@@ -258,6 +241,7 @@ export default function EmployeeScheduleAddForm({
                           },
                         }}
                         label="End Date"
+                        format="MMM DD, YYYY hh:mm a"
                         value={dayjs(field.value)}
                         inputRef={field.ref}
                         onChange={(date) => {
@@ -307,7 +291,11 @@ export default function EmployeeScheduleAddForm({
         >
           <AddOutlinedIcon />
         </Button>
-        {error && <FormStatusText message={error} status="error" />}
+        {/* {error && <FormStatusText message={error} status="error" />} */}
+        {errors && errors.root && errors.root.message && (
+          <FormStatusText message={errors.root.message} status="error" />
+        )}
+
         {success && <FormStatusText message={success} status="success" />}
         <Stack
           sx={{ flexDirection: "row", gap: 2, justifyContent: "flex-end" }}

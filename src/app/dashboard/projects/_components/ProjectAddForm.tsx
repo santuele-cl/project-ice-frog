@@ -1,35 +1,31 @@
 "use client";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import dayjs from "dayjs";
+import { useParams } from "next/navigation";
+import { Prisma } from "@prisma/client";
+
 import {
   Autocomplete,
-  Box,
   Button,
   Divider,
   FormHelperText,
-  IconButton,
   Paper,
   Stack,
   TextField,
   Typography,
-  formControlClasses,
 } from "@mui/material";
-import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import FormStatusText from "@/app/_ui/auth/FormStatusText";
-import dayjs from "dayjs";
-import { ProjectSchema } from "@/app/_schemas/zod/schema";
-import { useParams } from "next/navigation";
-import { Department, Prisma, Project, User } from "@prisma/client";
-import { getDepartments } from "@/actions/departments/department";
-import { addProject, getProjects } from "@/actions/projects/projects-action";
+import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
+import { DateTimePicker } from "@mui/x-date-pickers";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import { DateTimePicker } from "@mui/x-date-pickers";
-import { addMultipleScheduleByEmployeeId } from "@/actions/schedules/schedule-action";
+
+import FormStatusText from "@/app/_ui/auth/FormStatusText";
+import { ProjectSchema } from "@/app/_schemas/zod/schema";
+import { addProject } from "@/actions/projects/projects-action";
 import { getEmployeeIds } from "@/actions/users/users-action";
-import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 
 type UserWithName = Prisma.UserGetPayload<{
   select: {
@@ -44,7 +40,6 @@ export default function ProjectAddForm({
   setShow: Dispatch<SetStateAction<boolean>>;
 }) {
   const params = useParams();
-  console.log("params", params);
   const [pending, setPending] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -55,6 +50,7 @@ export default function ProjectAddForm({
     formState: { errors, isSubmitting },
     reset,
     control,
+    trigger,
   } = useForm<z.infer<typeof ProjectSchema>>({
     resolver: zodResolver(ProjectSchema),
     defaultValues: {
@@ -119,9 +115,6 @@ export default function ProjectAddForm({
         }}
       >
         <Typography variant="h6">New Project</Typography>
-        {/* <IconButton onClick={() => setShow(false)} color="error" size="small">
-          <CloseOutlinedIcon fontSize="medium" />
-        </IconButton> */}
       </Stack>
 
       <Divider sx={{ my: 2 }} />
@@ -174,10 +167,10 @@ export default function ProjectAddForm({
             <Controller
               control={control}
               name="startDate"
-              // rules={{ required: true }}
               render={({ field }) => {
                 return (
                   <DateTimePicker
+                    minDate={dayjs()}
                     slotProps={{
                       textField: {
                         fullWidth: true,
@@ -208,16 +201,10 @@ export default function ProjectAddForm({
             <Controller
               control={control}
               name="endDate"
-              // rules={{ required: true }}
               render={({ field }) => {
                 return (
                   <DateTimePicker
-                    // slotProps={{
-                    //   textField: {
-                    //     // size: "small",
-                    //     fullWidth: true,
-                    //   },
-                    // }}
+                    minDate={dayjs()}
                     slotProps={{
                       textField: {
                         fullWidth: true,
@@ -313,6 +300,7 @@ export default function ProjectAddForm({
                   render={({ field }) => {
                     return (
                       <DateTimePicker
+                        minDate={dayjs()}
                         slotProps={{
                           textField: {
                             error:
@@ -333,6 +321,8 @@ export default function ProjectAddForm({
                         inputRef={field.ref}
                         onChange={(date) => {
                           field.onChange(date?.toDate());
+                          trigger(`schedules.${index}.endDate`);
+                          trigger(`schedules.${index}.startDate`);
                         }}
                       />
                     );
@@ -345,6 +335,7 @@ export default function ProjectAddForm({
                   render={({ field }) => {
                     return (
                       <DateTimePicker
+                        minDate={dayjs()}
                         slotProps={{
                           textField: {
                             error:
@@ -365,6 +356,8 @@ export default function ProjectAddForm({
                         inputRef={field.ref}
                         onChange={(date) => {
                           field.onChange(date?.toDate());
+                          trigger(`schedules.${index}.endDate`);
+                          trigger(`schedules.${index}.startDate`);
                         }}
                       />
                     );
