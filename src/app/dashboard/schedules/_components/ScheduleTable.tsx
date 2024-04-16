@@ -25,14 +25,14 @@ interface ScheduleTableProps {
 }
 
 export default async function ScheduleTable({ week }: ScheduleTableProps) {
-  const employees = await getEmployeesByDepartment("TECHNOLOGY");
+  const employees = await getEmployeesByDepartment();
   const weekDates = getWeek(Number(week));
 
   return (
-    <Stack sx={{ p: 2 }}>
+    <Stack sx={{ p: 2}}>
       <ScheduleTableHeader week={week} />
       <Divider sx={{ my: 2 }} />
-      <TableContainer>
+      <TableContainer sx={{ height:"750px"}}>
         <Table
           sx={{ minWidth: 650, overflow: "auto" }}
           aria-label="simple table"

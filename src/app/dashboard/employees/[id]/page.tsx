@@ -58,9 +58,6 @@ export default async function EmployeeDetailsPage({
         <Suspense fallback={<TableSkeleton />}>
           <EmployeeSchedulesTable employeeId={employeeId} />
         </Suspense>
-
-        {/* <Divider sx={{ my: 1 }} />
-      <EmployeeTablePagination /> */}
       </Paper>
     </Stack>
   );
