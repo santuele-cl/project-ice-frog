@@ -50,12 +50,11 @@ export async function getEmployeeById(id: string) {
   }
 }
 
-export async function getEmployeesByDepartment(department: Department) {
+export async function getEmployeesByDepartment() {
   noStore();
 
   const users = await db.user.findMany({
     include: { schedules: true, profile: true },
-    // where: { profile: { department } },
   });
   if (!users) {
     const error = "Database error. Users fetch unsuccessful!";
