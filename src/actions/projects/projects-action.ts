@@ -14,7 +14,7 @@ export async function addProject(values: z.infer<typeof ProjectSchema>) {
   const { schedules, ...otherFields } = parse.data;
 
   try {
-    const createdSchedules = await db.project.create({
+    const newProject = await db.project.create({
       data: {
         ...otherFields,
         ...(schedules &&
@@ -25,7 +25,7 @@ export async function addProject(values: z.infer<typeof ProjectSchema>) {
     });
 
     revalidatePath("/dashboard/projects");
-    return { success: "Schedule(s) added!", data: createdSchedules };
+    return { success: "Schedule(s) added!", data: newProject };
   } catch (error: unknown) {
     return { error: getErrorMessage(error) };
   }
