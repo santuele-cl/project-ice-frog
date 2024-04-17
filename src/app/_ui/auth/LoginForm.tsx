@@ -67,11 +67,11 @@ const LoginForm = () => {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Paper sx={{ p: 4, borderRadius: "8px" }}>
+    <Container sx={{ width: 550}}>
+      <Paper sx={{ p: 4, borderRadius: "8px", height: "600px"}}>
         <Stack spacing={3}>
           {/* HEADER */}
-          <Stack spacing={3}>
+          <Stack spacing={3} paddingBottom={4}>
             <Stack
               direction="row"
               gap={1}
@@ -81,35 +81,35 @@ const LoginForm = () => {
               <Link
                 href="/"
                 style={{ lineHeight: 0, transition: "all 2s ease" }}
+               
               >
-                <Logo size={45} />
+                <Logo size={50}/>
               </Link>
-              <Typography
+              {/* <Typography
                 component={Link}
                 href="/"
-                mt="4px"
+                mt="4px"  
                 variant="h4"
                 textTransform="capitalize"
                 sx={{ textDecoration: "none", color: "common.black" }}
-                fontWeight={900}
+                fontWeight={800}
               >
-                Salus
-              </Typography>
+                Synxchronize 
+              </Typography>*/}
             </Stack>
-            <Stack>
-              <Typography variant="h4">Welcome to Salus!</Typography>
+            <Stack sx={{ textAlign: "center" }}>
+              <Typography 
+                variant="h4"
+                fontWeight={800}>
+                Welcome to Synx!
+              </Typography>
               <Typography variant="subtitle1">
                 Please sign-in to your account
               </Typography>
             </Stack>
           </Stack>
           {/* FORM */}
-          <Stack
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-            spacing={2}
-            sx={{}}
-          >
+          <Stack component="form" onSubmit={handleSubmit(onSubmit)} spacing={2}>
             {showTwoFactorInput && (
               <TextField
                 label="Two Factor Code"
@@ -142,7 +142,7 @@ const LoginForm = () => {
                 />
               </>
             )}
-            <Stack direction="row" justifyContent="flex-end">
+            <Stack direction="row" justifyContent="flex-end" paddingBottom={4}>
               <Link href="/auth/reset-password">Forgot Password?</Link>
             </Stack>
             <Button
