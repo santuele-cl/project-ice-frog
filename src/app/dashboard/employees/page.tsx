@@ -29,9 +29,9 @@ import PersonAddAltOutlinedIcon from "@mui/icons-material/PersonAddAltOutlined";
 import EmployeeTableHeader from "./_components/EmployeeTableHeader";
 import EmployeeTable from "./_components/EmployeeTable";
 import EmployeeTablePagination from "./_components/EmployeeTablePagination";
-import EmployeeAdd from "./_components/EmployeeAdd";
 import EmployeeSearch from "./_components/EmployeeSearch";
 import TableSkeleton from "@/app/_ui/TableSkeleton";
+import EmployeeAddFormModal from "./_components/EmployeeAddFormModal";
 
 export default async function page({
   searchParams: { email, page, department, status },
@@ -47,7 +47,7 @@ export default async function page({
     <Paper elevation={1} sx={{ p: 2 }}>
       <EmployeeTableHeader>
         <EmployeeSearch />
-        <EmployeeAdd />
+        <EmployeeAddFormModal />
       </EmployeeTableHeader>
       <Divider sx={{ my: 1 }} />
       <Suspense fallback={<TableSkeleton />}>

@@ -1,6 +1,6 @@
 import { Stack, Typography } from "@mui/material";
 import EmployeeSearch from "./EmployeeSearch";
-import EmployeeAdd from "./EmployeeAdd";
+import EmployeeAdd from "./EmployeeAddFormModal";
 import React from "react";
 
 export default function EmployeeTableHeader({
