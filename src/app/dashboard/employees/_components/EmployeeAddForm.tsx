@@ -1,28 +1,11 @@
 "use client";
-import { HTMLInputTypeAttribute, useEffect, useState } from "react";
-import {
-  Stepper,
-  Step,
-  StepLabel,
-  Typography,
-  Button,
-  Stack,
-  Box,
-  TextField,
-  Paper,
-  MenuItem,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
-  Autocomplete,
-} from "@mui/material";
+import { useEffect, useState } from "react";
+import { Button, Stack, TextField } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { AdminRegisterSchema } from "@/app/_schemas/zod/schema";
-import { STEPS } from "@/app/_data/constant";
-import { createUser } from "@/actions/auth";
+import { NewEmployeeSchema } from "@/app/_schemas/zod/schema";
 import { z } from "zod";
 import FormStatusText from "@/app/_ui/auth/FormStatusText";
 import { Department, Gender, Role } from "@prisma/client";
@@ -30,11 +13,12 @@ import { getDepartments } from "@/actions/departments/department";
 import AutoComplete from "@/app/_ui/AutoComplete";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
+import { createUserByAdminAcc } from "@/actions/users/users-action";
 
 type OptionType = { value: string; label: string };
 
 type FieldType = {
-  id: keyof z.infer<typeof AdminRegisterSchema>;
+  id: keyof z.infer<typeof NewEmployeeSchema>;
   label: string;
   placeholder?: string;
 } & (
@@ -69,6 +53,15 @@ const fields: FieldType[] = [
       { value: "SYSTEMS", label: "Systems Department" },
     ],
   },
+  {
+    id: "role",
+    label: "Role",
+    type: "select",
+    options: [
+      { value: Role.ADMIN, label: "Admin" },
+      { value: Role.EMPLOYEE, label: "Employee" },
+    ],
+  },
   { id: "email", label: "Email" },
   { id: "password", label: "Password", type: "password" },
   { id: "confirmPassword", label: "Confirm Password", type: "password" },
@@ -88,12 +81,29 @@ export default function EmployeeAddForm() {
     control,
     getValues,
     formState: { errors },
-  } = useForm<z.infer<typeof AdminRegisterSchema>>({
-    resolver: zodResolver(AdminRegisterSchema),
+  } = useForm<z.infer<typeof NewEmployeeSchema>>({
+    resolver: zodResolver(NewEmployeeSchema),
   });
 
-  const onSubmit = async (values: z.infer<typeof AdminRegisterSchema>) => {
-    console.log("values", values);
+  const onSubmit = async (values: z.infer<typeof NewEmployeeSchema>) => {
+    setPending(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const res = await createUserByAdminAcc(values);
+
+      if (res?.error) setError(res.error);
+
+      if (res?.success) {
+        reset();
+        setSuccess(res.success);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    setPending(false);
   };
 
   console.log("errors", errors);
@@ -107,125 +117,99 @@ export default function EmployeeAddForm() {
   }, []);
 
   return (
-    <Paper
-      elevation={3}
-      sx={{
-        height: "100%",
-      }}
-    >
-      <Stack height="100%">
-        {/* FORM */}
-        <Stack
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
-          p={4}
-          pt={1}
-          spacing={2}
-          flexGrow="1"
-          flexShrink="1"
-          // sx={{
-          // overflowY: "auto",
-          // }}
-          // overflowY="auto"
-          height="450px"
-          justifyContent="space-between"
-        >
-          <Box
-            sx={{
-              // maxHeight: "320px",
-              overflowY: "auto",
-              p: 2,
-            }}
-          >
-            <Stack gap={4}>
-              <Grid2 container direction="row" spacing={3}>
-                {departments &&
-                  fields.map((field,index) => {
-                    const { label, id, placeholder, type } = field;
-                    if (type === "select") {
-                      const { options } = field;
-                      if (id === "department") {
-                        return (
-                          <Grid2 xs={12} sm={6} key={id}>
-                            <AutoComplete
-                              control={control}
-                              name="department"
-                              options={departments}
-                              labelIdentifier="name"
-                              valueIdentifier="id"
-                              fieldLabel="Department"
-                            />
-                          </Grid2>
-                        );
-                      }
+    <Stack component="form" onSubmit={handleSubmit(onSubmit)} sx={{ gap: 2 }}>
+      <Grid2 container direction="row" spacing={3}>
+        {departments &&
+          fields.map((field, index) => {
+            const { label, id, placeholder, type } = field;
+            if (type === "select") {
+              const { options } = field;
+              if (id === "department") {
+                return (
+                  <Grid2 xs={12} sm={6} key={id}>
+                    <AutoComplete
+                      control={control}
+                      name="department"
+                      options={departments}
+                      labelIdentifier="name"
+                      valueIdentifier="id"
+                      fieldLabel="Department"
+                    />
+                  </Grid2>
+                );
+              }
+              return (
+                <Grid2 xs={12} sm={6} key={id}>
+                  <AutoComplete
+                    control={control}
+                    name={id}
+                    options={options}
+                    labelIdentifier="label"
+                    valueIdentifier="value"
+                    fieldLabel={label}
+                  />
+                </Grid2>
+              );
+            } else if (type === "date") {
+              return (
+                <Grid2 xs={12} sm={6} key={id}>
+                  <Controller
+                    key={id + index}
+                    control={control}
+                    name={id}
+                    render={({ field }) => {
                       return (
-                        <Grid2 xs={12} sm={6} key={id}>
-                          <AutoComplete
-                            control={control}
-                            name={id}
-                            options={options}
-                            labelIdentifier="label"
-                            valueIdentifier="value"
-                            fieldLabel={label}
-                          />
-                        </Grid2>
-                      );
-                    } else if (type === "date") {
-                      return (
-                        <Grid2 xs={12} sm={6} key={id}>
-                          <Controller
-                            key={id + index}
-                            control={control}
-                            name={id}
-                            render={({ field }) => {
-                              return (
-                                <DatePicker
-                                  slotProps={{
-                                    textField: {
-                                      fullWidth: true,
-                                      error: errors[id] ? true : false,
-                                      helperText: errors[id]?.message,
-                                    },
-                                  }}
-                                  label={label}
-                                  value={dayjs(field.value)}
-                                  inputRef={field.ref}
-                                  onChange={(date) => {
-                                    field.onChange(date?.toDate());
-                                  }}
-                                />
-                              );
-                            }}
-                          />
-                        </Grid2>
-                      );
-                    }
-                    return (
-                      <Grid2 xs={12} sm={6} key={id}>
-                        <TextField
-                          type={type ? type : "text"}
+                        <DatePicker
+                          slotProps={{
+                            textField: {
+                              fullWidth: true,
+                              error: errors[id] ? true : false,
+                              helperText: errors[id]?.message,
+                            },
+                          }}
                           label={label}
-                          {...register(id)}
-                          error={errors[id] ? true : false}
-                          helperText={errors[id]?.message as string}
-                          placeholder={placeholder}
-                          fullWidth
+                          value={
+                            field.value ? dayjs(field.value) ?? null : null
+                          }
+                          inputRef={field.ref}
+                          onChange={(date) => {
+                            field.onChange(
+                              date ? date?.toDate() ?? null : null
+                            );
+                          }}
                         />
-                      </Grid2>
-                    );
-                  })}
+                      );
+                    }}
+                  />
+                </Grid2>
+              );
+            }
+            return (
+              <Grid2 xs={12} sm={6} key={id}>
+                <TextField
+                  type={type ? type : "text"}
+                  label={label}
+                  {...register(id)}
+                  error={errors[id] ? true : false}
+                  helperText={errors[id]?.message as string}
+                  placeholder={placeholder}
+                  fullWidth
+                />
               </Grid2>
-            </Stack>
-          </Box>
-          <Button type="submit">Add</Button>
-          {(error || success) && (
-            <FormStatusText
-              message={error ? error : success}
-              status={error ? "error" : "success"}
-            />
-          )}
-        </Stack>
+            );
+          })}
+      </Grid2>
+      <Stack>
+        <Button type="submit" sx={{ ml: "auto" }} variant="contained">
+          Add
+        </Button>
       </Stack>
-    </Paper>
+      {(error || success) && (
+        <FormStatusText
+          message={error ? error : success}
+          status={error ? "error" : "success"}
+        />
+      )}
+    </Stack>
   );
 }

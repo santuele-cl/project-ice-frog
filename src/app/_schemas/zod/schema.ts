@@ -47,7 +47,7 @@ export const RegisterSchema = z.object({
   }),
 });
 
-export const AdminRegisterSchema = z
+export const NewEmployeeSchema = z
   .object({
     fname: z
       .string()
@@ -68,10 +68,10 @@ export const AdminRegisterSchema = z
       .string()
       .min(1, "Occupation is required!")
       .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
-    // department: z.nativeEnum(Department),O
     department: z.string().min(1, "Department is required"),
-    // USER
     email: z.string().email("Email is required!"),
+    role: z.nativeEnum(Role),
+
     password: z.string().min(1, "Password is required!"),
     confirmPassword: z.string().min(1, "Confirm password is required"),
   })
