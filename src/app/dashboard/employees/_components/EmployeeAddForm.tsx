@@ -28,6 +28,8 @@ import FormStatusText from "@/app/_ui/auth/FormStatusText";
 import { Department, Gender, Role } from "@prisma/client";
 import { getDepartments } from "@/actions/departments/department";
 import AutoComplete from "@/app/_ui/AutoComplete";
+import { DatePicker } from "@mui/x-date-pickers";
+import dayjs from "dayjs";
 
 type OptionType = { value: string; label: string };
 
@@ -138,7 +140,7 @@ export default function EmployeeAddForm() {
             <Stack gap={4}>
               <Grid2 container direction="row" spacing={3}>
                 {departments &&
-                  fields.map((field) => {
+                  fields.map((field,index) => {
                     const { label, id, placeholder, type } = field;
                     if (type === "select") {
                       const { options } = field;
@@ -171,14 +173,29 @@ export default function EmployeeAddForm() {
                     } else if (type === "date") {
                       return (
                         <Grid2 xs={12} sm={6} key={id}>
-                          <TextField
-                            type="date"
-                            label={label}
-                            {...register(id)}
-                            error={errors[id] ? true : false}
-                            helperText={errors[id]?.message as string}
-                            placeholder={placeholder}
-                            fullWidth
+                          <Controller
+                            key={id + index}
+                            control={control}
+                            name={id}
+                            render={({ field }) => {
+                              return (
+                                <DatePicker
+                                  slotProps={{
+                                    textField: {
+                                      fullWidth: true,
+                                      error: errors[id] ? true : false,
+                                      helperText: errors[id]?.message,
+                                    },
+                                  }}
+                                  label={label}
+                                  value={dayjs(field.value)}
+                                  inputRef={field.ref}
+                                  onChange={(date) => {
+                                    field.onChange(date?.toDate());
+                                  }}
+                                />
+                              );
+                            }}
                           />
                         </Grid2>
                       );

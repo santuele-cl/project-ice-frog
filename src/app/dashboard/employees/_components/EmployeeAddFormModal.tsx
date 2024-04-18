@@ -3,12 +3,22 @@ import { Button, Modal, Stack } from "@mui/material";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { useState } from "react";
 import EmployeeAddForm from "./EmployeeAddForm";
+import Link from "next/link";
 
 export default function EmployeeAddFormModal() {
   const [show, setShow] = useState(false);
 
   return (
     <Stack gap={2} direction="row">
+      <Button
+        LinkComponent={Link}
+        href="/dashboard/employees/create"
+        variant="contained"
+        startIcon={<AddOutlinedIcon />}
+        // onClick={() => setShow(true)}
+      >
+        Add employee
+      </Button>
       <Button
         variant="contained"
         startIcon={<AddOutlinedIcon />}
