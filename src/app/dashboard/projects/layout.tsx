@@ -1,22 +1,10 @@
 "use client";
-import {
-  Box,
-  Breadcrumbs,
-  Button,
-  Stack,
-  Typography,
-  Link,
-} from "@mui/material";
+import { Box, Breadcrumbs, Stack, Link } from "@mui/material";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const links = [
-  { label: "Employee", path: "/dashboard/employees" },
-  { label: "Create", path: "/dashboard/employees/create" },
-];
-
-export default function EmployeesLayout({
+export default function ProjectsLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
