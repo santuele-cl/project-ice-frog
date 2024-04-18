@@ -27,7 +27,7 @@ import HomeOutlined from "@mui/icons-material/HomeOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import PersonAddAltOutlinedIcon from "@mui/icons-material/PersonAddAltOutlined";
 import EmployeeSearch from "../_components/EmployeeSearch";
-import EmployeeAdd from "../_components/EmployeeAdd";
+import EmployeeAdd from "../_components/EmployeeAddFormModal";
 import EmployeeTable from "../_components/EmployeeTable";
 import EmployeeTableHeader from "../_components/EmployeeTableHeader";
 import EmployeeTablePagination from "../_components/EmployeeTablePagination";

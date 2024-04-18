@@ -47,6 +47,39 @@ export const RegisterSchema = z.object({
   }),
 });
 
+export const NewEmployeeSchema = z
+  .object({
+    fname: z
+      .string()
+      .min(1, "First Name is required!")
+      .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
+    mname: z.string().optional(),
+    lname: z
+      .string()
+      .min(1, "Last Name is required!")
+      .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
+    suffix: z.string().optional(),
+    gender: z.nativeEnum(Gender),
+    bdate: z.coerce.date(),
+    contactNumber: z
+      .string()
+      .regex(new RegExp(/^(09|\+639)\d{9}$/), "Invalid phone format"),
+    occupation: z
+      .string()
+      .min(1, "Occupation is required!")
+      .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
+    department: z.string().min(1, "Department is required"),
+    email: z.string().email("Email is required!"),
+    role: z.nativeEnum(Role),
+
+    password: z.string().min(1, "Password is required!"),
+    confirmPassword: z.string().min(1, "Confirm password is required"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
 // const isEndDateGreateeThanStartDate = ({ createdAt }: { createdAt: Date }) => createdAt < new Date();
 
 export const ScheduleSchema = z.object({
