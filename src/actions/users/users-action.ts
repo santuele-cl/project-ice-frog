@@ -12,7 +12,7 @@ import dayjs from "dayjs";
 export async function createUserByAdminAcc(
   registerData: z.infer<typeof NewEmployeeSchema>
 ) {
-  console.log(registerData);
+  // console.log(registerData);
 
   if (!registerData) return { error: "Missing data" };
 

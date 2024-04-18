@@ -30,7 +30,7 @@ export default async function EmployeeSchedulesTable({
 
   if (response.error) throw new Error(response.error);
 
-  console.log("data ", response.data);
+  // console.log("data ", response.data);
 
   return (
     <TableContainer>
