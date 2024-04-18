@@ -121,7 +121,27 @@ export const ScheduleSchemaWithDateRefine = ScheduleSchema.refine(
 });
 
 export const SchedulesSchema = z.object({
-  schedules: z.array(ScheduleSchemaWithDateRefine),
+  schedules: z.array(ScheduleSchemaWithDateRefine).refine(
+    (schedules) => {
+      const overlaps = schedules.filter((scheduleA, i) => {
+        const isOverlapping = schedules.some((scheduleB, j) => {
+          if (i !== j) {
+            return (
+              scheduleA.startDate < scheduleB.endDate &&
+              scheduleA.endDate > scheduleB.startDate
+            );
+          } else {
+            return false;
+          }
+        });
+        console.log("is overlapping: ", isOverlapping);
+        return isOverlapping;
+      });
+      console.log("status: ", overlaps, !overlaps.length);
+      return !overlaps.length;
+    },
+    { message: "Schedule overlaps" }
+  ),
 });
 
 export const ProjectSchema = z.object({
