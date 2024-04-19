@@ -9,6 +9,7 @@ interface AutoCompleteProps {
   valueIdentifier: string;
   defaultValueId?: string;
   fieldLabel: string;
+  required?: boolean;
 }
 
 export default function AutoComplete({
@@ -19,6 +20,7 @@ export default function AutoComplete({
   valueIdentifier,
   fieldLabel,
   defaultValueId,
+  required = true,
 }: AutoCompleteProps) {
   return (
     <Controller
@@ -48,6 +50,8 @@ export default function AutoComplete({
             }}
             renderInput={(params) => (
               <TextField
+                //  InputLabelProps={{required}}
+                required={required}
                 {...params}
                 label={fieldLabel}
                 inputRef={ref}

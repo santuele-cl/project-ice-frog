@@ -44,13 +44,15 @@ export default async function EmployeeSchedulesTable({
             <TableCell align="left">Start</TableCell>
             <TableCell align="left">End</TableCell>
             <TableCell align="left">Notes</TableCell>
+            <TableCell align="left">Date created</TableCell>
             <TableCell align="right">Details</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {response.data && response.data.length ? (
             response.data.map((schedule, i) => {
-              const { id, project, endDate, startDate, notes } = schedule;
+              const { id, project, endDate, startDate, notes, createdAt } =
+                schedule;
               //   const { id, email, isActive, ,emailVerified, role } = employee;
               return (
                 <TableRow
@@ -75,13 +77,15 @@ export default async function EmployeeSchedulesTable({
                     {project?.location}
                   </TableCell>
                   <TableCell align="left">
-                    {dayjs(startDate).format("MMMM DD, YYYY hh:mm a")}
+                    {dayjs(startDate).format("MMM DD, YYYY hh:mm a")}
                   </TableCell>
                   <TableCell align="left">
-                    {dayjs(endDate).format("MMMM DD, YYYY hh:mm a")}
+                    {dayjs(endDate).format("MMM DD, YYYY hh:mm a")}
                   </TableCell>
                   <TableCell align="left">{notes}</TableCell>
-
+                  <TableCell align="left">
+                    {dayjs(createdAt).format("MMM DD, YYYY hh:mm a")}
+                  </TableCell>
                   <TableCell align="right">
                     <Stack
                       spacing={2}

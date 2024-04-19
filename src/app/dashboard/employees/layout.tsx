@@ -54,7 +54,7 @@ export default function EmployeesLayout({
               component={NextLink}
               underline={href === pathname ? "always" : "hover"}
               color={href === pathname ? "primary" : "common.black"}
-              sx={{ textTransform: "capitalize", fontSize: "1rem" }}
+              sx={{ textTransform: "capitalize", fontSize: "0.9rem" }}
             >
               {breadcrumb}
             </Link>

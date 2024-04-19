@@ -68,8 +68,10 @@ export const NewEmployeeSchema = z
       .string()
       .min(1, "Occupation is required!")
       .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
-    department: z.string().min(1, "Department is required"),
-    email: z.string().email("Email is required!"),
+    department: z
+      .string({ invalid_type_error: "Invalid input" })
+      .min(1, "Department is required"),
+    email: z.string().email("Invalid email").min(1, "Email is required"),
     role: z.nativeEnum(Role),
 
     password: z.string().min(1, "Password is required!"),

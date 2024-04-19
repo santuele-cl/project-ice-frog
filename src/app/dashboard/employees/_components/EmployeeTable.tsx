@@ -28,8 +28,6 @@ export default async function EmployeeTable({
     ...(department && { department }),
   });
 
-  // console.log("data ", response.data);
-
   return (
     <TableContainer sx={{ height: "690px" }}>
       <Table sx={{ minWidth: 650, overflow: "auto" }} aria-label="simple table">
