@@ -10,7 +10,6 @@ import { auth } from "@/auth";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import MuiXDateProvider from "@/providers/MuiXDateProvider";
-import ToastProvider from "@/providers/ToastProvider";
 import SnackbarContextProvider from "@/providers/SnackbarProvider";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -35,7 +34,6 @@ export default async function RootLayout({
             <CssBaseline />
             <MuiXDateProvider>
               <body className={inter.className}>
-                {/* <ToastProvider /> */}
                 <SnackbarContextProvider>{children}</SnackbarContextProvider>
               </body>
             </MuiXDateProvider>
