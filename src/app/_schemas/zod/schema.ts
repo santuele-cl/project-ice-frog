@@ -68,8 +68,10 @@ export const NewEmployeeSchema = z
       .string()
       .min(1, "Occupation is required!")
       .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
-    department: z.string().min(1, "Department is required"),
-    email: z.string().email("Email is required!"),
+    department: z
+      .string({ invalid_type_error: "Invalid input" })
+      .min(1, "Department is required"),
+    email: z.string().email("Invalid email").min(1, "Email is required"),
     role: z.nativeEnum(Role),
 
     password: z.string().min(1, "Password is required!"),
@@ -121,7 +123,27 @@ export const ScheduleSchemaWithDateRefine = ScheduleSchema.refine(
 });
 
 export const SchedulesSchema = z.object({
-  schedules: z.array(ScheduleSchemaWithDateRefine),
+  schedules: z.array(ScheduleSchemaWithDateRefine).refine(
+    (schedules) => {
+      const overlaps = schedules.filter((scheduleA, i) => {
+        const isOverlapping = schedules.some((scheduleB, j) => {
+          if (i !== j) {
+            return (
+              scheduleA.startDate < scheduleB.endDate &&
+              scheduleA.endDate > scheduleB.startDate
+            );
+          } else {
+            return false;
+          }
+        });
+        console.log("is overlapping: ", isOverlapping);
+        return isOverlapping;
+      });
+      console.log("status: ", overlaps, !overlaps.length);
+      return !overlaps.length;
+    },
+    { message: "Schedule overlaps" }
+  ),
 });
 
 export const ProjectSchema = z.object({

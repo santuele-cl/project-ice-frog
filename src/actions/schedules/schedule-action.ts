@@ -99,39 +99,40 @@ export async function addMultipleScheduleByEmployeeId(
 
   if (!parse.success) return { error: "Parse error. Invalid data input!" };
 
-  // const hasOverlap = parse.data.schedules.every(async (schedule) => {
-  //   try {
-  //     const existingSchedules = await db.schedule.findMany({
-  //       where: {
-  //         userId: employeeId,
-  //         AND: [
-  //           {
-  //             startDate: { lt: schedule.endDate },
-  //             endDate: { gt: schedule.startDate },
-  //           },
-  //         ],
-  //       },
-  //     });
-  //     console.log("existing sched", existingSchedules);
-  //     console.log(
-  //       "existing sched check",
-  //       existingSchedules && !!existingSchedules.length
-  //     );
-  //     if (existingSchedules && existingSchedules.length > 0) {
-  //       return false;
-  //     } else {
-  //       return true;
-  //     }
-  //   } catch (error: unknown) {
-  //     console.log("error : ", error);
-  //     return false;
-  //   }
-  // });
+  const overlap = await Promise.all(
+    parse.data.schedules.map(async (schedule) => {
+      const existingSchedules = await db.schedule.findFirst({
+        where: {
+          userId: employeeId,
+          AND: [
+            {
+              startDate: { lt: schedule.endDate },
+              endDate: { gt: schedule.startDate },
+            },
+          ],
+        },
+      });
+      return existingSchedules;
+    })
+  )
+    .then((results) => {
+      console.log("results", results);
+      return results;
+    })
+    .catch((e) => console.log(e));
 
-  // console.log("overlaps : ", hasOverlap);
+  console.log("overlaps : ", overlap);
 
-  // if (hasOverlap)
-  //   return { error: "Schedule overlap. Schedules not saved.", hasOverlap };
+  // return overlap;
+  if (
+    overlap &&
+    !!overlap.length &&
+    overlap.some((item) => {
+      console.log("item is true: ", !!true);
+      return !!item;
+    })
+  )
+    return { error: "Schedule overlap. Schedules not saved.", overlap };
 
   try {
     // TODO: loop thru schedules then use create instead of create many

@@ -1,50 +1,37 @@
-// "use client";
-// import {
-//   Autocomplete,
-//   FormControl,
-//   InputLabel,
-//   MenuItem,
-//   Select,
-//   Stack,
-//   TextField,
-// } from "@mui/material";
+"use client";
+import { getDepartments } from "@/actions/departments/department";
+import AutoComplete from "@/app/_ui/AutoComplete";
+import { Department } from "@prisma/client";
+import { useEffect, useState } from "react";
+import { Control, FieldValues } from "react-hook-form";
 
-// import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-// import { useDebouncedCallback } from "use-debounce";
-// import { usePathname, useRouter, useSearchParams } from "next/navigation";
-// import { LoadingButton } from "@mui/lab";
-// import EmployeeDepartmentSelect from "./EmployeeDepartmentSelect";
-// import { useState } from "react";
+type DepartmentSelectProps = {
+  required: boolean;
+  control: any;
+};
 
-// export default function DepartmentSelect() {
-//   const hanldeDepartmentChange = (department: string | null) => {
-//     if (department) params.set("department", department);
-//     else params.delete("department");
+export default function DepartmentSelect({
+  required,
+  control,
+}: DepartmentSelectProps) {
+  const [departments, setDepartments] = useState<Department[]>([]);
 
-//     replace(`${pathname}?${params.toString()}`);
-//   };
-
-//   const searchParams = useSearchParams();
-//   const { replace } = useRouter();
-//   const pathname = usePathname();
-//   const params = new URLSearchParams(searchParams);
-//   return (
-//     <Autocomplete
-//       disablePortal
-//       id="combo-box-demo"
-//       options={top100Films}
-//       sx={{ width: 300 }}
-//       value={searchParams.get("department")?.toString()}
-//       onChange={(_, newValue) => {
-//         hanldeDepartmentChange(newValue), console.log(newValue);
-//       }}
-//       renderInput={(params) => (
-//         <TextField
-//           {...params}
-//           label="Departments"
-//           onChange={(e) => hanldeDepartmentChange(e.target.value)}
-//         />
-//       )}
-//     />
-//   );
-// }
+  useEffect(() => {
+    async function fetchDepartments() {
+      const res = await getDepartments();
+      if (res?.data) setDepartments(res.data);
+    }
+    fetchDepartments();
+  }, []);
+  return (
+    <AutoComplete
+      required={required}
+      control={control}
+      name="department"
+      options={departments}
+      labelIdentifier="name"
+      valueIdentifier="id"
+      fieldLabel="Department"
+    />
+  );
+}

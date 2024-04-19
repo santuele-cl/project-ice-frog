@@ -293,6 +293,15 @@ export default function EmployeeScheduleAddForm({
           <AddOutlinedIcon />
         </Button>
         {/* {error && <FormStatusText message={error} status="error" />} */}
+        {errors &&
+          errors.schedules &&
+          errors.schedules.root &&
+          errors.schedules.root.message && (
+            <FormStatusText
+              message={errors.schedules.root.message}
+              status="error"
+            />
+          )}
         {errors && errors.root && errors.root.message && (
           <FormStatusText message={errors.root.message} status="error" />
         )}

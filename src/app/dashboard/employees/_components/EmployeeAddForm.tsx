@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Button, Stack, TextField } from "@mui/material";
+import { useState } from "react";
+import { Button, IconButton, Stack, TextField, Tooltip } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,19 +8,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { NewEmployeeSchema } from "@/app/_schemas/zod/schema";
 import { z } from "zod";
 import FormStatusText from "@/app/_ui/auth/FormStatusText";
-import { Department, Gender, Role } from "@prisma/client";
-import { getDepartments } from "@/actions/departments/department";
+import { Gender, Role } from "@prisma/client";
 import AutoComplete from "@/app/_ui/AutoComplete";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { createUserByAdminAcc } from "@/actions/users/users-action";
+import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
+import DepartmentSelect from "./DepartmentSelect";
+import { getErrorMessage } from "@/actions/action-utils";
+import { enqueueSnackbar } from "notistack";
 
 type OptionType = { value: string; label: string };
 
 type FieldType = {
+  required?: boolean;
   id: keyof z.infer<typeof NewEmployeeSchema>;
   label: string;
-  placeholder?: string;
 } & (
   | { type?: "select"; options: OptionType[] }
   | { type?: "text" | "number" | "date" | "password" }
@@ -28,9 +31,9 @@ type FieldType = {
 
 const fields: FieldType[] = [
   { id: "fname", label: "First Name" },
-  { id: "mname", label: "Middle Name" },
+  { id: "mname", label: "Middle Name", required: false },
   { id: "lname", label: "Last Name" },
-  { id: "suffix", label: "Suffix" },
+  { id: "suffix", label: "Suffix", required: false },
   {
     id: "gender",
     label: "Gender",
@@ -40,7 +43,7 @@ const fields: FieldType[] = [
       { value: Gender.FEMALE, label: "Female" },
     ],
   },
-  { id: "bdate", label: "", type: "date" },
+  { id: "bdate", label: "Birthday", type: "date" },
   { id: "contactNumber", label: "Contact Number" },
   { id: "occupation", label: "Occupation" },
   {
@@ -71,15 +74,13 @@ export default function EmployeeAddForm() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [departments, setDepartments] = useState<Department[]>([]);
 
   const {
-    register,
     handleSubmit,
-    trigger,
     reset,
     control,
-    getValues,
+    watch,
+    resetField,
     formState: { errors },
   } = useForm<z.infer<typeof NewEmployeeSchema>>({
     resolver: zodResolver(NewEmployeeSchema),
@@ -89,118 +90,140 @@ export default function EmployeeAddForm() {
     setPending(true);
     setError("");
     setSuccess("");
-
     try {
       const res = await createUserByAdminAcc(values);
 
-      if (res?.error) setError(res.error);
-
+      if (res?.error) enqueueSnackbar(res.error, { variant: "error" });
       if (res?.success) {
         reset();
-        setSuccess(res.success);
+        enqueueSnackbar(res.success, { variant: "success" });
       }
     } catch (error) {
       console.log(error);
+      enqueueSnackbar(getErrorMessage(error), { variant: "error" });
     }
-
     setPending(false);
   };
 
-  console.log("errors", errors);
-
-  useEffect(() => {
-    async function fetchDepartments() {
-      const res = await getDepartments();
-      if (res?.data) setDepartments(res.data);
-    }
-    fetchDepartments();
-  }, []);
-
   return (
-    <Stack component="form" onSubmit={handleSubmit(onSubmit)} sx={{ gap: 2 }}>
+    <Stack
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+      sx={{ gap: 2 }}
+      noValidate
+    >
       <Grid2 container direction="row" spacing={3}>
-        {departments &&
-          fields.map((field, index) => {
-            const { label, id, placeholder, type } = field;
-            if (type === "select") {
-              const { options } = field;
-              if (id === "department") {
-                return (
-                  <Grid2 xs={12} sm={6} key={id}>
-                    <AutoComplete
-                      control={control}
-                      name="department"
-                      options={departments}
-                      labelIdentifier="name"
-                      valueIdentifier="id"
-                      fieldLabel="Department"
-                    />
-                  </Grid2>
-                );
-              }
+        {fields.map((field, index) => {
+          const { type, required, label, id } = field;
+          if (type === "select") {
+            const { options } = field;
+            if (id === "department") {
               return (
                 <Grid2 xs={12} sm={6} key={id}>
-                  <AutoComplete
+                  <DepartmentSelect
+                    required={required ?? true}
                     control={control}
-                    name={id}
-                    options={options}
-                    labelIdentifier="label"
-                    valueIdentifier="value"
-                    fieldLabel={label}
-                  />
-                </Grid2>
-              );
-            } else if (type === "date") {
-              return (
-                <Grid2 xs={12} sm={6} key={id}>
-                  <Controller
-                    key={id + index}
-                    control={control}
-                    name={id}
-                    render={({ field }) => {
-                      return (
-                        <DatePicker
-                          slotProps={{
-                            textField: {
-                              fullWidth: true,
-                              error: errors[id] ? true : false,
-                              helperText: errors[id]?.message,
-                            },
-                          }}
-                          label={label}
-                          value={
-                            field.value ? dayjs(field.value) ?? null : null
-                          }
-                          inputRef={field.ref}
-                          onChange={(date) => {
-                            field.onChange(
-                              date ? date?.toDate() ?? null : null
-                            );
-                          }}
-                        />
-                      );
-                    }}
                   />
                 </Grid2>
               );
             }
             return (
               <Grid2 xs={12} sm={6} key={id}>
-                <TextField
-                  type={type ? type : "text"}
-                  label={label}
-                  {...register(id)}
-                  error={errors[id] ? true : false}
-                  helperText={errors[id]?.message as string}
-                  placeholder={placeholder}
-                  fullWidth
+                <AutoComplete
+                  required={required}
+                  control={control}
+                  name={id}
+                  options={options}
+                  labelIdentifier="label"
+                  valueIdentifier="value"
+                  fieldLabel={label}
                 />
               </Grid2>
             );
-          })}
+          } else if (type === "date") {
+            return (
+              <Grid2 xs={12} sm={6} key={id}>
+                <Controller
+                  key={id + index}
+                  control={control}
+                  name={id}
+                  render={({ field }) => {
+                    return (
+                      <DatePicker
+                        slotProps={{
+                          textField: {
+                            InputLabelProps: { required: required ?? true },
+                            fullWidth: true,
+                            error: errors[id] ? true : false,
+                            helperText: errors[id]?.message,
+                          },
+                        }}
+                        label={label}
+                        value={field.value ? dayjs(field.value) ?? null : null}
+                        inputRef={field.ref}
+                        onChange={(date) => {
+                          field.onChange(date ? date?.toDate() ?? null : null);
+                        }}
+                      />
+                    );
+                  }}
+                />
+              </Grid2>
+            );
+          }
+          return (
+            <Grid2 xs={12} sm={6} key={id}>
+              <Controller
+                defaultValue={""}
+                name={id}
+                control={control}
+                render={({ field: { value, onChange } }) => (
+                  <TextField
+                    {...field}
+                    sx={{
+                      "&:hover .MuiIconButton-root": {
+                        display: watch(id) ? "block" : "none",
+                      },
+                    }}
+                    InputLabelProps={{ required: required ?? true }}
+                    InputProps={{
+                      endAdornment: (
+                        <IconButton
+                          onClick={(e) => resetField(id)}
+                          sx={{
+                            display: "none",
+                          }}
+                          size="small"
+                        >
+                          <ClearOutlinedIcon fontSize="small" color="inherit" />
+                        </IconButton>
+                      ),
+                    }}
+                    value={value}
+                    onChange={(event) => onChange(event.target.value)}
+                    type={type}
+                    label={label}
+                    error={errors[id] ? true : false}
+                    helperText={errors[id]?.message as string}
+                    fullWidth
+                  />
+                )}
+              />
+            </Grid2>
+          );
+        })}
       </Grid2>
-      <Stack>
-        <Button type="submit" sx={{ ml: "auto" }} variant="contained">
+      <Stack sx={{ ml: "auto", gap: 1, flexDirection: "row" }}>
+        <Tooltip title="Double click to clear form" placement="top">
+          <Button
+            onDoubleClick={() => reset()}
+            variant="outlined"
+            color="error"
+          >
+            Clear form
+          </Button>
+        </Tooltip>
+        <Button type="submit" variant="contained">
           Add
         </Button>
       </Stack>

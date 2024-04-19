@@ -38,7 +38,7 @@ export async function findDepartment({
       // skip: (Number(page) - 1) * ITEMS_PER_PAGE,
     });
 
-    console.log("departments : ", departments);
+    // console.log("departments : ", departments);
 
     if (!departments || departments.length < 1) {
       return { error: "No departments found!" };
