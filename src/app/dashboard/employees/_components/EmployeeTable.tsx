@@ -1,6 +1,7 @@
 import { findUser } from "@/actions/users/users";
 import {
   Button,
+  IconButton,
   Stack,
   Table,
   TableBody,
@@ -10,7 +11,9 @@ import {
   TableRow,
 } from "@mui/material";
 import Link from "next/link";
-
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
+import EmployeeArchiveButton from "./EmployeeArchiveButton";
+// import EmployeeDelete from "./EmployeeDelete";
 export default async function EmployeeTable({
   email,
   page = 1,
@@ -64,11 +67,12 @@ export default async function EmployeeTable({
                     {isActive ? "active" : "inactive"}
                   </TableCell>
 
-                  <TableCell align="right">
+                  <TableCell align="left">
+                    
                     <Stack
                       spacing={2}
-                      direction="row-reverse"
-                      sx={{ width: "100%" }}
+                      direction="row"
+                      sx={{ width: "100%", justifyContent: "flex-end"  }}
                     >
                       <Button
                         variant="contained"
@@ -77,6 +81,7 @@ export default async function EmployeeTable({
                       >
                         View Details
                       </Button>
+                      <EmployeeArchiveButton id={id}/>
                     </Stack>
                   </TableCell>
                 </TableRow>

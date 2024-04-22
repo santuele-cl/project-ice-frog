@@ -33,6 +33,7 @@ export async function findUser({
   try {
     const users = await db.user.findMany({
       where: {
+        isArchived: false,
         email: { contains: email },
         profile: { department: { name: { in: department?.split(",") } } },
         isActive: { equals: active },

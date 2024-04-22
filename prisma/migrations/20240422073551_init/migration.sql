@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('ADMIN', 'EMPLOYEE');
+CREATE TYPE "Role" AS ENUM ('SUPER_ADMIN', 'ADMIN', 'EMPLOYEE');
 
 -- CreateEnum
 CREATE TYPE "Gender" AS ENUM ('MALE', 'FEMALE');
@@ -13,11 +13,23 @@ CREATE TABLE "User" (
     "role" "Role" NOT NULL DEFAULT 'EMPLOYEE',
     "isTwoFactorEnabled" BOOLEAN NOT NULL DEFAULT false,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
     "consent" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Archive" (
+    "id" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "data" TEXT NOT NULL,
+    "dateArchived" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Archive_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable

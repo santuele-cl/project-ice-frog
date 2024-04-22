@@ -124,3 +124,71 @@ export async function getEmployeesByDepartment() {
   }
   return { success: "Users fetch successul!", data: users };
 }
+
+export async function EmployeeArchive(employeeId: string) {
+  if (!employeeId) return { error: "Employee ID missing!" };
+
+  try {
+    const existingEmployee = await db.user.findUnique({
+      where: { id: employeeId },
+    });
+
+    if (!existingEmployee) return { error: "Employee does not exist!" };
+
+    const archive = await db.user.update({ where: { id: employeeId }, data: { isArchived: true } })
+    if (!archive) return { error: "Something went wrong" };
+
+    revalidatePath("/dashboard/employees");
+
+    return { success: "Data archived successfully!", data: {id: archive.id} };
+
+    // // transfer
+    // const newArchive = await db.archive.create({data: {data: JSON.stringify(existingEmployee), type: "employee data"}})
+    // if (!newArchive) return { error: "Something went wrong" };
+    // // delete
+
+
+    // const EmployeeDelete = await db.EmployeeDelete.delete({ where: { id: EmployeeId } });
+    // if (!EmployeeDelete) return { error: "Database error. Role not deleted!" };
+
+  } catch (error) {
+    return { error: getErrorMessage(error) };
+
+  }
+
+  
+// export async function RestoreEmployee(EmployeeId: string) {
+//   if (!EmployeeId) return { error: "Employee ID missing!" };
+
+//   try {
+//     const existingEmployee = await db.user.findUnique({
+//       where: { id: EmployeeId },
+//     });
+
+//     if (!existingEmployee) return { error: "Employee does not exist!" };
+
+//     const newArchive = await db.user.update({ where: { id: EmployeeId }, data: { isArchived: true } })
+//     if (!newArchive) return { error: "Something went wrong" };
+
+//     revalidatePath("/dashboard/roles-and-permissions");
+
+//     return { success: "Role added!", data: EmployeeDelete };
+
+//     // // transfer
+//     // const newArchive = await db.archive.create({data: {data: JSON.stringify(existingEmployee), type: "employee data"}})
+//     // if (!newArchive) return { error: "Something went wrong" };
+//     // // delete
+
+
+//     // const EmployeeDelete = await db.EmployeeDelete.delete({ where: { id: EmployeeId } });
+//     // if (!EmployeeDelete) return { error: "Database error. Role not deleted!" };
+
+//   } catch (error) {
+//     return { error: getErrorMessage(error) };
+
+//   }
+
+
+
+
+}
