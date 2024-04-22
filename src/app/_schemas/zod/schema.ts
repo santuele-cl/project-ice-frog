@@ -149,7 +149,11 @@ export const SchedulesSchema = z.object({
 export const ProjectSchema = z.object({
   name: z.string().min(1, "Required field"),
   jobOrder: z.string().min(1, "Required field"),
-  location: z.string().min(1, "Required field"),
+  // location: z.string().min(1, "Required field"),
+  street: z.string().optional(), 
+  building: z.string().optional(),
+  city: z.string().min(1, "Required field"),
+  barangay: z.string().min(1, "Required field"), 
   startDate: z.date(),
   endDate: z.date(),
   notes: z.string().optional(),
