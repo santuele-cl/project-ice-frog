@@ -135,6 +135,16 @@ export default function ProjectAddForm({
               disabled={pending}
               fullWidth
             />
+          </Grid2>{" "}
+          <Grid2 xs={12} sm={6}>
+            <TextField
+              label="Bulding No."
+              {...register("building")}
+              error={errors.building ? true : false}
+              helperText={errors.building?.message}
+              disabled={pending}
+              fullWidth
+            />
           </Grid2>
           <Grid2 xs={12} sm={6}>
             <TextField
@@ -146,18 +156,6 @@ export default function ProjectAddForm({
               fullWidth
             />
           </Grid2>
-
-          <Grid2 xs={12} sm={6}>
-            <TextField
-              label="Bulding NO."
-              {...register("building")}
-              error={errors.building ? true : false}
-              helperText={errors.building?.message}
-              disabled={pending}
-              fullWidth
-            />
-          </Grid2>
-
           <Grid2 xs={12} sm={6}>
             <TextField
               label="Street"
@@ -170,32 +168,20 @@ export default function ProjectAddForm({
           </Grid2>
           <Grid2 xs={12} sm={6}>
             <TextField
-              label="Barangay"
-              {...register("barangay")}
-              error={errors.barangay? true : false}
-              helperText={errors.barangay?.message}
-              disabled={pending}
-              fullWidth
-            />
-          </Grid2>
-
-          <Grid2 xs={12} sm={6}>
-            <TextField
-              label="City"
-              {...register("city")}
-              error={errors.city? true : false}
-              helperText={errors.city?.message}
-              disabled={pending}
-              fullWidth
-            />
-          </Grid2>
-
-          <Grid2 xs={12} sm={6}>
-            <TextField
               label="Notes"
               {...register("notes")}
               error={errors.notes ? true : false}
               helperText={errors.notes?.message}
+              disabled={pending}
+              fullWidth
+            />
+          </Grid2>
+          <Grid2 xs={12} sm={6}>
+            <TextField
+              label="Barangay"
+              {...register("barangay")}
+              error={errors.barangay ? true : false}
+              helperText={errors.barangay?.message}
               disabled={pending}
               fullWidth
             />
@@ -232,6 +218,16 @@ export default function ProjectAddForm({
                   />
                 );
               }}
+            />
+          </Grid2>
+          <Grid2 xs={12} sm={6}>
+            <TextField
+              label="City"
+              {...register("city")}
+              error={errors.city ? true : false}
+              helperText={errors.city?.message}
+              disabled={pending}
+              fullWidth
             />
           </Grid2>
           <Grid2 xs={12} sm={6}>
