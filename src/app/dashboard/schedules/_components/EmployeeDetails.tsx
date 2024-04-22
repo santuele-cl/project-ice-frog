@@ -13,6 +13,8 @@ import {
 } from "@mui/material";
 import ExpandLessOutlinedIcon from "@mui/icons-material/ExpandLessOutlined";
 import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import Link from "next/link";
 
 type Props = {
   profile: Profile;
@@ -59,6 +61,12 @@ export default function EmployeeDetails({ profile }: Props) {
             </Stack>
           </Stack>
           <Box sx={{ ml: "auto" }}>
+            <IconButton
+              href={`/dashboard/employees/${profile.id}/edit`}
+              LinkComponent={Link}
+            >
+              <EditOutlinedIcon />
+            </IconButton>
             <IconButton
               onClick={() => setShowDetails((prevState) => !prevState)}
             >
