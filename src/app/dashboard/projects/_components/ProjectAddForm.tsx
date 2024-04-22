@@ -167,26 +167,6 @@ export default function ProjectAddForm({
             />
           </Grid2>
           <Grid2 xs={12} sm={6}>
-            <TextField
-              label="Notes"
-              {...register("notes")}
-              error={errors.notes ? true : false}
-              helperText={errors.notes?.message}
-              disabled={pending}
-              fullWidth
-            />
-          </Grid2>
-          <Grid2 xs={12} sm={6}>
-            <TextField
-              label="Barangay"
-              {...register("barangay")}
-              error={errors.barangay ? true : false}
-              helperText={errors.barangay?.message}
-              disabled={pending}
-              fullWidth
-            />
-          </Grid2>
-          <Grid2 xs={12} sm={6}>
             <Controller
               control={control}
               name="startDate"
@@ -222,10 +202,10 @@ export default function ProjectAddForm({
           </Grid2>
           <Grid2 xs={12} sm={6}>
             <TextField
-              label="City"
-              {...register("city")}
-              error={errors.city ? true : false}
-              helperText={errors.city?.message}
+              label="Barangay"
+              {...register("barangay")}
+              error={errors.barangay ? true : false}
+              helperText={errors.barangay?.message}
               disabled={pending}
               fullWidth
             />
@@ -262,6 +242,26 @@ export default function ProjectAddForm({
                   />
                 );
               }}
+            />
+          </Grid2>
+          <Grid2 xs={12} sm={6}>
+            <TextField
+              label="City"
+              {...register("city")}
+              error={errors.city ? true : false}
+              helperText={errors.city?.message}
+              disabled={pending}
+              fullWidth
+            />
+          </Grid2>
+          <Grid2 xs={12} sm={6}>
+            <TextField
+              label="Notes"
+              {...register("notes")}
+              error={errors.notes ? true : false}
+              helperText={errors.notes?.message}
+              disabled={pending}
+              fullWidth
             />
           </Grid2>
         </Grid2>
