@@ -31,31 +31,21 @@ type FieldType = {
 
 const fields: FieldType[] = [
   { id: "fname", label: "First Name" },
-  { id: "mname", label: "Middle Name", required: false },
-  { id: "lname", label: "Last Name" },
-  { id: "suffix", label: "Suffix", required: false },
-  {
-    id: "gender",
-    label: "Gender",
-    type: "select",
-    options: [
-      { value: Gender.MALE, label: "Male" },
-      { value: Gender.FEMALE, label: "Female" },
-    ],
-  },
-  { id: "bdate", label: "Birthday", type: "date" },
-  { id: "contactNumber", label: "Contact Number" },
-  { id: "occupation", label: "Occupation" },
-  {
+  { id: "email", label: "Email"  },
+  { id: "mname", label: "Middle Name", required: false},
+  { 
     id: "department",
     label: "Department",
     type: "select",
     options: [
-      { value: "CUSTOMIZED", label: "Customized Department" },
-      { value: "TECHNOLOGY", label: "Technology Department" },
-      { value: "SYSTEMS", label: "Systems Department" },
+    { value: "CUSTOMIZED", label: "Customized Department" },
+    { value: "TECHNOLOGY", label: "Technology Department" },
+    { value: "SYSTEMS", label: "Systems Department" },
     ],
   },
+  { id: "lname", label: "Last Name"},
+  { id: "occupation", label: "Occupation" },
+  { id: "suffix", label: "Suffix", required: false },
   {
     id: "role",
     label: "Role",
@@ -65,9 +55,20 @@ const fields: FieldType[] = [
       { value: Role.EMPLOYEE, label: "Employee" },
     ],
   },
-  { id: "email", label: "Email" },
+  {
+    id: "gender",
+    label: "Gender",
+    type: "select",
+    options: [
+      { value: Gender.MALE, label: "Male" },
+      { value: Gender.FEMALE, label: "Female" },
+    ],
+  },
   { id: "password", label: "Password", type: "password" },
+  { id: "bdate", label: "Birthday", type: "date" },
   { id: "confirmPassword", label: "Confirm Password", type: "password" },
+  { id: "contactNumber", label: "Contact Number" },
+
 ];
 
 export default function EmployeeAddForm() {
