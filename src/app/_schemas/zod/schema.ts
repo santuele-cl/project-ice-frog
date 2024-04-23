@@ -82,7 +82,45 @@ export const NewEmployeeSchema = z
     path: ["confirmPassword"],
   });
 
-// const isEndDateGreateeThanStartDate = ({ createdAt }: { createdAt: Date }) => createdAt < new Date();
+export const EditEmployeeSchema = z
+  .object({
+    fname: z
+      .string()
+      .min(1, "First Name is required!")
+      .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
+    mname: z.string().optional(),
+    lname: z
+      .string()
+      .min(1, "Last Name is required!")
+      .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
+    suffix: z.string().optional(),
+    gender: z.nativeEnum(Gender),
+    bdate: z.coerce.date(),
+    contactNumber: z
+      .string()
+      .regex(new RegExp(/^(09|\+639)\d{9}$/), "Invalid phone format"),
+    occupation: z
+      .string()
+      .min(1, "Occupation is required!")
+      .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
+    departmentId: z
+      .string({ invalid_type_error: "Invalid input" })
+      .min(1, "Department is required"),
+    email: z.string().email("Invalid email").min(1, "Email is required"),
+    role: z.nativeEnum(Role),
+    password: z
+      .union([z.string().min(6, "Min. of 6 characters"), z.string().length(0)])
+      .optional()
+      .transform((e) => (e === "" ? undefined : e)),
+    confirmPassword: z
+      .string()
+      .optional()
+      .transform((e) => (e === "" ? undefined : e)),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 export const ScheduleSchema = z.object({
   projectId: z.string().min(1, "Required field"),

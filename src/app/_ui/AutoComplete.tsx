@@ -1,18 +1,19 @@
+"use client";
 import { Autocomplete, TextField } from "@mui/material";
 import { Controller } from "react-hook-form";
 
-interface AutoCompleteProps {
+interface AutoCompleteProps<T> {
   control: any;
-  options: any;
+  options: T[];
   name: string;
-  labelIdentifier: string;
-  valueIdentifier: string;
+  labelIdentifier: keyof T;
+  valueIdentifier: keyof T;
   defaultValueId?: string;
   fieldLabel: string;
   required?: boolean;
 }
 
-export default function AutoComplete({
+export default function AutoComplete<T>({
   control,
   options,
   name,
@@ -21,7 +22,7 @@ export default function AutoComplete({
   fieldLabel,
   defaultValueId,
   required = true,
-}: AutoCompleteProps) {
+}: AutoCompleteProps<T>) {
   return (
     <Controller
       control={control}
@@ -36,7 +37,7 @@ export default function AutoComplete({
             defaultValue={options.find(
               (option: any) => option[valueIdentifier] === defaultValueId
             )}
-            getOptionLabel={(option) => option[labelIdentifier]}
+            getOptionLabel={(option) => `${option[labelIdentifier]}`}
             options={options}
             value={
               value
