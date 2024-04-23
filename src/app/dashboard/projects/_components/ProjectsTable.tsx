@@ -39,15 +39,15 @@ export default async function EmployeeTable({
   console.log("data ", response.data);
 
   return (
-    <TableContainer sx={{ height: "690px"}}>
+    <TableContainer sx={{ height: "690px" }}>
       <Table sx={{ minWidth: 650, overflow: "auto" }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell align="left">ID</TableCell>
-            <TableCell align="left">Project</TableCell>
             <TableCell align="left">Job Order</TableCell>
+            <TableCell align="left">Project</TableCell>
+
             <TableCell align="left">Location</TableCell>
-            <TableCell align="left">Notes</TableCell>
+
             <TableCell align="left">Created At</TableCell>
             <TableCell align="left">Last Updated</TableCell>
             <TableCell align="right">Action</TableCell>
@@ -77,12 +77,12 @@ export default async function EmployeeTable({
                   }}
                 >
                   <TableCell component="th" scope="row" align="left">
-                    {id}
+                    {jobOrder}
                   </TableCell>
                   <TableCell align="left">{name}</TableCell>
-                  <TableCell align="left">{jobOrder}</TableCell>
+
                   <TableCell align="left">{`${building} ${street} ${barangay}, ${city}`}</TableCell>
-                  <TableCell align="left">{notes}</TableCell>
+
                   <TableCell>
                     {dayjs(createdAt).format("MMM DD, YYYY hh:mm a")}
                   </TableCell>
