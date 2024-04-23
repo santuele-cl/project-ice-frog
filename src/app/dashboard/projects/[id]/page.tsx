@@ -38,7 +38,10 @@ export default async function ProjectId({
   const {
     id: projectId,
     jobOrder,
-    location,
+    building,
+    street,
+    city,
+    barangay,
     name,
     notes,
     createdAt,
@@ -47,12 +50,14 @@ export default async function ProjectId({
 
   return (
     <Stack sx={{ gap: 2 }}>
-      <Typography variant="h4">{`${jobOrder}-99-JobOrder`}</Typography>
+      <Paper elevation={1} sx={{ p: 2 }}>
+        <Typography variant="h4">{`${jobOrder}-99-JobOrder`}</Typography>
+      </Paper>
       <Paper elevation={1} sx={{ p: 2 }}>
         <ProjectSchedulesTableHeader>
           <Typography>{name}</Typography>
           <Typography>{jobOrder}</Typography>
-          <Typography>{location}</Typography>
+          <Typography>{`${building} ${street} ${barangay} ${city}`}</Typography>
         </ProjectSchedulesTableHeader>
       </Paper>
       <Paper elevation={1} sx={{ p: 2 }}>

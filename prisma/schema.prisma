@@ -75,7 +75,10 @@ model Project {
   updatedAt DateTime   @updatedAt
   name      String
   jobOrder  String
-  location  String
+  street    String?
+  building  String?
+  city      String
+  barangay  String
   startDate DateTime
   endDate   DateTime
   notes     String?

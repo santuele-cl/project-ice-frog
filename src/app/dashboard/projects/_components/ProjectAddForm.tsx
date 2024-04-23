@@ -56,10 +56,11 @@ export default function ProjectAddForm({
     defaultValues: {
       name: "",
       jobOrder: "",
-      location: "",
+      street: "",
+      building: "",
+      city: "",
+      barangay: "",
       notes: "",
-      // startDate: undefined,
-      // endDate: undefined,
       schedules: [],
     },
   });
@@ -135,6 +136,16 @@ export default function ProjectAddForm({
           </Grid2>
           <Grid2 xs={12} sm={6}>
             <TextField
+              label="Bulding No."
+              {...register("building")}
+              error={errors.building ? true : false}
+              helperText={errors.building?.message}
+              disabled={pending}
+              fullWidth
+            />
+          </Grid2>
+          <Grid2 xs={12} sm={6}>
+            <TextField
               label="Job Order"
               {...register("jobOrder")}
               error={errors.jobOrder ? true : false}
@@ -145,20 +156,10 @@ export default function ProjectAddForm({
           </Grid2>
           <Grid2 xs={12} sm={6}>
             <TextField
-              label="Location"
-              {...register("location")}
-              error={errors.location ? true : false}
-              helperText={errors.location?.message}
-              disabled={pending}
-              fullWidth
-            />
-          </Grid2>
-          <Grid2 xs={12} sm={6}>
-            <TextField
-              label="Notes"
-              {...register("notes")}
-              error={errors.notes ? true : false}
-              helperText={errors.notes?.message}
+              label="Street"
+              {...register("street")}
+              error={errors.street ? true : false}
+              helperText={errors.street?.message}
               disabled={pending}
               fullWidth
             />
@@ -198,6 +199,16 @@ export default function ProjectAddForm({
             />
           </Grid2>
           <Grid2 xs={12} sm={6}>
+            <TextField
+              label="Barangay"
+              {...register("barangay")}
+              error={errors.barangay ? true : false}
+              helperText={errors.barangay?.message}
+              disabled={pending}
+              fullWidth
+            />
+          </Grid2>
+          <Grid2 xs={12} sm={6}>
             <Controller
               control={control}
               name="endDate"
@@ -229,6 +240,26 @@ export default function ProjectAddForm({
                   />
                 );
               }}
+            />
+          </Grid2>
+          <Grid2 xs={12} sm={6}>
+            <TextField
+              label="City"
+              {...register("city")}
+              error={errors.city ? true : false}
+              helperText={errors.city?.message}
+              disabled={pending}
+              fullWidth
+            />
+          </Grid2>
+          <Grid2 xs={12} sm={6}>
+            <TextField
+              label="Notes"
+              {...register("notes")}
+              error={errors.notes ? true : false}
+              helperText={errors.notes?.message}
+              disabled={pending}
+              fullWidth
             />
           </Grid2>
         </Grid2>

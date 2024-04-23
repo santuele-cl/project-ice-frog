@@ -60,7 +60,10 @@ export default async function EmployeeTable({
                 id,
                 name,
                 jobOrder,
-                location,
+                building,
+                street,
+                barangay,
+                city,
                 notes,
                 createdAt,
                 updatedAt,
@@ -78,7 +81,7 @@ export default async function EmployeeTable({
                   </TableCell>
                   <TableCell align="left">{name}</TableCell>
                   <TableCell align="left">{jobOrder}</TableCell>
-                  <TableCell align="left">{location}</TableCell>
+                  <TableCell align="left">{`${building} ${street} ${barangay}, ${city}`}</TableCell>
                   <TableCell align="left">{notes}</TableCell>
                   <TableCell>
                     {dayjs(createdAt).format("MMM DD, YYYY hh:mm a")}
