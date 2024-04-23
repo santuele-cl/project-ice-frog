@@ -117,18 +117,10 @@ export const EditEmployeeSchema = z
       .optional()
       .transform((e) => (e === "" ? undefined : e)),
   })
-  .refine(
-    (data) => {
-      // if (data.password || data.confirmPassword) {
-      return data.password === data.confirmPassword;
-      // }
-      // return true
-    },
-    {
-      message: "Passwords don't match",
-      path: ["confirmPassword"],
-    }
-  );
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 export const ScheduleSchema = z.object({
   projectId: z.string().min(1, "Required field"),

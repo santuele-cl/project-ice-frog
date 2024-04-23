@@ -30,7 +30,6 @@ export async function updateEmployeeDetails({
       parse.data;
     const updatedUser = await db.user.update({
       where: { id: user.id },
-      // data: parse.success,
       data: {
         password,
         email,
@@ -134,17 +133,6 @@ export async function getCompleteEmployeeDetailsById(id: string) {
         profile: { include: { department: true } },
         schedules: { include: { project: true } },
       },
-
-      // select: {
-      //   id: true,
-      //   role: true,
-      //   email: true,
-      //   isActive: true,
-      //   emailVerified: true,
-      //   createdAt: true,
-      //   profile: { include: { department: true } },
-      //   schedules: { include: { project: true } },
-      // },
     });
 
     if (!user) return { error: "Employee does not exist!" };
