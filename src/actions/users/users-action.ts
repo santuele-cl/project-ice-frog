@@ -1,13 +1,51 @@
 "use server";
-
 import { db } from "@/app/_lib/db";
-import { Department } from "@prisma/client";
 import { unstable_noStore as noStore, revalidatePath } from "next/cache";
 import { getErrorMessage } from "../action-utils";
-import { NewEmployeeSchema } from "@/app/_schemas/zod/schema";
+import {
+  EditEmployeeSchema,
+  NewEmployeeSchema,
+} from "@/app/_schemas/zod/schema";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import dayjs from "dayjs";
+
+export async function updateEmployeeDetails({
+  employeeId,
+  values,
+}: {
+  employeeId: string;
+  values: z.infer<typeof EditEmployeeSchema>;
+}) {
+  try {
+    const user = await db.user.findUnique({ where: { id: employeeId } });
+
+    if (!user) return { error: "Employee does not exist!" };
+
+    const parse = EditEmployeeSchema.safeParse(values);
+
+    if (!parse.success) return { error: "Parse error. Invalid data" };
+
+    const { password, confirmPassword, email, role, ...profileData } =
+      parse.data;
+    const updatedUser = await db.user.update({
+      where: { id: user.id },
+      data: {
+        password,
+        email,
+        role,
+        profile: { update: { data: { ...profileData } } },
+      },
+    });
+
+    if (!updatedUser) return { error: "Something went wrong" };
+    revalidatePath("/dashboard/employees/");
+    revalidatePath("/dashboard/employees/[id]/edit");
+    return { success: "Success!", data: updatedUser };
+  } catch (error) {
+    return { error: getErrorMessage(error) };
+  }
+}
 
 export async function createUserByAdminAcc(
   registerData: z.infer<typeof NewEmployeeSchema>
@@ -85,6 +123,25 @@ export async function getEmployeeIds() {
   }
 }
 
+export async function getCompleteEmployeeDetailsById(id: string) {
+  noStore();
+
+  try {
+    const user = await db.user.findUnique({
+      where: { id },
+      include: {
+        profile: { include: { department: true } },
+        schedules: { include: { project: true } },
+      },
+    });
+
+    if (!user) return { error: "Employee does not exist!" };
+
+    return { success: "Success!", data: user };
+  } catch (error) {
+    return { error: getErrorMessage(error) };
+  }
+}
 export async function getEmployeeById(id: string) {
   noStore();
 
@@ -135,60 +192,16 @@ export async function EmployeeArchive(employeeId: string) {
 
     if (!existingEmployee) return { error: "Employee does not exist!" };
 
-    const archive = await db.user.update({ where: { id: employeeId }, data: { isArchived: true } })
+    const archive = await db.user.update({
+      where: { id: employeeId },
+      data: { isArchived: true },
+    });
     if (!archive) return { error: "Something went wrong" };
 
     revalidatePath("/dashboard/employees");
 
-    return { success: "Data archived successfully!", data: {id: archive.id} };
-
-    // // transfer
-    // const newArchive = await db.archive.create({data: {data: JSON.stringify(existingEmployee), type: "employee data"}})
-    // if (!newArchive) return { error: "Something went wrong" };
-    // // delete
-
-
-    // const EmployeeDelete = await db.EmployeeDelete.delete({ where: { id: EmployeeId } });
-    // if (!EmployeeDelete) return { error: "Database error. Role not deleted!" };
-
+    return { success: "Data archived successfully!", data: { id: archive.id } };
   } catch (error) {
     return { error: getErrorMessage(error) };
-
   }
-
-  
-// export async function RestoreEmployee(EmployeeId: string) {
-//   if (!EmployeeId) return { error: "Employee ID missing!" };
-
-//   try {
-//     const existingEmployee = await db.user.findUnique({
-//       where: { id: EmployeeId },
-//     });
-
-//     if (!existingEmployee) return { error: "Employee does not exist!" };
-
-//     const newArchive = await db.user.update({ where: { id: EmployeeId }, data: { isArchived: true } })
-//     if (!newArchive) return { error: "Something went wrong" };
-
-//     revalidatePath("/dashboard/roles-and-permissions");
-
-//     return { success: "Role added!", data: EmployeeDelete };
-
-//     // // transfer
-//     // const newArchive = await db.archive.create({data: {data: JSON.stringify(existingEmployee), type: "employee data"}})
-//     // if (!newArchive) return { error: "Something went wrong" };
-//     // // delete
-
-
-//     // const EmployeeDelete = await db.EmployeeDelete.delete({ where: { id: EmployeeId } });
-//     // if (!EmployeeDelete) return { error: "Database error. Role not deleted!" };
-
-//   } catch (error) {
-//     return { error: getErrorMessage(error) };
-
-//   }
-
-
-
-
 }

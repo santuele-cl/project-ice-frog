@@ -1,9 +1,9 @@
 "use client";
 import { getDepartments } from "@/actions/departments/department";
 import AutoComplete from "@/app/_ui/AutoComplete";
+import { Box } from "@mui/material";
 import { Department } from "@prisma/client";
 import { useEffect, useState } from "react";
-import { Control, FieldValues } from "react-hook-form";
 
 type DepartmentSelectProps = {
   required: boolean;
@@ -19,19 +19,23 @@ export default function DepartmentSelect({
   useEffect(() => {
     async function fetchDepartments() {
       const res = await getDepartments();
-      if (res?.data) setDepartments(res.data);
+      if (res?.success) setDepartments(res.data);
     }
     fetchDepartments();
   }, []);
   return (
-    <AutoComplete
-      required={required}
-      control={control}
-      name="department"
-      options={departments}
-      labelIdentifier="name"
-      valueIdentifier="id"
-      fieldLabel="Department"
-    />
+    <Box>
+      {departments && !!departments.length && (
+        <AutoComplete
+          required={required}
+          control={control}
+          name="departmentId"
+          options={departments}
+          labelIdentifier="name"
+          valueIdentifier="id"
+          fieldLabel="Department"
+        />
+      )}
+    </Box>
   );
 }

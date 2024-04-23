@@ -1,28 +1,33 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, IconButton, Stack, TextField, Tooltip } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { NewEmployeeSchema } from "@/app/_schemas/zod/schema";
+import { EditEmployeeSchema } from "@/app/_schemas/zod/schema";
 import { z } from "zod";
 import FormStatusText from "@/app/_ui/auth/FormStatusText";
-import { Gender, Role } from "@prisma/client";
+import { Gender, Prisma, Role, User } from "@prisma/client";
 import AutoComplete from "@/app/_ui/AutoComplete";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
-import { createUserByAdminAcc } from "@/actions/users/users-action";
+import {
+  createUserByAdminAcc,
+  getCompleteEmployeeDetailsById,
+  updateEmployeeDetails,
+} from "@/actions/users/users-action";
 import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
-import DepartmentSelect from "./DepartmentSelect";
 import { getErrorMessage } from "@/actions/action-utils";
 import { enqueueSnackbar } from "notistack";
+import DepartmentSelect from "../../../_components/DepartmentSelect";
+import { useRouter } from "next/navigation";
 
 type OptionType = { value: string; label: string };
 
 type FieldType = {
   required?: boolean;
-  id: keyof z.infer<typeof NewEmployeeSchema>;
+  id: keyof z.infer<typeof EditEmployeeSchema>;
   label: string;
 } & (
   | { type?: "select"; options: OptionType[] }
@@ -31,30 +36,9 @@ type FieldType = {
 
 const fields: FieldType[] = [
   { id: "fname", label: "First Name" },
-  { id: "email", label: "Email"  },
-  { id: "mname", label: "Middle Name", required: false},
-  { 
-    id: "department",
-    label: "Department",
-    type: "select",
-    options: [
-    { value: "CUSTOMIZED", label: "Customized Department" },
-    { value: "TECHNOLOGY", label: "Technology Department" },
-    { value: "SYSTEMS", label: "Systems Department" },
-    ],
-  },
-  { id: "lname", label: "Last Name"},
-  { id: "occupation", label: "Occupation" },
-  { id: "suffix", label: "Suffix", required: false },
-  {
-    id: "role",
-    label: "Role",
-    type: "select",
-    options: [
-      { value: Role.ADMIN, label: "Admin" },
-      { value: Role.EMPLOYEE, label: "Employee" },
-    ],
-  },
+  { id: "mname", label: "Middle Name" },
+  { id: "lname", label: "Last Name" },
+  { id: "suffix", label: "Suffix" },
   {
     id: "gender",
     label: "Gender",
@@ -64,14 +48,48 @@ const fields: FieldType[] = [
       { value: Gender.FEMALE, label: "Female" },
     ],
   },
-  { id: "password", label: "Password", type: "password" },
   { id: "bdate", label: "Birthday", type: "date" },
-  { id: "confirmPassword", label: "Confirm Password", type: "password" },
   { id: "contactNumber", label: "Contact Number" },
-
+  { id: "occupation", label: "Occupation" },
+  {
+    id: "departmentId",
+    label: "Department",
+    type: "select",
+    options: [
+      { value: "CUSTOMIZED", label: "Customized Department" },
+      { value: "TECHNOLOGY", label: "Technology Department" },
+      { value: "SYSTEMS", label: "Systems Department" },
+    ],
+  },
+  {
+    id: "role",
+    label: "Role",
+    type: "select",
+    options: [
+      { value: Role.ADMIN, label: "Admin" },
+      { value: Role.EMPLOYEE, label: "Employee" },
+    ],
+  },
+  { id: "email", label: "Email" },
+  { id: "password", label: "Password", type: "password" },
+  { id: "confirmPassword", label: "Confirm Password", type: "password" },
 ];
 
-export default function EmployeeAddForm() {
+type UserWithOtherDetails = Prisma.UserGetPayload<{
+  include: {
+    profile: { include: { department: true } };
+    schedules: { include: { project: true } };
+  };
+}>;
+
+export default function EmployeeDetailsEditForm({
+  user,
+}: {
+  user: UserWithOtherDetails;
+}) {
+  console.log("user : ", user);
+  const profile = user.profile;
+  const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -83,16 +101,31 @@ export default function EmployeeAddForm() {
     watch,
     resetField,
     formState: { errors },
-  } = useForm<z.infer<typeof NewEmployeeSchema>>({
-    resolver: zodResolver(NewEmployeeSchema),
+  } = useForm<z.infer<typeof EditEmployeeSchema>>({
+    resolver: zodResolver(EditEmployeeSchema),
+    defaultValues: {
+      fname: profile?.fname,
+      lname: profile?.lname,
+      bdate: profile?.bdate,
+      departmentId: profile?.departmentId ?? "",
+      password: "",
+      confirmPassword: "",
+      gender: profile?.gender,
+      suffix: profile?.suffix ?? "",
+      contactNumber: profile?.contactNumber,
+      email: user.email ?? "",
+      mname: profile?.mname ?? "",
+      occupation: profile?.occupation,
+      role: user.role,
+    },
   });
 
-  const onSubmit = async (values: z.infer<typeof NewEmployeeSchema>) => {
+  const onSubmit = async (values: z.infer<typeof EditEmployeeSchema>) => {
     setPending(true);
     setError("");
     setSuccess("");
     try {
-      const res = await createUserByAdminAcc(values);
+      const res = await updateEmployeeDetails({ employeeId: user.id, values });
 
       if (res?.error) enqueueSnackbar(res.error, { variant: "error" });
       if (res?.success) {
@@ -118,11 +151,11 @@ export default function EmployeeAddForm() {
           const { type, required, label, id } = field;
           if (type === "select") {
             const { options } = field;
-            if (id === "department") {
+            if (id === "departmentId") {
               return (
                 <Grid2 xs={12} sm={6} key={id}>
                   <DepartmentSelect
-                    required={required ?? true}
+                    required={required ?? false}
                     control={control}
                   />
                 </Grid2>
@@ -131,7 +164,7 @@ export default function EmployeeAddForm() {
             return (
               <Grid2 xs={12} sm={6} key={id}>
                 <AutoComplete
-                  required={required}
+                  required={required ?? false}
                   control={control}
                   name={id}
                   options={options}
@@ -153,7 +186,7 @@ export default function EmployeeAddForm() {
                       <DatePicker
                         slotProps={{
                           textField: {
-                            InputLabelProps: { required: required ?? true },
+                            InputLabelProps: { required: required ?? false },
                             fullWidth: true,
                             error: errors[id] ? true : false,
                             helperText: errors[id]?.message,
@@ -186,7 +219,7 @@ export default function EmployeeAddForm() {
                         display: watch(id) ? "block" : "none",
                       },
                     }}
-                    InputLabelProps={{ required: required ?? true }}
+                    InputLabelProps={{ required: required ?? false }}
                     InputProps={{
                       endAdornment: (
                         <IconButton
@@ -221,11 +254,14 @@ export default function EmployeeAddForm() {
             variant="outlined"
             color="error"
           >
-            Clear form
+            Undo all changes
           </Button>
         </Tooltip>
+        <Button onClick={() => router.back()} variant="outlined" color="error">
+          Cancel
+        </Button>
         <Button type="submit" variant="contained">
-          Add
+          Update
         </Button>
       </Stack>
       {(error || success) && (

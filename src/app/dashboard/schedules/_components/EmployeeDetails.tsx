@@ -13,6 +13,9 @@ import {
 } from "@mui/material";
 import ExpandLessOutlinedIcon from "@mui/icons-material/ExpandLessOutlined";
 import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
 type Props = {
   profile: Profile;
@@ -23,6 +26,7 @@ const SectionHeaderStyle: SxProps = {
 };
 
 export default function EmployeeDetails({ profile }: Props) {
+  const params = useParams();
   const [showDetails, setShowDetails] = useState(false);
   return (
     <Stack>
@@ -59,6 +63,12 @@ export default function EmployeeDetails({ profile }: Props) {
             </Stack>
           </Stack>
           <Box sx={{ ml: "auto" }}>
+            <IconButton
+              href={`/dashboard/employees/${params.id}/edit`}
+              LinkComponent={Link}
+            >
+              <EditOutlinedIcon />
+            </IconButton>
             <IconButton
               onClick={() => setShowDetails((prevState) => !prevState)}
             >
