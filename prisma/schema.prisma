@@ -32,26 +32,10 @@ model User {
   schedules             Schedule[]
 }
 
-model Archive {
-  id           String   @id @default(cuid())
-  type         String // employee data or project data
-  data         String // JSON stringify the data then JSON parse
-  dateArchived DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-}
-
-
-
 enum Gender {
   MALE
   FEMALE
 }
-
-// enum Department {
-//   CUSTOMIZED
-//   TECHNOLOGY
-//   SYSTEMS
-// }
 
 model Department {
   id        String    @id @default(nanoid(8))
@@ -684,4 +668,12 @@ model TwoFactorToken {
 
 //   contactInfo   ContactInfo? @relation(fields: [contactInfoId], references: [id], onDelete: Cascade)
 //   contactInfoId String?
+// }
+
+// model Archive {
+//   id           String   @id @default(cuid())
+//   type         String // employee data or project data
+//   data         String // JSON stringify the data then JSON parse
+//   dateArchived DateTime @default(now())
+//   updatedAt    DateTime @updatedAt
 // }
