@@ -18,7 +18,7 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { toKebabCase } from "@/app/_utils/utils";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/Settings";
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 type SidebarLink = {
   label: string;
   path?: string;
@@ -76,9 +76,9 @@ const sidebarLinks: SidebarLinks[] = [
         icon: () => <SettingsIcon />,
       },
       {
-        label: "Archieved",
-        path: "Archieved",
-        icon: () => <DeleteOutlineOutlinedIcon />,
+        label: "Archived",
+        path: "archived",
+        icon: () => <DeleteForeverOutlinedIcon />,
       },
     ],
   },

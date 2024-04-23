@@ -205,3 +205,28 @@ export async function EmployeeArchive(employeeId: string) {
     return { error: getErrorMessage(error) };
   }
 }
+
+export async function EmployeeRestore(employeeId: string) {
+  if (!employeeId) return { error: "Employee ID missing!" };
+
+  try {
+    const existingEmployee = await db.user.findUnique({
+      where: { id: employeeId },
+    });
+
+    if (!existingEmployee) return { error: "Employee does not exist!" };
+
+    const archive = await db.user.update({
+      where: { id: employeeId },
+      data: { isArchived: false },
+    });
+    if (!archive) return { error: "Something went wrong" };
+
+    revalidatePath("/dashboard/employees");
+
+    return { success: "Data archived successfully!", data: { id: archive.id } };
+  } catch (error) {
+    return { error: getErrorMessage(error) };
+  }
+}
+
