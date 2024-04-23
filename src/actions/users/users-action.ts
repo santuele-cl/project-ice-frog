@@ -62,7 +62,7 @@ export async function createUserByAdminAcc(
     password,
     confirmPassword,
     bdate,
-    department,
+    departmentId,
     ...profileData
   } = validatedData.data;
 
@@ -71,7 +71,7 @@ export async function createUserByAdminAcc(
   if (isEmailTaken) return { error: "Email already taken." };
 
   const isValidDepartment = await db.department.findUnique({
-    where: { id: department },
+    where: { id: departmentId },
   });
 
   if (!isValidDepartment) return { error: "Invalid department" };
@@ -90,7 +90,7 @@ export async function createUserByAdminAcc(
             age: dayjs().diff(dayjs(bdate), "year"),
             bdate,
             ...profileData,
-            departmentId: department,
+            departmentId: departmentId,
           },
         },
       },
