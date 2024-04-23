@@ -33,21 +33,12 @@ export default async function EmployeeDetailsPage({
       </Paper>
     );
 
-  const {
-    profile,
-    schedules,
-    id: employeeId,
-    role,
-    email,
-    isActive,
-    emailVerified,
-    createdAt,
-  } = employee.data;
+  const { id: employeeId } = employee.data;
 
   return (
     <Stack sx={{ gap: 2 }}>
       <Paper elevation={1} sx={{ p: 2 }}>
-        {profile && <EmployeeDetails profile={profile} />}
+        {employee.data && <EmployeeDetails details={employee.data} />}
       </Paper>
       <Paper elevation={1} sx={{ p: 2 }}>
         <EmployeeScheduleTableHeader>
