@@ -61,8 +61,6 @@ export default function ProjectAddForm({
       city: "",
       barangay: "",
       notes: "",
-      // startDate: undefined,
-      // endDate: undefined,
       schedules: [],
     },
   });
@@ -135,7 +133,7 @@ export default function ProjectAddForm({
               disabled={pending}
               fullWidth
             />
-          </Grid2>{" "}
+          </Grid2>
           <Grid2 xs={12} sm={6}>
             <TextField
               label="Bulding No."

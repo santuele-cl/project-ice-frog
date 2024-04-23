@@ -38,7 +38,6 @@ export default async function ProjectId({
   const {
     id: projectId,
     jobOrder,
-    // location,
     building,
     street,
     city,
