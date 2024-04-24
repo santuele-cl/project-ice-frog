@@ -1,6 +1,5 @@
 import { findUser } from "@/actions/users/users";
 import {
-  Button,
   IconButton,
   Stack,
   Table,
@@ -12,12 +11,9 @@ import {
   Tooltip,
 } from "@mui/material";
 import Link from "next/link";
-import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import EmployeeArchiveButton from "./EmployeeArchiveButton";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
-import DeleteIcon from "@mui/icons-material/Delete";
-// import EmployeeDelete from "./EmployeeDelete";
 export default async function EmployeeTable({
   email,
   page = 1,
@@ -44,6 +40,8 @@ export default async function EmployeeTable({
             <TableCell align="left">Name</TableCell>
             <TableCell align="left">Email</TableCell>
             <TableCell align="left">Department</TableCell>
+            <TableCell align="left">Occupation</TableCell>
+            <TableCell align="left">Role</TableCell>
             <TableCell align="left">Status</TableCell>
             <TableCell align="right">Action</TableCell>
           </TableRow>
@@ -51,7 +49,7 @@ export default async function EmployeeTable({
         <TableBody>
           {response.data && response.data.length ? (
             response.data.map((employee) => {
-              const { id, email, isActive, profile } = employee;
+              const { id, email, isActive, profile, role } = employee;
               return (
                 <TableRow
                   key={id}
@@ -67,6 +65,8 @@ export default async function EmployeeTable({
                   <TableCell align="left">
                     {profile?.department?.name}
                   </TableCell>
+                  <TableCell align="left">{profile?.occupation}</TableCell>
+                  <TableCell align="left">{role}</TableCell>
                   <TableCell align="left">
                     {isActive ? "active" : "inactive"}
                   </TableCell>
