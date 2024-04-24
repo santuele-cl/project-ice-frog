@@ -100,57 +100,60 @@ export default function EmployeeDetails({ details }: Props) {
           </Box>
         </Stack>
       </Stack>
+
       {showDetails && (
-        <Stack sx={{ p: 2 }}>
-          <Grid2 container spacing={2}>
-            <Grid2 xs={6}>
-              <Typography>
-                <b>Gender: </b>
-                {" " +
-                  (profile?.gender
-                    ? profile.gender.charAt(0).toUpperCase() +
-                      profile.gender.slice(1).toLowerCase()
-                    : "")}
-              </Typography>
-              <Typography>
-                <b>Birthday:</b>
-                {" " +
-                  (profile?.bdate
-                    ? profile.bdate
-                        .toLocaleDateString("en-US", {
-                          month: "long",
-                          day: "numeric",
-                          year: "numeric",
-                        })
-                        .replace(/\d{1,2}\s/, (match) => match.trim() + ", ")
-                    : "")}
-              </Typography>
-              <Typography>
-                <b>Email:</b>
-                {" " + details.email}
-              </Typography>
-            </Grid2>
+        <Stack sx={{ my: 2 }}>
+          <Divider />
 
-            <Grid2 xs={6}>
-              <Typography>
-                <b>Department: </b>
-                {" " +
-                  (profile?.department?.name
-                    ? profile.department.name.charAt(0).toUpperCase() +
-                      profile.department.name.slice(1).toLowerCase()
-                    : "")}
-              </Typography>
-
-              <Typography>
-                <b>Role:</b>
-                {" " +
-                  (details?.role
-                    ? details.role.charAt(0).toUpperCase() +
-                      details.role.slice(1).toLowerCase()
-                    : "")}
-              </Typography>
+          <Stack sx={{ p: 2 }}>
+            <Grid2 container spacing={2}>
+              <Grid2 xs={6}>
+                <Typography>
+                  <b>Gender: </b>
+                  {" " +
+                    (profile?.gender
+                      ? profile.gender.charAt(0).toUpperCase() +
+                        profile.gender.slice(1).toLowerCase()
+                      : "")}
+                </Typography>
+                <Typography>
+                  <b>Birthday:</b>
+                  {" " +
+                    (profile?.bdate
+                      ? profile.bdate
+                          .toLocaleDateString("en-US", {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                          })
+                          .replace(/\d{1,2}\s/, (match) => match.trim() + ", ")
+                      : "")}
+                </Typography>
+                <Typography>
+                  <b>Email:</b>
+                  {" " + details.email}
+                </Typography>
+              </Grid2>
+              <Grid2 xs={6}>
+                <Typography>
+                  <b>Department: </b>
+                  {" " +
+                    (profile?.department?.name
+                      ? profile.department.name.charAt(0).toUpperCase() +
+                        profile.department.name.slice(1).toLowerCase()
+                      : "")}
+                </Typography>
+                <Typography>
+                  <b>Role:</b>
+                  {" " +
+                    (details?.role
+                      ? details.role.charAt(0).toUpperCase() +
+                        details.role.slice(1).toLowerCase()
+                      : "")}
+                </Typography>
+              </Grid2>
             </Grid2>
-          </Grid2>
+          </Stack>
         </Stack>
       )}
     </Stack>
