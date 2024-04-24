@@ -130,6 +130,17 @@ export const ScheduleSchema = z.object({
   endDate: z.date(),
 });
 
+export const EditScheduleSchema = z
+  .object({
+    projectId: z.string().min(1, "Required field"),
+    startDate: z.date(),
+    endDate: z.date(),
+  })
+  .refine((data) => data.endDate > data.startDate, {
+    message: "End date must be greater than start date.",
+    path: ["endDate"],
+  });
+
 export const ScheduleSchemaWithoutProjectId = ScheduleSchema.omit({
   projectId: true,
 });

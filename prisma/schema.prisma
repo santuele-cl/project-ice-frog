@@ -85,8 +85,8 @@ model Schedule {
   id        String   @id @default(nanoid(16))
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  project   Project? @relation(fields: [projectId], references: [id])
-  projectId String?
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId String
   startDate DateTime
   endDate   DateTime
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

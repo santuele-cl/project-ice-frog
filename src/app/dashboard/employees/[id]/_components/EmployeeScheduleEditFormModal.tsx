@@ -1,11 +1,15 @@
 "use client";
-import { Button, Drawer, IconButton, Modal, Stack } from "@mui/material";
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import { Drawer, IconButton, Stack } from "@mui/material";
 import { useState } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import EmployeeScheduleAddForm from "./EmployeeScheduleAddForm";
+import EmployeeScheduleEditForm from "./EmployeeScheduleEditForm";
+import { Schedule } from "@prisma/client";
 
-export default function EmployeeScheduleEditFormModal() {
+export default function EmployeeScheduleEditFormModal({
+  schedule,
+}: {
+  schedule: Schedule;
+}) {
   const [show, setShow] = useState(false);
   const onClose = (event: any) => {
     if (
@@ -34,7 +38,7 @@ export default function EmployeeScheduleEditFormModal() {
           },
         }}
       >
-        <EmployeeScheduleAddForm setShow={setShow} />
+        <EmployeeScheduleEditForm setShow={setShow} schedule={schedule} />
       </Drawer>
     </Stack>
   );

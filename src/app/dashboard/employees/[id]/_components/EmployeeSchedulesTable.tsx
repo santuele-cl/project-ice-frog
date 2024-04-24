@@ -46,7 +46,6 @@ export default async function EmployeeSchedulesTable({
             <TableCell align="left">Location</TableCell>
             <TableCell align="left">Start</TableCell>
             <TableCell align="left">End</TableCell>
-            <TableCell align="left">Notes</TableCell>
             <TableCell align="left">Date created</TableCell>
             <TableCell align="right">Details</TableCell>
           </TableRow>
@@ -85,7 +84,6 @@ export default async function EmployeeSchedulesTable({
                   <TableCell align="left">
                     {dayjs(endDate).format("MMM DD, YYYY hh:mm a")}
                   </TableCell>
-                  <TableCell align="left">{notes}</TableCell>
                   <TableCell align="left">
                     {dayjs(createdAt).format("MMM DD, YYYY hh:mm a")}
                   </TableCell>
@@ -95,7 +93,7 @@ export default async function EmployeeSchedulesTable({
                       direction="row-reverse"
                       sx={{ width: "100%" }}
                     >
-                      <EmployeeScheduleEditFormModal />
+                      <EmployeeScheduleEditFormModal schedule={schedule} />
                       {/* <IconButton onClick={() => console.log("edit me: ", id)}> */}
                       {/* <EditOutlinedIcon /> */}
                       {/* </IconButton> */}
