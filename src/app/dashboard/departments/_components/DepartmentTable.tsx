@@ -9,11 +9,15 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
 } from "@mui/material";
 import dayjs from "dayjs";
 import Link from "next/link";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export default async function DepartmentTable({
   email,
@@ -35,7 +39,7 @@ export default async function DepartmentTable({
   console.log("data ", response.data);
 
   return (
-    <TableContainer sx={{ height: "690px"}}>
+    <TableContainer sx={{ height: "690px" }}>
       <Table sx={{ minWidth: 650, overflow: "auto" }} aria-label="simple table">
         <TableHead>
           <TableRow>
@@ -71,11 +75,21 @@ export default async function DepartmentTable({
                   </TableCell>
 
                   <TableCell align="right">
-                    <Stack spacing={2} direction="row-reverse">
-                      {/* <IconButton color="error" onClick={() => setOpen(true)}> */}
-                      <EditOutlinedIcon />
-                      <DeleteOutlineOutlinedIcon color="error" />
-                      {/* </IconButton> */}
+                    <Stack
+                      spacing={2}
+                      direction="row-reverse"
+                      sx={{ width: "100%" }}
+                    >
+                      <Tooltip title="Delete Project">
+                        <IconButton component={Link} href="#delete">
+                          <DeleteIcon fontSize="medium" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Edit Details">
+                        <IconButton component={Link} href="#edit">
+                          <BorderColorIcon fontSize="medium" />
+                        </IconButton>
+                      </Tooltip>
                     </Stack>
                   </TableCell>
                 </TableRow>
