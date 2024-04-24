@@ -7,7 +7,11 @@ import {
   TableCell,
   TableRow,
   Typography,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { Prisma } from "@prisma/client";
 import dayjs from "dayjs";
 import Link from "next/link";
@@ -34,19 +38,16 @@ type Props = {
   index: number;
   userId: string;
   projectId: string;
- 
 };
 
 export default async function ProjectSchedulesEmployeeRow({
   index,
   userId,
   projectId,
-
 }: Props) {
   const { error, data, success } = await getSchedulesByUserIdAndProjectId({
     projectId,
     userId,
-   
   });
 
   //   if (res.error || !res.data) throw new Error(res.error);
@@ -79,49 +80,106 @@ export default async function ProjectSchedulesEmployeeRow({
 
       <TableCell align="left">
         <Stack sx={{ gap: 1 }}>
-          {data.map(({ startDate, endDate }) => (
-            <Stack
-              sx={{
-                p: 1,
-                flexDirection: "row",
-                gap: 1,
-                bgcolor: "rgba(255,255,0,0.2)",
-                borderRadius: 1,
-              }}
-            >
-              <Typography>
-                {dayjs(startDate).format("MMM DD, YYYY hh:mm a")}
-              </Typography>
-              <Typography>
-                {dayjs(endDate).format("MMM DD, YYYY hh:mm a")}
-              </Typography>
-            </Stack>
-          ))}
+          {data
+            .map(({ startDate }) => (
+              <Stack
+                sx={{
+                  p: 1,
+                  flexDirection: "row",
+                  gap: 1,
+                  bgcolor: "rgba(166,174,255, 0.2)",
+                  borderRadius: 1,
+                }}
+              >
+                <Typography>
+                  {dayjs(startDate).format("MMM DD, YYYY")}
+                </Typography>
+              </Stack>
+            ))
+            .reverse()}
         </Stack>
       </TableCell>
 
-      
+      <TableCell align="left">
+        <Stack sx={{ gap: 1 }}>
+          {data
+            .map(({ startDate }) => (
+              <Stack
+                sx={{
+                  p: 1,
+                  flexDirection: "row",
+                  gap: 1,
+                  bgcolor: "rgba(166,174,255, 0.2)",
+                  borderRadius: 1,
+                }}
+              >
+                <Typography>{dayjs(startDate).format("hh:mm a")}</Typography>
+              </Stack>
+            ))
+            .reverse()}
+        </Stack>
+      </TableCell>
 
       <TableCell align="left">
-        {/* <Typography>{notes || "-"}</Typography> */}
+        <Stack sx={{ gap: 1 }}>
+          {data
+            .map(({ endDate }) => (
+              <Stack
+                sx={{
+                  p: 1,
+                  flexDirection: "row",
+                  gap: 1,
+                  bgcolor: "rgba(166,174,255, 0.2)",
+                  borderRadius: 1,
+                }}
+              >
+                <Typography>{dayjs(endDate).format("MMM DD, YYYY")}</Typography>
+              </Stack>
+            ))
+            .reverse()}
+        </Stack>
       </TableCell>
+
+      <TableCell align="left">
+        <Stack sx={{ gap: 1 }}>
+          {data
+            .map(({ endDate }) => (
+              <Stack
+                sx={{
+                  p: 1,
+                  flexDirection: "row",
+                  gap: 1,
+                  bgcolor: "rgba(166,174,255, 0.2)",
+                  borderRadius: 1,
+                }}
+              >
+                <Typography>{dayjs(endDate).format("hh:mm a")}</Typography>
+              </Stack>
+            ))
+            .reverse()}
+        </Stack>
+      </TableCell>
+
       <TableCell align="right">
-        <Stack spacing={2} direction="row-reverse" sx={{ width: "100%" }}>
-          <Button
-            variant="contained"
-            // LinkComponent={Link}
-            // href={`/dashboard/schedules/${id}`}
-          >
-            Edit
-          </Button>
-          {/* <Button
-                        variant="outlined"
-                        //   LinkComponent={Link}
-                        //   href={`${pathname}/${id}`}
-                        // onClick={async () => await toggleUserIsActive(id)}
-                      >
-                        {isActive ? "Deactivate" : "Activate"}
-                      </Button> */}
+        <Stack sx={{ gap: 1 }}>
+          {data
+            .map(({ startDate }) => (
+              <div>
+                {" "}
+                {/* Adding a unique key for each iteration */}
+                <Tooltip title="Edit Schedule">
+                  <IconButton component={Link} href="#edit">
+                    <BorderColorIcon fontSize="medium" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Delete Project">
+                  <IconButton component={Link} href="#delete">
+                    <DeleteIcon fontSize="medium" />
+                  </IconButton>
+                </Tooltip>
+              </div>
+            ))
+            .reverse()}
         </Stack>
       </TableCell>
     </TableRow>

@@ -115,6 +115,7 @@ export default async function EmployeeTable({
                           <DeleteIcon fontSize="medium" />
                         </IconButton>
                       </Tooltip>
+
                       <Tooltip title="Edit Details">
                         <IconButton component={Link} href="#edit">
                           <BorderColorIcon fontSize="medium" />
