@@ -60,7 +60,7 @@ export const NewEmployeeSchema = z
       .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
     suffix: z.string().optional(),
     gender: z.nativeEnum(Gender),
-    bdate: z.coerce.date(),
+    bdate: z.date(),
     contactNumber: z
       .string()
       .regex(new RegExp(/^(09|\+639)\d{9}$/), "Invalid phone format"),
@@ -195,18 +195,23 @@ export const SchedulesSchema = z.object({
   ),
 });
 
-export const ProjectSchema = z.object({
-  name: z.string().min(1, "Required field"),
-  jobOrder: z.string().min(1, "Required field"),
-  street: z.string().optional(),
-  building: z.string().optional(),
-  city: z.string().min(1, "Required field"),
-  barangay: z.string().min(1, "Required field"),
-  startDate: z.date(),
-  endDate: z.date(),
-  notes: z.string().optional(),
-  schedules: z.array(ScheduleSchemaWithoutProjectIdWithDateRefine).optional(),
-});
+export const ProjectSchema = z
+  .object({
+    name: z.string().min(1, "Required"),
+    jobOrder: z.string().min(1, "Required"),
+    street: z.string().optional(),
+    building: z.string().optional(),
+    city: z.string().min(1, "Required"),
+    barangay: z.string().min(1, "Required"),
+    startDate: z.date(),
+    endDate: z.date(),
+    notes: z.string().optional(),
+    schedules: z.array(ScheduleSchemaWithoutProjectIdWithDateRefine).optional(),
+  })
+  .refine((data) => data.endDate > data.startDate, {
+    message: "End date must be greater than start date.",
+    path: ["endDate"],
+  });
 
 // export const SchedulesSchema = z.object({
 //   projects: z.array(ScheduleSchema),
