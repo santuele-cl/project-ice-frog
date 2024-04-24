@@ -150,7 +150,6 @@ export async function addMultipleScheduleByEmployeeId(
 }
 
 export async function getScheduleByEmployeeId(employeeId: string) {
-  
   noStore();
 
   const isExisting = await db.user.findUnique({ where: { id: employeeId } });
