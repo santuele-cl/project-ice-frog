@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Divider,
+  IconButton,
   Pagination,
   Paper,
   Stack,
@@ -20,6 +21,8 @@ import {
 import { Department } from "@prisma/client";
 import dayjs from "dayjs";
 import Link from "next/link";
+import EmployeeScheduleEditFormModal from "./EmployeeScheduleEditFormModal";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 
 export default async function EmployeeSchedulesTable({
   employeeId,
@@ -33,7 +36,7 @@ export default async function EmployeeSchedulesTable({
   // console.log("data ", response.data);
 
   return (
-    <TableContainer>
+    <TableContainer sx={{ position: "relative" }}>
       <Table sx={{ minWidth: 650, overflow: "auto" }} aria-label="simple table">
         <TableHead>
           <TableRow>
@@ -74,7 +77,7 @@ export default async function EmployeeSchedulesTable({
                     <Typography>{project?.jobOrder}</Typography>
                   </TableCell>
                   <TableCell component="th" scope="row" align="left">
-                  {project?.building} {project?.street} {project?.barangay}, {project?.city}
+                    {`${project?.building} ${project?.street} ${project?.barangay}, ${project?.city}`}
                   </TableCell>
                   <TableCell align="left">
                     {dayjs(startDate).format("MMM DD, YYYY hh:mm a")}
@@ -92,13 +95,18 @@ export default async function EmployeeSchedulesTable({
                       direction="row-reverse"
                       sx={{ width: "100%" }}
                     >
-                      <Button
+                      <EmployeeScheduleEditFormModal />
+                      {/* <IconButton onClick={() => console.log("edit me: ", id)}> */}
+                      {/* <EditOutlinedIcon /> */}
+                      {/* </IconButton> */}
+
+                      {/* <Button
                         variant="contained"
                         // LinkComponent={Link}
                         // href={`/dashboard/schedules/${id}`}
                       >
                         Edit
-                      </Button>
+                      </Button> */}
                       {/* <Button
                         variant="outlined"
                         //   LinkComponent={Link}
