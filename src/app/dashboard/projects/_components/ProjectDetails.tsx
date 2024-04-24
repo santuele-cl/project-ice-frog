@@ -12,6 +12,7 @@ import {
   Stack,
   SxProps,
   Typography,
+  TextField,
 } from "@mui/material";
 import ExpandLessOutlinedIcon from "@mui/icons-material/ExpandLessOutlined";
 import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
@@ -84,33 +85,38 @@ export default function ProjectDetails({ details }: Props) {
           <Grid2 container spacing={2}>
             <Grid2 xs={6}>
               <Typography>
-                <b>Project Name: </b>
-                {name}
+                <b>Location: </b>
+                {`${building} ${street} ${barangay}, ${city}`}
               </Typography>
               <Typography>
                 <b>Start Date:</b>{" "}
                 {dayjs(startDate).format("MMM DD, YYYY hh:mm a")}
               </Typography>
               <Typography>
-                <b>Date Created:</b>{" "}
-                {dayjs(createdAt).format("MMM DD, YYYY hh:mm a")}
+                <b>End Date:</b> {dayjs(endDate).format("MMM DD, YYYY hh:mm a")}
               </Typography>
             </Grid2>
 
             <Grid2 xs={6}>
               <Typography>
-                <b>Location: </b>
-                {`${building} ${street} ${barangay}, ${city}`}
+                <b>Date Created:</b>{" "}
+                {dayjs(createdAt).format("MMM DD, YYYY hh:mm a")}
               </Typography>
+
               <Typography>
-                <b>End Date:</b> {dayjs(endDate).format("MMM DD, YYYY hh:mm a")}
-              </Typography>
-              <Typography>
-                <b>Date Updated:</b>{" "}
+                <b>Last Updated:</b>{" "}
                 {dayjs(updatedAt).format("MMM DD, YYYY hh:mm a")}
               </Typography>
             </Grid2>
           </Grid2>
+
+          <TextField
+            sx={{ mt: 2 }}
+            InputProps={{ readOnly: true }}
+            value={notes}
+            label="Notes"
+            InputLabelProps={{ sx: { fontWeight: "bold" } }}
+          />
         </Stack>
       )}
     </Stack>
