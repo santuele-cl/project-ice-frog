@@ -34,16 +34,19 @@ type Props = {
   index: number;
   userId: string;
   projectId: string;
+ 
 };
 
 export default async function ProjectSchedulesEmployeeRow({
   index,
   userId,
   projectId,
+
 }: Props) {
   const { error, data, success } = await getSchedulesByUserIdAndProjectId({
     projectId,
     userId,
+   
   });
 
   //   if (res.error || !res.data) throw new Error(res.error);
@@ -97,8 +100,11 @@ export default async function ProjectSchedulesEmployeeRow({
         </Stack>
       </TableCell>
 
-      {/* <TableCell align="left">{notes}</TableCell> */}
+      
 
+      <TableCell align="left">
+        {/* <Typography>{notes || "-"}</Typography> */}
+      </TableCell>
       <TableCell align="right">
         <Stack spacing={2} direction="row-reverse" sx={{ width: "100%" }}>
           <Button
