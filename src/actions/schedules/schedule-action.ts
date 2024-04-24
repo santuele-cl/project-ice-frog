@@ -1,10 +1,8 @@
 "use server";
-
-import { StringValidation, z } from "zod";
+import { z } from "zod";
 import { unstable_noStore as noStore, revalidatePath } from "next/cache";
-
 import { db } from "@/app/_lib/db";
-import { SchedulesSchema } from "@/app/_schemas/zod/schema";
+import { EditScheduleSchema, SchedulesSchema } from "@/app/_schemas/zod/schema";
 import { getErrorMessage } from "../action-utils";
 
 // async function filterAsyncArray(array: any, employeeId: string) {
@@ -31,11 +29,9 @@ import { getErrorMessage } from "../action-utils";
 export async function getSchedulesByUserIdAndProjectId({
   userId,
   projectId,
- 
 }: {
   userId: string;
   projectId: string;
- 
 }) {
   noStore();
 
@@ -123,9 +119,6 @@ export async function addMultipleScheduleByEmployeeId(
     })
     .catch((e) => console.log(e));
 
-  console.log("overlaps : ", overlap);
-
-  // return overlap;
   if (
     overlap &&
     !!overlap.length &&
@@ -141,10 +134,11 @@ export async function addMultipleScheduleByEmployeeId(
     const createdSchedules = await db.schedule.createMany({
       data: parse.data.schedules,
     });
-    if (!createdSchedules) {
-      return { error: "Something went wrong" };
-    }
+
+    if (!createdSchedules) return { error: "Something went wrong" };
+
     revalidatePath("/dashboard/schedules");
+
     return { success: "Schedule(s) added!", data: schedules };
   } catch (error: unknown) {
     return { error: getErrorMessage(error) };
@@ -198,6 +192,53 @@ export async function getSchedulesByDate(
 
     return { success: "Schedules fetch successul!", data: schedules };
   } catch (error: unknown) {
+    return { error: getErrorMessage(error) };
+  }
+}
+
+export async function editSchedule({
+  scheduleId,
+  data,
+}: {
+  scheduleId: string;
+  data: z.infer<typeof EditScheduleSchema>;
+}) {
+  try {
+    const schedule = await db.schedule.findUnique({
+      where: { id: scheduleId },
+    });
+
+    if (!schedule) return { error: "Schedule does not exist!" };
+
+    const parse = EditScheduleSchema.safeParse(data);
+
+    if (!parse.success) return { error: "Parse error. Invalid data" };
+
+    const overlap = await db.schedule.findFirst({
+      where: {
+        AND: [
+          {
+            id: { not: scheduleId },
+            startDate: { lt: data.endDate },
+            endDate: { gt: data.startDate },
+          },
+        ],
+      },
+    });
+
+    if (overlap) return { error: "Schedule overlap" };
+
+    const updatedSchedule = await db.schedule.update({
+      where: { id: scheduleId },
+      data,
+    });
+
+    if (!updatedSchedule) return { error: "Something went wrong" };
+
+    revalidatePath(`/dashboard/employees/${updatedSchedule.userId}`);
+
+    return { success: "Success!", data: updatedSchedule };
+  } catch (error) {
     return { error: getErrorMessage(error) };
   }
 }
