@@ -11,11 +11,13 @@ import ProjectSchedulesEmployeeRow from "./ProjectSchedulesEmployeeRow";
 type Props = {
   employeeIds: { userId: string }[];
   projectId: string;
+  // notes:string;
 };
 
 export default async function ProjectSchedulesTableBody({
   employeeIds,
   projectId,
+  // notes,
 }: Props) {
   return (
     <TableContainer>
@@ -30,6 +32,7 @@ export default async function ProjectSchedulesTableBody({
           </TableRow>
         </TableHead>
         <TableBody>
+          
           {employeeIds && !!employeeIds.length ? (
             employeeIds.map((employee, index) => (
               <ProjectSchedulesEmployeeRow
@@ -37,6 +40,7 @@ export default async function ProjectSchedulesTableBody({
                 index={index}
                 userId={employee.userId}
                 projectId={projectId}
+                // notes={notes}
               />
             ))
           ) : (
@@ -53,8 +57,11 @@ export default async function ProjectSchedulesTableBody({
               <TableCell align="left">-</TableCell>
               <TableCell align="left">-</TableCell>
               <TableCell align="left">-</TableCell>
+              <TableCell align="left">-</TableCell>
             </TableRow>
           )}
+
+
         </TableBody>
       </Table>
     </TableContainer>
