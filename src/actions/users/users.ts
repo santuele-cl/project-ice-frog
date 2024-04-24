@@ -21,19 +21,21 @@ export async function findUser({
   department,
   sort,
   active,
+  isArchived = false
 }: {
   page?: number;
   email?: string;
   department?: string;
   sort?: Sort[];
   active?: boolean;
+  isArchived?: boolean;
 }) {
   noStore();
 
   try {
     const users = await db.user.findMany({
       where: {
-        isArchived: false,
+        isArchived: isArchived,
         email: { contains: email },
         profile: { department: { name: { in: department?.split(",") } } },
         isActive: { equals: active },

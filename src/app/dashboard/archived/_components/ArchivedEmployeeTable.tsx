@@ -1,7 +1,5 @@
 import { findUser } from "@/actions/users/users";
 import {
-  Button,
-  IconButton,
   Stack,
   Table,
   TableBody,
@@ -9,16 +7,10 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Tooltip,
 } from "@mui/material";
-import Link from "next/link";
-import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
-import EmployeeArchiveButton from "./EmployeeArchiveButton";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import BorderColorIcon from "@mui/icons-material/BorderColor";
-import DeleteIcon from "@mui/icons-material/Delete";
-// import EmployeeDelete from "./EmployeeDelete";
-export default async function EmployeeTable({
+import ArchivedRestore from "./ArchivedRestore";
+
+export default async function ArchivedEmployeeTable({
   email,
   page = 1,
   department,
@@ -33,6 +25,7 @@ export default async function EmployeeTable({
     ...(email && { email }),
     ...(page && { page }),
     ...(department && { department }),
+    isArchived: true,
   });
 
   return (
@@ -45,7 +38,7 @@ export default async function EmployeeTable({
             <TableCell align="left">Email</TableCell>
             <TableCell align="left">Department</TableCell>
             <TableCell align="left">Status</TableCell>
-            <TableCell align="right">Action</TableCell>
+            <TableCell align="right">Details</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -71,29 +64,13 @@ export default async function EmployeeTable({
                     {isActive ? "active" : "inactive"}
                   </TableCell>
 
-                  <TableCell align="right">
+                  <TableCell align="left">
                     <Stack
                       spacing={2}
-                      direction="row-reverse"
-                      sx={{ width: "100%", justifyContent: "end" }}
+                      direction="row"
+                      sx={{ width: "100%", justifyContent: "flex-end" }}
                     >
-                      <Tooltip title="View Details">
-                        <IconButton
-                          component={Link}
-                          href={`/dashboard/employees/${id}`}
-                        >
-                          <VisibilityIcon fontSize="medium" />
-                        </IconButton>
-                      </Tooltip>
-                      <EmployeeArchiveButton id={id} />
-                      <Tooltip title="Edit Details">
-                        <IconButton
-                          component={Link}
-                          href={`/dashboard/employees/${id}/edit`}
-                        >
-                          <BorderColorIcon fontSize="medium" />
-                        </IconButton>
-                      </Tooltip>
+                      <ArchivedRestore id={id} />
                     </Stack>
                   </TableCell>
                 </TableRow>
