@@ -9,10 +9,14 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
 } from "@mui/material";
 import Link from "next/link";
-import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
+import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import EmployeeArchiveButton from "./EmployeeArchiveButton";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import DeleteIcon from "@mui/icons-material/Delete";
 // import EmployeeDelete from "./EmployeeDelete";
 export default async function EmployeeTable({
   email,
@@ -41,7 +45,7 @@ export default async function EmployeeTable({
             <TableCell align="left">Email</TableCell>
             <TableCell align="left">Department</TableCell>
             <TableCell align="left">Status</TableCell>
-            <TableCell align="right">Details</TableCell>
+            <TableCell align="right">Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -67,21 +71,29 @@ export default async function EmployeeTable({
                     {isActive ? "active" : "inactive"}
                   </TableCell>
 
-                  <TableCell align="left">
-                    
+                  <TableCell align="right">
                     <Stack
                       spacing={2}
-                      direction="row"
-                      sx={{ width: "100%", justifyContent: "flex-end"  }}
+                      direction="row-reverse"
+                      sx={{ width: "100%", justifyContent: "end" }}
                     >
-                      <Button
-                        variant="contained"
-                        LinkComponent={Link}
-                        href={`/dashboard/employees/${id}`}
-                      >
-                        View Details
-                      </Button>
-                      <EmployeeArchiveButton id={id}/>
+                      <Tooltip title="View Details">
+                        <IconButton
+                          component={Link}
+                          href={`/dashboard/employees/${id}`}
+                        >
+                          <VisibilityIcon fontSize="medium" />
+                        </IconButton>
+                      </Tooltip>
+                      <EmployeeArchiveButton id={id} />
+                      <Tooltip title="Edit Details">
+                        <IconButton
+                          component={Link}
+                          href={`/dashboard/employees/${id}/edit`}
+                        >
+                          <BorderColorIcon fontSize="medium" />
+                        </IconButton>
+                      </Tooltip>
                     </Stack>
                   </TableCell>
                 </TableRow>

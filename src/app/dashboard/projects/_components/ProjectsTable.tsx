@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Divider,
+  IconButton,
   Pagination,
   Paper,
   Stack,
@@ -13,6 +14,7 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import ProjectsTablePagination from "./ProjectsTablePagination";
@@ -20,6 +22,9 @@ import { Department } from "@prisma/client";
 import Link from "next/link";
 import { getProjects } from "@/actions/projects/projects-action";
 import dayjs from "dayjs";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export default async function EmployeeTable({
   email,
@@ -39,7 +44,7 @@ export default async function EmployeeTable({
   console.log("data ", response.data);
 
   return (
-    <TableContainer sx={{ height: "690px"}}>
+    <TableContainer sx={{ height: "690px" }}>
       <Table sx={{ minWidth: 650, overflow: "auto" }} aria-label="simple table">
         <TableHead>
           <TableRow>
@@ -50,7 +55,7 @@ export default async function EmployeeTable({
             <TableCell align="left">Notes</TableCell>
             <TableCell align="left">Created At</TableCell>
             <TableCell align="left">Last Updated</TableCell>
-            <TableCell align="right">Action</TableCell>
+            <TableCell align="center">Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -90,19 +95,32 @@ export default async function EmployeeTable({
                     {dayjs(updatedAt).format("MMM DD, YYYY hh:mm a")}
                   </TableCell>
 
-                  <TableCell align="right">
+                  <TableCell align="center">
                     <Stack
                       spacing={2}
                       direction="row-reverse"
                       sx={{ width: "100%" }}
                     >
-                      <Button
-                        variant="contained"
-                        LinkComponent={Link}
-                        href={`/dashboard/projects/${id}`}
-                      >
-                        View Details
-                      </Button>
+                      <Tooltip title="View Details">
+                        <IconButton
+                          component={Link}
+                          href={`/dashboard/projects/${id}`}
+                        >
+                          <VisibilityIcon fontSize="medium" />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip title="Delete Project">
+                        <IconButton component={Link} href="#delete">
+                          <DeleteIcon fontSize="medium" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Edit Details">
+                        <IconButton component={Link} href="#edit">
+                          <BorderColorIcon fontSize="medium" />
+                        </IconButton>
+                      </Tooltip>
+
                       {/* <Button
                         variant="outlined"
                         //   LinkComponent={Link}
