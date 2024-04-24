@@ -194,11 +194,12 @@ export async function EmployeeArchive(employeeId: string) {
 
     const archive = await db.user.update({
       where: { id: employeeId },
-      data: { isArchived: true },
+      data: { isArchived: true, isActive: false },
     });
     if (!archive) return { error: "Something went wrong" };
 
     revalidatePath("/dashboard/employees");
+    revalidatePath("/dashboard/archived");
 
     return { success: "Data archived successfully!", data: { id: archive.id } };
   } catch (error) {
@@ -218,15 +219,15 @@ export async function EmployeeRestore(employeeId: string) {
 
     const archive = await db.user.update({
       where: { id: employeeId },
-      data: { isArchived: false },
+      data: { isArchived: false, isActive: true },
     });
     if (!archive) return { error: "Something went wrong" };
 
     revalidatePath("/dashboard/employees");
+    revalidatePath("/dashboard/archived");
 
     return { success: "Data archived successfully!", data: { id: archive.id } };
   } catch (error) {
     return { error: getErrorMessage(error) };
   }
 }
-

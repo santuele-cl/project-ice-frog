@@ -1,7 +1,5 @@
 import { findUser } from "@/actions/users/users";
 import {
-  Button,
-  IconButton,
   Stack,
   Table,
   TableBody,
@@ -10,11 +8,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import Link from "next/link";
-import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import ArchivedRestore from "./ArchivedRestore";
-// import EmployeeDelete from "./EmployeeDelete";
-
 
 export default async function ArchivedEmployeeTable({
   email,
@@ -71,20 +65,12 @@ export default async function ArchivedEmployeeTable({
                   </TableCell>
 
                   <TableCell align="left">
-                    
                     <Stack
                       spacing={2}
                       direction="row"
-                      sx={{ width: "100%", justifyContent: "flex-end"  }}
+                      sx={{ width: "100%", justifyContent: "flex-end" }}
                     >
-                      {/* <Button
-                        variant="contained"
-                        LinkComponent={Link}
-                        href={`/dashboard/employees/${id}`}
-                      >
-                        View Details
-                      </Button> */}
-                      <ArchivedRestore id={id}/>
+                      <ArchivedRestore id={id} />
                     </Stack>
                   </TableCell>
                 </TableRow>
