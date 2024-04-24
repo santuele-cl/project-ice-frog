@@ -18,7 +18,7 @@ const ActiveTab = async () => {
           textAlign: "center",
         }}
       >
-        <Typography variant="h2">Welcome to Salus Dashboard</Typography>
+        <Typography variant="h2">Welcome to Synx Dashboard</Typography>
       </Box>
     </Paper>
   );
