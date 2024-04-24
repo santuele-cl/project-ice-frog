@@ -81,7 +81,11 @@ export default async function DepartmentTable({
                       sx={{ width: "100%" }}
                     >
                       <Tooltip title="Delete Project">
-                        <IconButton component={Link} href="#delete">
+                        <IconButton
+                          component={Link}
+                          href="#delete"
+                          color="error"
+                        >
                           <DeleteIcon fontSize="medium" />
                         </IconButton>
                       </Tooltip>

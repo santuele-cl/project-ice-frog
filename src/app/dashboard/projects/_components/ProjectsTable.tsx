@@ -55,7 +55,7 @@ export default async function EmployeeTable({
             <TableCell align="left">Notes</TableCell>
             <TableCell align="left">Created At</TableCell>
             <TableCell align="left">Last Updated</TableCell>
-            <TableCell align="center">Action</TableCell>
+            <TableCell align="right">Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -111,7 +111,11 @@ export default async function EmployeeTable({
                       </Tooltip>
 
                       <Tooltip title="Delete Project">
-                        <IconButton component={Link} href="#delete">
+                        <IconButton
+                          component={Link}
+                          href="#delete"
+                          color="error"
+                        >
                           <DeleteIcon fontSize="medium" />
                         </IconButton>
                       </Tooltip>
