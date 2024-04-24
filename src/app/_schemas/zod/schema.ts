@@ -213,6 +213,23 @@ export const ProjectSchema = z
     path: ["endDate"],
   });
 
+export const EditProjectSchema = z
+  .object({
+    name: z.string().min(1, "Required"),
+    jobOrder: z.string().min(1, "Required"),
+    street: z.string().optional(),
+    building: z.string().optional(),
+    city: z.string().min(1, "Required"),
+    barangay: z.string().min(1, "Required"),
+    startDate: z.date(),
+    endDate: z.date(),
+    notes: z.string().optional(),
+  })
+  .refine((data) => data.endDate > data.startDate, {
+    message: "End date must be greater than start date.",
+    path: ["endDate"],
+  });
+
 // export const SchedulesSchema = z.object({
 //   projects: z.array(ScheduleSchema),
 // });

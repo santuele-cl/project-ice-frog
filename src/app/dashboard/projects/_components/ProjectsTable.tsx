@@ -120,7 +120,10 @@ export default async function EmployeeTable({
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Edit Details">
-                        <IconButton component={Link} href="#edit">
+                        <IconButton
+                          component={Link}
+                          href={`/dashboard/projects/${id}/edit`}
+                        >
                           <BorderColorIcon fontSize="medium" />
                         </IconButton>
                       </Tooltip>
