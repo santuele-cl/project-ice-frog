@@ -194,11 +194,37 @@ export async function EmployeeArchive(employeeId: string) {
 
     const archive = await db.user.update({
       where: { id: employeeId },
-      data: { isArchived: true },
+      data: { isArchived: true, isActive: false },
     });
     if (!archive) return { error: "Something went wrong" };
 
     revalidatePath("/dashboard/employees");
+    revalidatePath("/dashboard/archived");
+
+    return { success: "Data archived successfully!", data: { id: archive.id } };
+  } catch (error) {
+    return { error: getErrorMessage(error) };
+  }
+}
+
+export async function EmployeeRestore(employeeId: string) {
+  if (!employeeId) return { error: "Employee ID missing!" };
+
+  try {
+    const existingEmployee = await db.user.findUnique({
+      where: { id: employeeId },
+    });
+
+    if (!existingEmployee) return { error: "Employee does not exist!" };
+
+    const archive = await db.user.update({
+      where: { id: employeeId },
+      data: { isArchived: false, isActive: true },
+    });
+    if (!archive) return { error: "Something went wrong" };
+
+    revalidatePath("/dashboard/employees");
+    revalidatePath("/dashboard/archived");
 
     return { success: "Data archived successfully!", data: { id: archive.id } };
   } catch (error) {
