@@ -74,7 +74,7 @@ export default async function EmployeeSchedulesTable({
                     <Typography>{project?.jobOrder}</Typography>
                   </TableCell>
                   <TableCell component="th" scope="row" align="left">
-                    {project?.location}
+                  {project?.building} {project?.street} {project?.barangay}, {project?.city}
                   </TableCell>
                   <TableCell align="left">
                     {dayjs(startDate).format("MMM DD, YYYY hh:mm a")}
