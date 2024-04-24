@@ -13,7 +13,7 @@ interface SearchQUery {
   filter: Filter[];
 }
 
-const ITEMS_PER_PAGE = 2;
+const ITEMS_PER_PAGE = 15;
 
 export async function findUser({
   page = 1,
@@ -21,19 +21,21 @@ export async function findUser({
   department,
   sort,
   active,
+  isArchived = false
 }: {
   page?: number;
   email?: string;
   department?: string;
   sort?: Sort[];
   active?: boolean;
+  isArchived?: boolean;
 }) {
   noStore();
 
   try {
     const users = await db.user.findMany({
       where: {
-        isArchived: false,
+        isArchived: isArchived,
         email: { contains: email },
         profile: { department: { name: { in: department?.split(",") } } },
         isActive: { equals: active },

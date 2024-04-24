@@ -31,19 +31,19 @@ type FieldType = {
 
 const fields: FieldType[] = [
   { id: "fname", label: "First Name" },
-  { id: "email", label: "Email"  },
-  { id: "mname", label: "Middle Name", required: false},
-  { 
-    id: "department",
+  { id: "email", label: "Email" },
+  { id: "mname", label: "Middle Name", required: false },
+  {
+    id: "departmentId",
     label: "Department",
     type: "select",
     options: [
-    { value: "CUSTOMIZED", label: "Customized Department" },
-    { value: "TECHNOLOGY", label: "Technology Department" },
-    { value: "SYSTEMS", label: "Systems Department" },
+      { value: "CUSTOMIZED", label: "Customized Department" },
+      { value: "TECHNOLOGY", label: "Technology Department" },
+      { value: "SYSTEMS", label: "Systems Department" },
     ],
   },
-  { id: "lname", label: "Last Name"},
+  { id: "lname", label: "Last Name" },
   { id: "occupation", label: "Occupation" },
   { id: "suffix", label: "Suffix", required: false },
   {
@@ -68,7 +68,6 @@ const fields: FieldType[] = [
   { id: "bdate", label: "Birthday", type: "date" },
   { id: "confirmPassword", label: "Confirm Password", type: "password" },
   { id: "contactNumber", label: "Contact Number" },
-
 ];
 
 export default function EmployeeAddForm() {
@@ -106,6 +105,7 @@ export default function EmployeeAddForm() {
     setPending(false);
   };
 
+  console.log("errors", errors);
   return (
     <Stack
       component="form"
@@ -118,7 +118,7 @@ export default function EmployeeAddForm() {
           const { type, required, label, id } = field;
           if (type === "select") {
             const { options } = field;
-            if (id === "department") {
+            if (id === "departmentId") {
               return (
                 <Grid2 xs={12} sm={6} key={id}>
                   <DepartmentSelect
