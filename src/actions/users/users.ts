@@ -18,13 +18,15 @@ const ITEMS_PER_PAGE = 15;
 export async function findUser({
   page = 1,
   email,
+  name,
   department,
   sort,
   active,
-  isArchived = false
+  isArchived = false,
 }: {
   page?: number;
   email?: string;
+  name?: string;
   department?: string;
   sort?: Sort[];
   active?: boolean;
@@ -37,6 +39,11 @@ export async function findUser({
       where: {
         isArchived: isArchived,
         email: { contains: email },
+        OR: [
+          { profile: { fname: { contains: name } } },
+          { profile: { mname: { contains: name } } },
+          { profile: { lname: { contains: name } } },
+        ],
         profile: { department: { name: { in: department?.split(",") } } },
         isActive: { equals: active },
       },
