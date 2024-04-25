@@ -44,7 +44,7 @@ export default function ArchivedRestore({ id }: { id: string }) {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ display: "flex", justifyContent: "center" }} >
-            Are you sure?
+          "Are you sure you want to restore this Employee?"
           </Typography>
           <Stack id="modal-modal-description" sx={{ mt: 2, flexDirection: "row", gap: 2 }}>
             <Button onClick={ handleClose} sx={{ width: "150px",
