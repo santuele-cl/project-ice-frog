@@ -4,7 +4,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { LoadingButton } from "@mui/lab";
 import EmployeeDepartmentSelect from "./EmployeeDepartmentSelect";
-import EmployeeSearchByEmail from "./EmployeeSearchByName";
+import EmployeeSearchByName from "./EmployeeSearchByName";
 import EmployeeSearchByOccupation from "./EmployeeSearchByOccupation";
 
 export default function EmployeeSearch() {
@@ -33,7 +33,7 @@ export default function EmployeeSearch() {
       }}
     >
       <EmployeeDepartmentSelect />
-      <EmployeeSearchByEmail />
+      <EmployeeSearchByName />
       <EmployeeSearchByOccupation />
     </Stack>
   );
