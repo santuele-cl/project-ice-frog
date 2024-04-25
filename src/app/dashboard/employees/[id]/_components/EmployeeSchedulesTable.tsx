@@ -17,12 +17,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-// import EmployeeTablePagination from "./EmployeeTablePagination";
 import { Department } from "@prisma/client";
 import dayjs from "dayjs";
 import Link from "next/link";
 import EmployeeScheduleEditFormModal from "./EmployeeScheduleEditFormModal";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import NoDataComponent from "./EmployeeNoScheduleDisplay";
 
 export default async function EmployeeSchedulesTable({
   employeeId,
@@ -37,7 +37,10 @@ export default async function EmployeeSchedulesTable({
 
   return (
     <TableContainer sx={{ position: "relative" }}>
-      <Table sx={{ minWidth: 650, overflow: "auto" }} aria-label="simple table">
+      <Table
+        sx={{ minHeight: "50vh", overflow: "auto" }}
+        aria-label="simple table"
+      >
         <TableHead>
           <TableRow>
             <TableCell align="left">No</TableCell>
@@ -119,19 +122,10 @@ export default async function EmployeeSchedulesTable({
               );
             })
           ) : (
-            <TableRow
-              sx={{
-                "&:last-child td, &:last-child th": { border: 0 },
-              }}
-            >
-              <TableCell component="th" scope="row">
-                -
+            <TableRow>
+              <TableCell colSpan={8} sx={{ position: "relative" }}>
+                <NoDataComponent />
               </TableCell>
-              <TableCell align="left">-</TableCell>
-              <TableCell align="left">-</TableCell>
-              <TableCell align="left">-</TableCell>
-              <TableCell align="left">-</TableCell>
-              <TableCell align="left">-</TableCell>
             </TableRow>
           )}
           {/* <TableRow

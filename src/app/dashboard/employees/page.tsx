@@ -1,3 +1,4 @@
+"use client";
 import { Button, Divider, Paper, Stack, Typography } from "@mui/material";
 import React, { Suspense } from "react";
 // import { Patient, User } from "@prisma/client";
