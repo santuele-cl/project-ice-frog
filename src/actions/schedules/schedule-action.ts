@@ -258,7 +258,7 @@ export async function editSchedule({
   }
 }
 
-export async function deleteSchedule({ scheduleId }: { scheduleId: string }) {
+export async function deleteSchedule(scheduleId: string) {
   if (!scheduleId) return { error: "Missing schedule ID" };
   try {
     const schedule = await db.schedule.findUnique({
