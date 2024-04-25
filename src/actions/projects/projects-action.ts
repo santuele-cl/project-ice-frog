@@ -6,7 +6,7 @@ import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import { z } from "zod";
 import { getErrorMessage } from "../action-utils";
 
-export async function archiveProject(projectId: string) {
+export async function deleteProject(projectId: string) {
   if (!projectId) return { error: "Project ID missing!" };
 
   try {
@@ -16,18 +16,17 @@ export async function archiveProject(projectId: string) {
 
     if (!existingProject) return { error: "Project does not exist!" };
 
-    const archivedProject = await db.project.update({
+    const deletedProject = await db.project.delete({
       where: { id: projectId },
-      data: { isArchived: true },
     });
-    if (!archivedProject) return { error: "Something went wrong" };
+    if (!deletedProject) return { error: "Something went wrong" };
 
     revalidatePath("/dashboard/projects");
     revalidatePath("/dashboard/archived/projects");
 
     return {
-      success: "Project archived successfully!",
-      data: { id: archivedProject.id },
+      success: "Project Deleted successfully!",
+      data: { id: deletedProject.id },
     };
   } catch (error) {
     return { error: getErrorMessage(error) };

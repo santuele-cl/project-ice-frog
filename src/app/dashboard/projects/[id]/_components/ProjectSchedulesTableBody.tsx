@@ -14,14 +14,12 @@ import ProjectSchedulesEmployeeRow from "./ProjectSchedulesEmployeeRow";
 type Props = {
   employeeIds: { userId: string }[];
   projectId: string;
-  // notes:string;
 };
 
 export default async function ProjectSchedulesTableBody({
   employeeIds,
   projectId,
-}: // notes,
-Props) {
+}: Props) {
   return (
     <Stack sx={{ gap: 2 }}>
       <Box sx={{ mb: 1 }}>
@@ -51,8 +49,7 @@ Props) {
                   index={index}
                   userId={employee.userId}
                   projectId={projectId}
-                  // notes={notes}
-                />
+                  />
               ))
             ) : (
               <TableRow

@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ProjectDeleteModal from "./ProjectDeleteModal";
 
 export default async function ProjectsTable({
   email,
@@ -99,8 +100,8 @@ export default async function ProjectsTable({
                           <VisibilityIcon fontSize="medium" />
                         </IconButton>
                       </Tooltip>
-
-                      <Tooltip title="Delete Project">
+                      <ProjectDeleteModal id={id}/>
+                      {/* <Tooltip title="Delete Project">
                         <IconButton
                           component={Link}
                           href="#delete"
@@ -108,7 +109,7 @@ export default async function ProjectsTable({
                         >
                           <DeleteIcon fontSize="medium" />
                         </IconButton>
-                      </Tooltip>
+                      </Tooltip> */}
 
                       <Tooltip title="Edit Details">
                         <IconButton
