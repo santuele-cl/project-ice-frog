@@ -18,17 +18,22 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ProjectDeleteModal from "./ProjectDeleteModal";
 
 export default async function ProjectsTable({
-  email,
+  name,
   page = 1,
-  department,
-  status,
+  location,
+  jobOrder,
 }: {
-  email: string;
+  name: string;
   page: number;
-  department: string;
-  status: string;
+  location: string;
+  jobOrder: string;
 }) {
-  const response = await getProjects();
+  const response = await getProjects({
+    ...(name && { name }),
+    ...(page && { page }),
+    ...(location && { location }),
+    ...(jobOrder && { jobOrder }),
+  });
 
   if (response.error) throw new Error(response.error);
 
@@ -81,7 +86,7 @@ export default async function ProjectsTable({
 
                   <TableCell>
                     {dayjs(startDate).format("MMM DD, YYYY hh:mm a")}
-                  </TableCell>  
+                  </TableCell>
                   <TableCell>
                     {dayjs(endDate).format("MMM DD, YYYY hh:mm a")}
                   </TableCell>
@@ -100,7 +105,7 @@ export default async function ProjectsTable({
                           <VisibilityIcon fontSize="medium" />
                         </IconButton>
                       </Tooltip>
-                      <ProjectDeleteModal id={id}/>
+                      <ProjectDeleteModal id={id} />
                       {/* <Tooltip title="Delete Project">
                         <IconButton
                           component={Link}
