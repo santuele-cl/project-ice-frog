@@ -4,7 +4,9 @@ import { useDebouncedCallback } from "use-debounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { LoadingButton } from "@mui/lab";
 import ProjectsDepartmentSelect from "./ProjectsDepartmentSelect";
-import ProjectsSearchByEmail from "./ProjectsSearchByEmail";
+import ProjectsSearchByProjectName from "./ProjectsSearchByProjectName";
+import ProjectsSearchByJobOrder from "./ProjectsSearchByJobOrder";
+import ProjectsSearchByLocation from "./ProjectsSearchByLocation";
 
 export default function EmployeeSearch() {
   const searchParams = useSearchParams();
@@ -28,11 +30,13 @@ export default function EmployeeSearch() {
       spacing={2}
       sx={{
         alignItems: "center",
+
         // justifyContent: "center",
       }}
     >
-      <ProjectsDepartmentSelect />
-      <ProjectsSearchByEmail />
+      <ProjectsSearchByJobOrder />
+      <ProjectsSearchByProjectName />
+      <ProjectsSearchByLocation />
       {/* <FormControl sx={{ width: 300 }}>
         <InputLabel id="department-label">Department</InputLabel>
         <Select
