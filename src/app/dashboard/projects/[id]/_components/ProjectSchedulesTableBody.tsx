@@ -11,14 +11,12 @@ import ProjectSchedulesEmployeeRow from "./ProjectSchedulesEmployeeRow";
 type Props = {
   employeeIds: { userId: string }[];
   projectId: string;
-  // notes:string;
 };
 
 export default async function ProjectSchedulesTableBody({
   employeeIds,
   projectId,
-}: // notes,
-Props) {
+}: Props) {
   return (
     <TableContainer>
       <Table sx={{ minWidth: 650, overflow: "auto" }} aria-label="simple table">
@@ -41,7 +39,6 @@ Props) {
                 index={index}
                 userId={employee.userId}
                 projectId={projectId}
-                // notes={notes}
               />
             ))
           ) : (

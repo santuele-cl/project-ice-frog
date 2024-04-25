@@ -15,6 +15,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Prisma } from "@prisma/client";
 import dayjs from "dayjs";
 import Link from "next/link";
+import ProjectSchedulesEmployeeRowEditModal from "./ProjectSchedulesEmployeeRowEditModal";
 
 type ScheduleWithUserProfile = Prisma.ScheduleGetPayload<{
   include: {
@@ -50,15 +51,12 @@ export default async function ProjectSchedulesEmployeeRow({
     userId,
   });
 
-  //   if (res.error || !res.data) throw new Error(res.error);
   if (error || !data)
     return (
       <Paper elevation={1} sx={{ p: 2, position: "relative", height: "100%" }}>
         <ErrorComponent errMessage={String(error)} />
       </Paper>
     );
-
-  // console.log("data", data);
 
   return (
     <TableRow
@@ -143,8 +141,9 @@ export default async function ProjectSchedulesEmployeeRow({
       <TableCell align="left">
         <Stack sx={{ gap: 1 }}>
           {data
-            .map(({ endDate }) => (
+            .map(({ endDate }, i) => (
               <Stack
+                key={i}
                 sx={{
                   p: 1,
                   flexDirection: "row",
@@ -161,26 +160,28 @@ export default async function ProjectSchedulesEmployeeRow({
       </TableCell>
 
       <TableCell align="right">
-        <Stack sx={{ gap: 1 }}>
-          {data
-            .map(({ startDate }) => (
-              <div>
-                {" "}
-                {/* Adding a unique key for each iteration */}
-                <Tooltip title="Edit Schedule">
-                  <IconButton component={Link} href="#edit">
-                    <BorderColorIcon fontSize="medium" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Delete Project">
-                  <IconButton component={Link} href="#delete">
-                    <DeleteIcon fontSize="medium" />
-                  </IconButton>
-                </Tooltip>
-              </div>
-            ))
-            .reverse()}
-        </Stack>
+        {/* <Stack sx={{ gap: 1 }}> */}
+        {data
+          .map(({ startDate, id }, i) => (
+            <Stack
+              key={i}
+              sx={{ flexDirection: "row", justifyContent: "flex-end" }}
+            >
+              <ProjectSchedulesEmployeeRowEditModal scheduleId={id} />
+              {/* <Tooltip title="Edit Schedule">
+              <IconButton component={Link} href="#edit">
+                <BorderColorIcon fontSize="medium" />
+              </IconButton>
+            </Tooltip> */}
+              <Tooltip title="Delete Project">
+                <IconButton component={Link} href="#delete">
+                  <DeleteIcon fontSize="medium" />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          ))
+          .reverse()}
+        {/* </Stack> */}
       </TableCell>
     </TableRow>
   );
