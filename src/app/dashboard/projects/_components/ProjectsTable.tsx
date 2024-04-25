@@ -1,11 +1,5 @@
-import { findUser } from "@/actions/users/users";
 import {
-  Box,
-  Button,
-  Divider,
   IconButton,
-  Pagination,
-  Paper,
   Stack,
   Table,
   TableBody,
@@ -13,12 +7,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
   Tooltip,
-  Typography,
 } from "@mui/material";
-import ProjectsTablePagination from "./ProjectsTablePagination";
-import { Department } from "@prisma/client";
 import Link from "next/link";
 import { getProjects } from "@/actions/projects/projects-action";
 import dayjs from "dayjs";
@@ -26,7 +16,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-export default async function EmployeeTable({
+export default async function ProjectsTable({
   email,
   page = 1,
   department,
@@ -69,11 +59,9 @@ export default async function EmployeeTable({
                 street,
                 barangay,
                 city,
-                notes,
                 createdAt,
                 updatedAt,
               } = project;
-              // const { id, email, isActive, ,emailVerified, role } = employee;
               return (
                 <TableRow
                   key={id}
