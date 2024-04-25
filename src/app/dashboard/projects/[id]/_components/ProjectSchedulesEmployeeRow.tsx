@@ -16,6 +16,7 @@ import { Prisma } from "@prisma/client";
 import dayjs from "dayjs";
 import Link from "next/link";
 import ProjectSchedulesEmployeeRowEditModal from "./ProjectSchedulesEmployeeRowEditModal";
+import ProjectScheduleEmployeeRowDeleteModal from "./ProjectScheduleEmployeeRowDeleteModal";
 
 type ScheduleWithUserProfile = Prisma.ScheduleGetPayload<{
   include: {
@@ -168,16 +169,17 @@ export default async function ProjectSchedulesEmployeeRow({
               sx={{ flexDirection: "row", justifyContent: "flex-end" }}
             >
               <ProjectSchedulesEmployeeRowEditModal scheduleId={id} />
+              <ProjectScheduleEmployeeRowDeleteModal id={id} />
               {/* <Tooltip title="Edit Schedule">
               <IconButton component={Link} href="#edit">
                 <BorderColorIcon fontSize="medium" />
               </IconButton>
             </Tooltip> */}
-              <Tooltip title="Delete Project">
+              {/* <Tooltip title="Delete Project">
                 <IconButton component={Link} href="#delete">
                   <DeleteIcon fontSize="medium" />
                 </IconButton>
-              </Tooltip>
+              </Tooltip> */}
             </Stack>
           ))
           .reverse()}
