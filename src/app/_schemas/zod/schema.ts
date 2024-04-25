@@ -1,5 +1,17 @@
 import { Gender, Role, Department } from "@prisma/client";
+import dayjs from "dayjs";
 import { z } from "zod";
+
+export const DepartmentSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Department name is required!")
+    .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
+  head: z
+    .string()
+    .min(1, "Department head is required!")
+    .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
+});
 
 export const RegisterSchema = z.object({
   // PROFILE
@@ -23,7 +35,8 @@ export const RegisterSchema = z.object({
     .string()
     .min(1, "Occupation is required!")
     .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
-  department: z.nativeEnum(Department),
+  // department: z.nativeEnum(Department),O
+  department: z.string().min(1, "Department is required"),
   // USER
   email: z.string().email("Email is required!"),
   password: z.string().min(1, "Password is required!"),
@@ -33,6 +46,160 @@ export const RegisterSchema = z.object({
     message: "Consent required!",
   }),
 });
+
+export const NewEmployeeSchema = z
+  .object({
+    fname: z
+      .string()
+      .min(1, "First Name is required!")
+      .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
+    mname: z.string().optional(),
+    lname: z
+      .string()
+      .min(1, "Last Name is required!")
+      .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
+    suffix: z.string().optional(),
+    gender: z.nativeEnum(Gender),
+    bdate: z.coerce.date(),
+    contactNumber: z
+      .string()
+      .regex(new RegExp(/^(09|\+639)\d{9}$/), "Invalid phone format"),
+    occupation: z
+      .string()
+      .min(1, "Occupation is required!")
+      .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
+    departmentId: z
+      .string({ invalid_type_error: "Invalid input" })
+      .min(1, "Department is required"),
+    email: z.string().email("Invalid email").min(1, "Email is required"),
+    role: z.nativeEnum(Role),
+
+    password: z.string().min(1, "Password is required!"),
+    confirmPassword: z.string().min(1, "Confirm password is required"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
+export const EditEmployeeSchema = z
+  .object({
+    fname: z
+      .string()
+      .min(1, "First Name is required!")
+      .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
+    mname: z.string().optional(),
+    lname: z
+      .string()
+      .min(1, "Last Name is required!")
+      .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
+    suffix: z.string().optional(),
+    gender: z.nativeEnum(Gender),
+    bdate: z.coerce.date(),
+    contactNumber: z
+      .string()
+      .regex(new RegExp(/^(09|\+639)\d{9}$/), "Invalid phone format"),
+    occupation: z
+      .string()
+      .min(1, "Occupation is required!")
+      .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
+    departmentId: z
+      .string({ invalid_type_error: "Invalid input" })
+      .min(1, "Department is required"),
+    email: z.string().email("Invalid email").min(1, "Email is required"),
+    role: z.nativeEnum(Role),
+    password: z
+      .union([z.string().min(6, "Min. of 6 characters"), z.string().length(0)])
+      .optional()
+      .transform((e) => (e === "" ? undefined : e)),
+    confirmPassword: z
+      .string()
+      .optional()
+      .transform((e) => (e === "" ? undefined : e)),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
+export const ScheduleSchema = z.object({
+  projectId: z.string().min(1, "Required field"),
+  userId: z.string().min(1, "Required field"),
+  notes: z.string().optional(),
+  startDate: z.date(),
+  endDate: z.date(),
+});
+
+export const ScheduleSchemaWithoutProjectId = ScheduleSchema.omit({
+  projectId: true,
+});
+
+export const ScheduleSchemaWithoutProjectIdWithDateRefine =
+  ScheduleSchemaWithoutProjectId.refine(
+    (data) =>
+      data.startDate >=
+      new Date(dayjs().year(), dayjs().month(), dayjs().day()),
+    {
+      message: "Cannot set past date as start date",
+      path: ["startDate"],
+    }
+  ).refine((data) => data.endDate > data.startDate, {
+    message: "End date must be greater than start date.",
+    path: ["endDate"],
+  });
+
+export const ScheduleSchemaWithDateRefine = ScheduleSchema.refine(
+  (data) =>
+    data.startDate >= new Date(dayjs().year(), dayjs().month(), dayjs().day()),
+  {
+    message: "Cannot set past date as start date",
+    path: ["startDate"],
+  }
+).refine((data) => data.endDate > data.startDate, {
+  message: "End date must be greater than start date.",
+  path: ["endDate"],
+});
+
+export const SchedulesSchema = z.object({
+  schedules: z.array(ScheduleSchemaWithDateRefine).refine(
+    (schedules) => {
+      const overlaps = schedules.filter((scheduleA, i) => {
+        const isOverlapping = schedules.some((scheduleB, j) => {
+          if (i !== j) {
+            return (
+              scheduleA.startDate < scheduleB.endDate &&
+              scheduleA.endDate > scheduleB.startDate
+            );
+          } else {
+            return false;
+          }
+        });
+        console.log("is overlapping: ", isOverlapping);
+        return isOverlapping;
+      });
+      console.log("status: ", overlaps, !overlaps.length);
+      return !overlaps.length;
+    },
+    { message: "Schedule overlaps" }
+  ),
+});
+
+export const ProjectSchema = z.object({
+  name: z.string().min(1, "Required field"),
+  jobOrder: z.string().min(1, "Required field"),
+  street: z.string().optional(),
+  building: z.string().optional(),
+  city: z.string().min(1, "Required field"),
+  barangay: z.string().min(1, "Required field"),
+  startDate: z.date(),
+  endDate: z.date(),
+  notes: z.string().optional(),
+  schedules: z.array(ScheduleSchemaWithoutProjectIdWithDateRefine).optional(),
+});
+
+// export const SchedulesSchema = z.object({
+//   projects: z.array(ScheduleSchema),
+// });
 
 export const AppointmentSchema = z.object({
   title: z.string().min(1, "Required field"),

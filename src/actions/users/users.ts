@@ -1,38 +1,59 @@
 "use server";
 
 import { db } from "@/app/_lib/db";
+import { Profile, User } from "@prisma/client";
 import { unstable_noStore as noStore } from "next/cache";
 
-export async function findUser(term: string) {
-  noStore();
+type Sort = Record<keyof User, "asc" | "desc">;
+type Filter = Record<keyof User | keyof Profile, string>;
 
-  if (!term) return { error: "No search term found!" };
+interface SearchQUery {
+  page: number;
+  sort: Sort[];
+  filter: Filter[];
+}
+
+const ITEMS_PER_PAGE = 15;
+
+export async function findUser({
+  page = 1,
+  email,
+  department,
+  sort,
+  active,
+  isArchived = false
+}: {
+  page?: number;
+  email?: string;
+  department?: string;
+  sort?: Sort[];
+  active?: boolean;
+  isArchived?: boolean;
+}) {
+  noStore();
 
   try {
     const users = await db.user.findMany({
       where: {
-        OR: [
-          { id: { contains: term, mode: "insensitive" } },
-          {
-            email: {
-              contains: term,
-              mode: "insensitive",
-            },
-          },
-          {
-            username: {
-              contains: term,
-              mode: "insensitive",
-            },
-          },
-          {
-            id: {
-              contains: term,
-              mode: "insensitive",
-            },
-          },
-        ],
+        isArchived: isArchived,
+        email: { contains: email },
+        profile: { department: { name: { in: department?.split(",") } } },
+        isActive: { equals: active },
       },
+      orderBy: sort,
+      include: {
+        profile: {
+          select: {
+            contactNumber: true,
+            department: true,
+            fname: true,
+            lname: true,
+            occupation: true,
+          },
+        },
+      },
+      take: ITEMS_PER_PAGE,
+      skip: (Number(page) - 1) * ITEMS_PER_PAGE,
     });
 
     if (!users || users.length < 1) {
@@ -52,7 +73,7 @@ export async function getUserById(id: string) {
 
   const user = await db.user.findUnique({
     where: { id },
-    include: { profile: { select: { isEmployee: true, isPatient: true } } },
+    include: { profile: true },
   });
 
   if (!user) return { error: "User not found!" };

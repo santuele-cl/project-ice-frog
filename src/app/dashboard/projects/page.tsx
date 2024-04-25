@@ -1,5 +1,75 @@
-const ProjectsPage = () => {
-  return <div>ProjectsPage</div>;
-};
+import { findUser } from "@/actions/users/users";
+// import Search from "../../users/_components/Search";
 
-export default ProjectsPage;
+import FindInPageOutlinedIcon from "@mui/icons-material/FindInPageOutlined";
+import {
+  Box,
+  Button,
+  Divider,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import React, { FormEvent, Suspense, useEffect, useState } from "react";
+import { findPatient, getTotalPatientsCount } from "@/actions/patients";
+// import { Patient, User } from "@prisma/client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import HomeOutlined from "@mui/icons-material/HomeOutlined";
+import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
+import PersonAddAltOutlinedIcon from "@mui/icons-material/PersonAddAltOutlined";
+import ProjectsTableHeader from "./_components/ProjectsTableHeader";
+import ProjectsTable from "./_components/ProjectsTable";
+import ProjectsTablePagination from "./_components/ProjectsTablePagination";
+import ProjectsAdd from "./_components/ProjectsAdd";
+import ProjectsSearch from "./_components/ProjectsSearch";
+import TableSkeleton from "@/app/_ui/TableSkeleton";
+import ProjectAddFormModal from "./_components/ProjectAddFormModal";
+// import EmployeeSearch from "../_components/EmployeeSearch";
+// import EmployeeAdd from "../_components/EmployeeAdd";
+// import EmployeeTable from "../_components/EmployeeTable";
+// import EmployeeTableHeader from "../_components/EmployeeTableHeader";
+// import EmployeeTablePagination from "../_components/EmployeeTablePagination";
+// import { findUser, toggleUserIsActive } from "@/actions/users/users";
+// import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+// import AddEmployeeFormModal from "./AddEmployeeFormModal";
+
+export default async function page({
+  searchParams: { email, page, department, status },
+}: {
+  searchParams: {
+    email: string;
+    page: string;
+    department: string;
+    status: string;
+  };
+}) {
+  return (
+    <Paper elevation={1} sx={{ p: 2 }}>
+      <ProjectsTableHeader>
+        <ProjectsSearch />
+        <ProjectAddFormModal />
+      </ProjectsTableHeader>
+      <Divider sx={{ my: 1 }} />
+      <Suspense fallback={<TableSkeleton />}>
+        <ProjectsTable
+          email={email}
+          page={Number(page)}
+          department={department}
+          status={status}
+        />
+      </Suspense>
+
+      <Divider sx={{ my: 1 }} />
+      <ProjectsTablePagination />
+    </Paper>
+  );
+}

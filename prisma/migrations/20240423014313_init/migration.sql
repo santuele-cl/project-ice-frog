@@ -1,14 +1,8 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('ADMIN', 'EMPLOYEE');
+CREATE TYPE "Role" AS ENUM ('SUPER_ADMIN', 'ADMIN', 'EMPLOYEE');
 
 -- CreateEnum
 CREATE TYPE "Gender" AS ENUM ('MALE', 'FEMALE');
-
--- CreateEnum
-CREATE TYPE "Department" AS ENUM ('CUSTOMIZED', 'TECHNOLOGY', 'SYSTEMS');
-
--- CreateEnum
-CREATE TYPE "AppointmentStatus" AS ENUM ('SCHEDULED', 'CONFIRMED', 'CANCELLED', 'COMPLETED', 'RESCHEDULED');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -19,11 +13,23 @@ CREATE TABLE "User" (
     "role" "Role" NOT NULL DEFAULT 'EMPLOYEE',
     "isTwoFactorEnabled" BOOLEAN NOT NULL DEFAULT false,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
     "consent" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Department" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "head" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Department_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -39,27 +45,43 @@ CREATE TABLE "Profile" (
     "bdate" TIMESTAMP(3) NOT NULL,
     "age" INTEGER NOT NULL,
     "contactNumber" TEXT NOT NULL,
-    "department" "Department" NOT NULL,
     "occupation" TEXT NOT NULL,
+    "departmentId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
 
     CONSTRAINT "Profile_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Appointments" (
+CREATE TABLE "Project" (
     "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "title" TEXT NOT NULL,
-    "status" "AppointmentStatus" NOT NULL,
-    "room" TEXT NOT NULL,
-    "reason" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "jobOrder" TEXT NOT NULL,
+    "street" TEXT,
+    "building" TEXT,
+    "city" TEXT NOT NULL,
+    "barangay" TEXT NOT NULL,
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3) NOT NULL,
-    "userId" TEXT,
+    "notes" TEXT,
 
-    CONSTRAINT "Appointments_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Project_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Schedule" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "projectId" TEXT,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
+    "userId" TEXT NOT NULL,
+    "notes" TEXT,
+
+    CONSTRAINT "Schedule_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -149,10 +171,16 @@ CREATE UNIQUE INDEX "TwoFactorToken_token_key" ON "TwoFactorToken"("token");
 CREATE UNIQUE INDEX "TwoFactorToken_email_token_key" ON "TwoFactorToken"("email", "token");
 
 -- AddForeignKey
+ALTER TABLE "Profile" ADD CONSTRAINT "Profile_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES "Department"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Profile" ADD CONSTRAINT "Profile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Appointments" ADD CONSTRAINT "Appointments_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Schedule" ADD CONSTRAINT "Schedule_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Schedule" ADD CONSTRAINT "Schedule_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TwoFactorConfirmation" ADD CONSTRAINT "TwoFactorConfirmation_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
