@@ -17,8 +17,8 @@ type Props = {
 export default async function ProjectSchedulesTableBody({
   employeeIds,
   projectId,
-  // notes,
-}: Props) {
+}: // notes,
+Props) {
   return (
     <TableContainer>
       <Table sx={{ minWidth: 650, overflow: "auto" }} aria-label="simple table">
@@ -26,13 +26,14 @@ export default async function ProjectSchedulesTableBody({
           <TableRow>
             <TableCell align="left">No</TableCell>
             <TableCell align="left">Employee</TableCell>
-            <TableCell align="left">Schedules</TableCell>
-            {/* <TableCell align="left">Notes</TableCell> */}
+            <TableCell align="left">Start Date</TableCell>
+            <TableCell align="left">Start Time</TableCell>
+            <TableCell align="left">End Date</TableCell>
+            <TableCell align="left">End Time</TableCell>
             <TableCell align="right">Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          
           {employeeIds && !!employeeIds.length ? (
             employeeIds.map((employee, index) => (
               <ProjectSchedulesEmployeeRow
@@ -60,8 +61,6 @@ export default async function ProjectSchedulesTableBody({
               <TableCell align="left">-</TableCell>
             </TableRow>
           )}
-
-
         </TableBody>
       </Table>
     </TableContainer>
