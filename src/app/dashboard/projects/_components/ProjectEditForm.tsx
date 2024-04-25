@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import { useParams } from "next/navigation";
 import { Prisma, Project } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
 import {
   Autocomplete,
@@ -14,6 +15,7 @@ import {
   IconButton,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
@@ -77,6 +79,7 @@ export default function ProjectEditForm({
   const [pending, setPending] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const router = useRouter();
 
   const {
     register,
@@ -233,6 +236,18 @@ export default function ProjectEditForm({
       <Divider sx={{ mt: 1 }} />
 
       <Stack sx={{ flexDirection: "row", gap: 2, justifyContent: "flex-end" }}>
+        <Tooltip title="Double click to clear form" placement="top">
+          <Button
+            onDoubleClick={() => reset()}
+            variant="outlined"
+            color="error"
+          >
+            Undo all changes
+          </Button>
+        </Tooltip>
+        <Button onClick={() => router.back()} variant="outlined" color="error">
+          Cancel
+        </Button>
         <Button
           type="submit"
           variant="contained"
