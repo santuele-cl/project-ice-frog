@@ -15,22 +15,28 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import EmployeeArchiveButton from "./EmployeeArchiveButton";
 export default async function EmployeeTable({
-  email,
+  name,
+  occupation,
   page = 1,
   department,
   status,
 }: {
-  email: string;
+  name: string;
+  occupation: string;
   page: number;
   department: string;
   status: string;
 }) {
+  console.log("name : ", name);
+
   const response = await findUser({
-    ...(email && { email }),
+    ...(name && { name }),
+    ...(occupation && { occupation }),
     ...(page && { page }),
     ...(department && { department }),
   });
 
+  console.log("res", response);
   return (
     <TableContainer sx={{ height: "690px" }}>
       <Table sx={{ minWidth: 650, overflow: "auto" }} aria-label="simple table">
