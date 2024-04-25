@@ -13,6 +13,7 @@ import {
   SxProps,
   Typography,
   TextField,
+  Tooltip,
 } from "@mui/material";
 import ExpandLessOutlinedIcon from "@mui/icons-material/ExpandLessOutlined";
 import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
@@ -67,17 +68,19 @@ export default function ProjectDetails({ details }: Props) {
               </Typography>
             </Stack>
           </Stack>
-          <Box sx={{ ml: "auto" }}>
-            <IconButton
-              onClick={() => setShowDetails((prevState) => !prevState)}
-            >
-              {showDetails ? (
-                <ExpandLessOutlinedIcon />
-              ) : (
-                <ExpandMoreOutlinedIcon />
-              )}
-            </IconButton>
-          </Box>
+          <Tooltip title="More Details">
+            <Box sx={{ ml: "auto" }}>
+              <IconButton
+                onClick={() => setShowDetails((prevState) => !prevState)}
+              >
+                {showDetails ? (
+                  <ExpandLessOutlinedIcon />
+                ) : (
+                  <ExpandMoreOutlinedIcon />
+                )}
+              </IconButton>
+            </Box>
+          </Tooltip>
         </Stack>
       </Stack>
       {showDetails && (
