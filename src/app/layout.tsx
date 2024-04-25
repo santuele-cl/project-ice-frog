@@ -15,8 +15,8 @@ import SnackbarContextProvider from "@/providers/SnackbarProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Salus",
-  description: "Electronic Health Record System by Triz",
+  title: "Synx",
+  description: "the best scheduler system",
 };
 
 export default async function RootLayout({
