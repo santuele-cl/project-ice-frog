@@ -7,6 +7,7 @@ import {
   Stack,
   SxProps,
   Typography,
+  Box,
 } from "@mui/material";
 import EmployeeScheduleTableHeader from "./_components/EmployeeScheduleTableHeader";
 import EmployeeScheduleSearch from "./_components/EmployeeScheduleSearch";
@@ -41,6 +42,9 @@ export default async function EmployeeDetailsPage({
         {employee.data && <EmployeeDetails details={employee.data} />}
       </Paper>
       <Paper elevation={1} sx={{ p: 2 }}>
+        <Box sx={{ mb: 1 }}>
+          <Typography variant="h6">Employee Schedules</Typography>
+        </Box>
         <EmployeeScheduleTableHeader>
           <EmployeeScheduleSearch />
           <EmployeeScheduleAddFormModal />

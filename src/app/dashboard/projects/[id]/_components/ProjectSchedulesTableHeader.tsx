@@ -1,4 +1,4 @@
-import { Stack } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 
 export default function ProjectSchedulesTableHeader({
   children,
@@ -7,6 +7,7 @@ export default function ProjectSchedulesTableHeader({
 }) {
   return (
     <Stack sx={{ gap: 2 }}>
+      
       <Stack
         direction="row"
         sx={{

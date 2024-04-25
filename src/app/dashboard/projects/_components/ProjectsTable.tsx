@@ -1,11 +1,5 @@
-import { findUser } from "@/actions/users/users";
 import {
-  Box,
-  Button,
-  Divider,
   IconButton,
-  Pagination,
-  Paper,
   Stack,
   Table,
   TableBody,
@@ -13,20 +7,17 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
   Tooltip,
-  Typography,
 } from "@mui/material";
-import ProjectsTablePagination from "./ProjectsTablePagination";
-import { Department } from "@prisma/client";
 import Link from "next/link";
 import { getProjects } from "@/actions/projects/projects-action";
 import dayjs from "dayjs";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ProjectDeleteModal from "./ProjectDeleteModal";
 
-export default async function EmployeeTable({
+export default async function ProjectsTable({
   email,
   page = 1,
   department,
@@ -53,8 +44,8 @@ export default async function EmployeeTable({
 
             <TableCell align="left">Location</TableCell>
 
-            <TableCell align="left">Created At</TableCell>
-            <TableCell align="left">Last Updated</TableCell>
+            <TableCell align="left">Start Date</TableCell>
+            <TableCell align="left">End Date</TableCell>
             <TableCell align="right">Action</TableCell>
           </TableRow>
         </TableHead>
@@ -69,11 +60,11 @@ export default async function EmployeeTable({
                 street,
                 barangay,
                 city,
-                notes,
                 createdAt,
                 updatedAt,
+                startDate,
+                endDate,
               } = project;
-              // const { id, email, isActive, ,emailVerified, role } = employee;
               return (
                 <TableRow
                   key={id}
@@ -89,10 +80,10 @@ export default async function EmployeeTable({
                   <TableCell align="left">{`${building} ${street} ${barangay}, ${city}`}</TableCell>
 
                   <TableCell>
-                    {dayjs(createdAt).format("MMM DD, YYYY hh:mm a")}
-                  </TableCell>
+                    {dayjs(startDate).format("MMM DD, YYYY hh:mm a")}
+                  </TableCell>  
                   <TableCell>
-                    {dayjs(updatedAt).format("MMM DD, YYYY hh:mm a")}
+                    {dayjs(endDate).format("MMM DD, YYYY hh:mm a")}
                   </TableCell>
 
                   <TableCell align="center">
@@ -109,8 +100,8 @@ export default async function EmployeeTable({
                           <VisibilityIcon fontSize="medium" />
                         </IconButton>
                       </Tooltip>
-
-                      <Tooltip title="Delete Project">
+                      <ProjectDeleteModal id={id}/>
+                      {/* <Tooltip title="Delete Project">
                         <IconButton
                           component={Link}
                           href="#delete"
@@ -118,9 +109,13 @@ export default async function EmployeeTable({
                         >
                           <DeleteIcon fontSize="medium" />
                         </IconButton>
-                      </Tooltip>
+                      </Tooltip> */}
+
                       <Tooltip title="Edit Details">
-                        <IconButton component={Link} href="#edit">
+                        <IconButton
+                          component={Link}
+                          href={`/dashboard/projects/${id}/edit`}
+                        >
                           <BorderColorIcon fontSize="medium" />
                         </IconButton>
                       </Tooltip>

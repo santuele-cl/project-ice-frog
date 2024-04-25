@@ -169,6 +169,21 @@ export async function getScheduleByEmployeeId(employeeId: string) {
   }
 }
 
+export async function getScheduleById(id: string) {
+  noStore();
+  if (!id) return { error: "Missing ID" };
+
+  try {
+    const existingSchedule = await db.schedule.findUnique({ where: { id } });
+
+    if (!existingSchedule) return { error: "Schedule does not exist." };
+
+    return { success: "Schedule fetch successul!", data: existingSchedule };
+  } catch (error: unknown) {
+    return { error: getErrorMessage(error) };
+  }
+}
+
 export async function getSchedulesByDate(
   employeeId: string,
   startDate: Date,
@@ -238,6 +253,29 @@ export async function editSchedule({
     revalidatePath(`/dashboard/employees/${updatedSchedule.userId}`);
 
     return { success: "Success!", data: updatedSchedule };
+  } catch (error) {
+    return { error: getErrorMessage(error) };
+  }
+}
+
+export async function deleteSchedule(scheduleId: string) {
+  if (!scheduleId) return { error: "Missing schedule ID" };
+  try {
+    const schedule = await db.schedule.findUnique({
+      where: { id: scheduleId },
+    });
+
+    if (!schedule) return { error: "Schedule does not exist!" };
+
+    const deletedSchedule = await db.schedule.delete({
+      where: { id: scheduleId },
+    });
+
+    if (!deletedSchedule) return { error: "Something went wrong" };
+
+    revalidatePath(`/dashboard/projects/${deletedSchedule.projectId}`);
+
+    return { success: "Success!", data: deletedSchedule };
   } catch (error) {
     return { error: getErrorMessage(error) };
   }

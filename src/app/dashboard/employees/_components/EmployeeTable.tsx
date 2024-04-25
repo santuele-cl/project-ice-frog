@@ -11,9 +11,9 @@ import {
   Tooltip,
 } from "@mui/material";
 import Link from "next/link";
-import EmployeeArchiveButton from "./EmployeeArchiveButton";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
+import EmployeeArchiveButton from "./EmployeeArchiveButton";
 export default async function EmployeeTable({
   email,
   page = 1,
