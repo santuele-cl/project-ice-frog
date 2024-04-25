@@ -43,8 +43,8 @@ export default async function ProjectsTable({
 
             <TableCell align="left">Location</TableCell>
 
-            <TableCell align="left">Created At</TableCell>
-            <TableCell align="left">Last Updated</TableCell>
+            <TableCell align="left">Start Date</TableCell>
+            <TableCell align="left">End Date</TableCell>
             <TableCell align="right">Action</TableCell>
           </TableRow>
         </TableHead>
@@ -61,6 +61,8 @@ export default async function ProjectsTable({
                 city,
                 createdAt,
                 updatedAt,
+                startDate,
+                endDate,
               } = project;
               return (
                 <TableRow
@@ -77,10 +79,10 @@ export default async function ProjectsTable({
                   <TableCell align="left">{`${building} ${street} ${barangay}, ${city}`}</TableCell>
 
                   <TableCell>
-                    {dayjs(createdAt).format("MMM DD, YYYY hh:mm a")}
-                  </TableCell>
+                    {dayjs(startDate).format("MMM DD, YYYY hh:mm a")}
+                  </TableCell>  
                   <TableCell>
-                    {dayjs(updatedAt).format("MMM DD, YYYY hh:mm a")}
+                    {dayjs(endDate).format("MMM DD, YYYY hh:mm a")}
                   </TableCell>
 
                   <TableCell align="center">

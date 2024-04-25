@@ -1,4 +1,4 @@
-import { Button, Divider, Paper } from "@mui/material";
+import { Button, Divider, Paper, Box, Typography, Stack } from "@mui/material";
 import React, { FormEvent, Suspense } from "react";
 import Link from "next/link";
 import ProjectsTableHeader from "./_components/ProjectsTableHeader";
@@ -19,30 +19,35 @@ export default async function page({
   };
 }) {
   return (
-    <Paper elevation={1} sx={{ p: 2 }}>
-      <ProjectsTableHeader>
-        <ProjectsSearch />
-        <Button
-          LinkComponent={Link}
-          href="/dashboard/projects/add"
-          variant="contained"
-          startIcon={<AddOutlinedIcon />}
-        >
-          Add Project
-        </Button>
-      </ProjectsTableHeader>
-      <Divider sx={{ my: 1 }} />
-      <Suspense fallback={<TableSkeleton />}>
-        <ProjectsTable
-          email={email}
-          page={Number(page)}
-          department={department}
-          status={status}
-        />
-      </Suspense>
+    <Stack sx={{ gap: 2 }}>
+      <Box>
+        <Typography variant="h5">List of Projects</Typography>
+      </Box>
+      <Paper elevation={1} sx={{ p: 2 }}>
+        <ProjectsTableHeader>
+          <ProjectsSearch />
+          <Button
+            LinkComponent={Link}
+            href="/dashboard/projects/add"
+            variant="contained"
+            startIcon={<AddOutlinedIcon />}
+          >
+            Add Project
+          </Button>
+        </ProjectsTableHeader>
+        <Divider sx={{ my: 1 }} />
+        <Suspense fallback={<TableSkeleton />}>
+          <ProjectsTable
+            email={email}
+            page={Number(page)}
+            department={department}
+            status={status}
+          />
+        </Suspense>
 
-      <Divider sx={{ my: 1 }} />
-      <ProjectsTablePagination />
-    </Paper>
+        <Divider sx={{ my: 1 }} />
+        <ProjectsTablePagination />
+      </Paper>
+    </Stack>
   );
 }
