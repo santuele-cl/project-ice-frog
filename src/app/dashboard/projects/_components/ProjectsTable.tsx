@@ -1,5 +1,6 @@
 "use client";
 import {
+  Box,
   Divider,
   IconButton,
   Stack,
@@ -23,6 +24,7 @@ import ProjectsTablePagination from "./ProjectsTablePagination";
 import { Fragment, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Project } from "@prisma/client";
+import NoDataComponent from "../../employees/[id]/_components/EmployeeNoScheduleDisplay";
 
 type PaginationProps = {
   totalCount: number;
@@ -66,7 +68,7 @@ export default function ProjectsTable(props: Props) {
         <Typography></Typography>
       </Stack>
       <Divider sx={{ my: 1 }} />
-      <TableContainer sx={{ height: "690px" }}>
+      <TableContainer sx={{ height: "690px", position: "relative" }}>
         <Table
           sx={{ minWidth: 650, overflow: "auto" }}
           aria-label="simple table"
@@ -161,19 +163,28 @@ export default function ProjectsTable(props: Props) {
                 );
               })
             ) : (
-              <TableRow
-                sx={{
-                  "&:last-child td, &:last-child th": { border: 0 },
-                }}
-              >
-                <TableCell component="th" scope="row">
-                  -
+              <TableRow sx={{ height: "100%" }}>
+                <TableCell
+                  colSpan={8}
+                  sx={{
+                    height: "100%",
+                    border: "none",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      height: "100%",
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                    }}
+                  >
+                    <Typography variant="h5" color="#9FA6B2" sx={{ p: 2 }}>
+                      NO RECORD(S)
+                    </Typography>
+                  </Box>
                 </TableCell>
-                <TableCell align="left">-</TableCell>
-                <TableCell align="left">-</TableCell>
-                <TableCell align="left">-</TableCell>
-                <TableCell align="left">-</TableCell>
-                <TableCell align="left">-</TableCell>
               </TableRow>
             )}
             {/* <TableRow
