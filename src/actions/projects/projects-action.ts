@@ -6,6 +6,8 @@ import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import { z } from "zod";
 import { getErrorMessage } from "../action-utils";
 
+const ITEMS_PER_PAGE = 15;
+
 export async function deleteProject(projectId: string) {
   if (!projectId) return { error: "Project ID missing!" };
 
@@ -131,15 +133,67 @@ export async function addProject(values: z.infer<typeof ProjectSchema>) {
   }
 }
 
-export async function getProjects() {
+export async function getProjects({
+  page = 1,
+  name,
+  jobOrder,
+  location,
+  date,
+  isCompleted = false,
+}: {
+  isCompleted?: boolean;
+  page?: number;
+  name?: string;
+  jobOrder?: string;
+  location?: string;
+  date?: Date;
+}) {
   noStore();
+  console.log("location", location);
+  console.log("name", name);
+  console.log("jobOrder", jobOrder);
+  console.log("page", page);
+  console.log("isCompleted", isCompleted);
 
   try {
     const projects = await db.project.findMany({
+      where: {
+        name: { contains: name, mode: "insensitive" },
+        jobOrder: { contains: jobOrder, mode: "insensitive" },
+        isCompleted: isCompleted,
+        // barangay: { contains: location, mode: "insensitive" },
+        // street: { contains: location, mode: "insensitive" },
+        // city: { contains: location, mode: "insensitive" },
+        // building: { contains: location, mode: "insensitive" },
+        // OR: [
+        //   {
+        //     barangay: { contains: name, mode: "insensitive" },
+        //   },
+        //   {
+        //     street: { contains: name, mode: "insensitive" },
+        //   },
+        //   {
+        //     city: { contains: name, mode: "insensitive" },
+        //   },
+        //   {
+        //     building: { contains: name, mode: "insensitive" },
+        //   },
+        //   {
+        //     AND: [
+        //       { barangay: { contains: name, mode: "insensitive" } },
+        //       { street: { contains: name, mode: "insensitive" } },
+        //       { city: { contains: name, mode: "insensitive" } },
+        //       { building: { contains: name, mode: "insensitive" } },
+        //     ],
+        //   },
+        // ],
+      },
       orderBy: { createdAt: "desc" },
+      take: ITEMS_PER_PAGE,
+      skip: (Number(page) - 1) * ITEMS_PER_PAGE,
     });
 
-    if (!projects) return { error: "Cannot find requested resources" };
+    // if (!projects) return { error: "Cannot find requested resources" };
     return { success: "Success!", data: projects };
   } catch (error: unknown) {
     return { error: getErrorMessage(error) };

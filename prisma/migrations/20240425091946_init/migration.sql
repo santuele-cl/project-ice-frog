@@ -67,6 +67,7 @@ CREATE TABLE "Project" (
     "endDate" TIMESTAMP(3) NOT NULL,
     "notes" TEXT,
     "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "isCompleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Project_pkey" PRIMARY KEY ("id")
 );

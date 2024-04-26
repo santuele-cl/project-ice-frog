@@ -60,7 +60,7 @@ export default function EmployeeDepartmentSelect() {
           <Chip {...getTagProps({ index })} key={option} label={option} />
         ));
       }}
-      style={{ width: 500 }}
+      style={{ width: 300 }}
       renderInput={(params) => (
         <TextField {...params} label="Department" placeholder="select..." />
       )}

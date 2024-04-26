@@ -9,13 +9,13 @@ import TableSkeleton from "@/app/_ui/TableSkeleton";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 
 export default async function page({
-  searchParams: { email, page, department, status },
+  searchParams: { jobOrder, page, name, location },
 }: {
   searchParams: {
-    email: string;
+    jobOrder: string;
     page: string;
-    department: string;
-    status: string;
+    name: string;
+    location: string;
   };
 }) {
   return (
@@ -38,10 +38,10 @@ export default async function page({
         <Divider sx={{ my: 1 }} />
         <Suspense fallback={<TableSkeleton />}>
           <ProjectsTable
-            email={email}
+            name={name}
             page={Number(page)}
-            department={department}
-            status={status}
+            location={location}
+            jobOrder={jobOrder}
           />
         </Suspense>
 
