@@ -11,8 +11,13 @@ export default function EmployeeSearchByName() {
   const handleNameFilter = useDebouncedCallback((name: string) => {
     const params = new URLSearchParams(searchParams);
 
-    if (name) params.set("name", name);
-    else params.delete("name");
+    if (name) {
+      params.set("name", name);
+      params.set("page", "1");
+    } else {
+      params.delete("name");
+      params.delete("page");
+    }
 
     replace(`${pathname}?${params.toString()}`);
   }, 300);

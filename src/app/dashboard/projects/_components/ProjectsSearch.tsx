@@ -1,85 +1,92 @@
 "use client";
 import { Stack, TextField } from "@mui/material";
-import { useDebouncedCallback } from "use-debounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { LoadingButton } from "@mui/lab";
-import ProjectsDepartmentSelect from "./ProjectsDepartmentSelect";
 import ProjectsSearchByProjectName from "./ProjectsSearchByProjectName";
 import ProjectsSearchByJobOrder from "./ProjectsSearchByJobOrder";
 import ProjectsSearchByLocation from "./ProjectsSearchByLocation";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function EmployeeSearch() {
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   const pathname = usePathname();
 
-  const handleStatusChange = (status: string) => {
+  const handleProjectNameFilter = useDebouncedCallback((name: string) => {
     const params = new URLSearchParams(searchParams);
 
-    if (status) params.set("status", status);
-    else params.delete("status");
+    if (name) {
+      params.set("name", name);
+      params.set("page", "1");
+    } else {
+      params.delete("name");
+      params.delete("page");
+    }
 
     replace(`${pathname}?${params.toString()}`);
-  };
+  }, 300);
+
+  const handleJobOrderFilter = useDebouncedCallback((jobOrder: string) => {
+    const params = new URLSearchParams(searchParams);
+
+    if (jobOrder) {
+      params.set("jobOrder", jobOrder);
+      params.set("page", "1");
+    } else {
+      params.delete("jobOrder");
+      params.delete("page");
+    }
+
+    replace(`${pathname}?${params.toString()}`);
+  }, 300);
+
+  const handleLocationFilter = useDebouncedCallback((location: string) => {
+    const params = new URLSearchParams(searchParams);
+
+    if (location) {
+      params.set("location", location);
+      params.set("page", "1");
+    } else {
+      params.delete("location");
+    }
+
+    replace(`${pathname}?${params.toString()}`);
+  }, 300);
 
   return (
     <Stack
-      // component="form"
-      // onSubmit={(e) => handleSearch(e)}
       direction="row"
       spacing={2}
       sx={{
         alignItems: "center",
-
-        // justifyContent: "center",
       }}
     >
-      <ProjectsSearchByJobOrder />
-      <ProjectsSearchByProjectName />
-      <ProjectsSearchByLocation />
-      {/* <FormControl sx={{ width: 300 }}>
-        <InputLabel id="department-label">Department</InputLabel>
-        <Select
-          labelId="department-label"
-          id="department"
-          value={searchParams.get("department")?.toString()}
-          label="Department"
-          onChange={(e) => hanldeDepartmentChange(e.target.value)}
-          // size="small"
-        >
-          <MenuItem value="">OFF</MenuItem>
-          <MenuItem value="SYSTEMS">SYTEMS</MenuItem>
-          <MenuItem value="TECHONOLOGY">TECHNOLOGY</MenuItem>
-          <MenuItem value="CUSTOMIZED">CUSTOMIZED</MenuItem>
-        </Select>
-      </FormControl> */}
-      {/* <FormControl sx={{ width: 300 }}>
-        <InputLabel id="department-label">Status</InputLabel>
-        <Select
-          labelId="department-label"
-          id="department"
-          value={searchParams.get("department")?.toString()}
-          label="Department"
-          onChange={(e) => handleStatusChange(e.target.value)}
-          // size="small"
-          sx={{}}
-        >
-          <MenuItem value="">Off</MenuItem>
-          <MenuItem value="active">Active</MenuItem>
-          <MenuItem value="inactive">Inactive</MenuItem>
-        </Select>
-      </FormControl> */}
-
-      {/* <LoadingButton
-        //   loading={isSearching}
-        // type="submit"
-        variant="outlined"
-        sx={{ px: 2 }}
-
-        // onClick={handleSearch}
-      >
-        Search
-      </LoadingButton> */}
+      {/* <ProjectsSearchByJobOrder /> */}
+      <TextField
+        sx={{
+          width: "300px",
+        }}
+        onChange={(e) => handleJobOrderFilter(e.target.value)}
+        defaultValue={searchParams.get("jobOrder")?.toString()}
+        label="Job Order"
+      />
+      <TextField
+        sx={{
+          width: "300px",
+        }}
+        onChange={(e) => handleProjectNameFilter(e.target.value)}
+        defaultValue={searchParams.get("name")?.toString()}
+        label="Project Name"
+      />
+      {/* <ProjectsSearchByProjectName /> */}
+      <TextField
+        sx={{
+          width: "300px",
+        }}
+        onChange={(e) => handleLocationFilter(e.target.value)}
+        defaultValue={searchParams.get("location")?.toString()}
+        label="Location"
+      />
+      {/* <ProjectsSearchByLocation /> */}
     </Stack>
   );
 }

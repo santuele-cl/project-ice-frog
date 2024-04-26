@@ -1,8 +1,9 @@
 "use server";
 
 import { db } from "@/app/_lib/db";
-import { Profile, User } from "@prisma/client";
+import { Prisma, Profile, User } from "@prisma/client";
 import { unstable_noStore as noStore } from "next/cache";
+import { getErrorMessage } from "../action-utils";
 
 type Sort = Record<keyof User, "asc" | "desc">;
 type Filter = Record<keyof User | keyof Profile, string>;
@@ -13,64 +14,58 @@ interface SearchQUery {
   filter: Filter[];
 }
 
-const ITEMS_PER_PAGE = 15;
+const ITEMS_PER_PAGE = 2;
 
 export async function findUser({
   page = 1,
-  email,
   occupation,
   name,
   department,
-  sort,
   active,
   isArchived = false,
 }: {
   page?: number;
-  email?: string;
   occupation?: string;
   name?: string;
   department?: string;
-  sort?: Sort[];
   active?: boolean;
   isArchived?: boolean;
 }) {
   noStore();
+  console.log("occupation : ", occupation);
+  console.log("name : ", name);
+  console.log("department : ", department);
+  console.log("page : ", page);
   try {
-    const users = await db.user.findMany({
+    const findUserQuery = {
       where: {
         isArchived: isArchived,
-        OR: [
-          {
-            profile: {
-              fname: { contains: name, mode: "insensitive" },
+        ...(name && {
+          OR: [
+            {
+              profile: {
+                fname: { contains: name, mode: "insensitive" },
+              },
             },
-          },
-          {
-            profile: {
-              mname: { contains: name, mode: "insensitive" },
+            {
+              profile: {
+                mname: { contains: name, mode: "insensitive" },
+              },
             },
-          },
-          {
-            profile: {
-              lname: { contains: name, mode: "insensitive" },
+            {
+              profile: {
+                lname: { contains: name, mode: "insensitive" },
+              },
             },
-          },
-          {
-            AND: [
-              { profile: { lname: { contains: name, mode: "insensitive" } } },
-              { profile: { fname: { contains: name, mode: "insensitive" } } },
-              { profile: { mname: { contains: name, mode: "insensitive" } } },
-            ],
-          },
-        ],
-
+          ],
+        }),
         profile: {
           department: { name: { in: department?.split(",") } },
           occupation: { contains: occupation, mode: "insensitive" },
         },
         isActive: { equals: active },
       },
-      orderBy: sort,
+      orderBy: { createdAt: "desc" },
       include: {
         profile: {
           select: {
@@ -84,12 +79,24 @@ export async function findUser({
       },
       take: ITEMS_PER_PAGE,
       skip: (Number(page) - 1) * ITEMS_PER_PAGE,
-    });
+    } as Prisma.UserFindManyArgs;
 
-    if (!users || users.length < 1) return { error: "No users found!" };
-    else return { success: "Users found!", data: users };
+    const [users, count] = await db.$transaction([
+      db.user.findMany(findUserQuery),
+      db.user.count({ where: findUserQuery.where }),
+    ]);
+
+    return {
+      success: "Success",
+      data: users,
+      pagination: {
+        totalCount: count,
+        itemsPerPage: ITEMS_PER_PAGE,
+        totalPages: Math.ceil(count / ITEMS_PER_PAGE),
+      },
+    };
   } catch (error) {
-    return { error: "Something went wrong!" };
+    return { error: getErrorMessage(error) };
   }
 }
 
