@@ -25,6 +25,7 @@ import { Fragment, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Project } from "@prisma/client";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import * as XLSX from "xlsx";
 
 type PaginationProps = {
   totalCount: number;
@@ -44,6 +45,14 @@ export default function ProjectsTable(props: Props) {
   const params = useSearchParams();
   const [data, setData] = useState<Project[]>([]);
   const [pagination, setPagination] = useState<PaginationProps>();
+
+  const handleExport = () => {
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(data);
+
+    XLSX.utils.book_append_sheet(wb, ws, "sheet 1");
+    XLSX.writeFile(wb, "book.xlsx");
+  };
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -75,6 +84,7 @@ export default function ProjectsTable(props: Props) {
           startIcon={<FileDownloadIcon />}
           variant="outlined"
           color="success"
+          onClick={handleExport}
         >
           Export
         </Button>
