@@ -83,7 +83,7 @@ export default async function DepartmentTable({
                     >
                     <DepartmentDeleteForm id={id}/>
 
-                    
+
                       <Tooltip title="Edit Details">
                         <IconButton component={Link} href="#edit">
                           <BorderColorIcon fontSize="medium" />
@@ -127,5 +127,6 @@ export default async function DepartmentTable({
         </TableBody>
       </Table>
     </TableContainer>
+    // sa
   );
 }
