@@ -7,7 +7,7 @@ import { z } from "zod";
 import { getErrorMessage } from "../action-utils";
 import { Prisma } from "@prisma/client";
 
-const ITEMS_PER_PAGE = 2;
+const ITEMS_PER_PAGE = 15;
 
 export async function deleteProject(projectId: string) {
   if (!projectId) return { error: "Project ID missing!" };
