@@ -35,17 +35,13 @@ export default async function page({
             Add Project
           </Button>
         </ProjectsTableHeader>
-        {/* <Suspense fallback={<TableSkeleton />}> */}
+        <Divider sx={{ my: 1 }} />
         <ProjectsTable
           name={name}
           page={Number(page)}
           location={location}
           jobOrder={jobOrder}
         />
-        {/* </Suspense> */}
-
-        {/* <Divider sx={{ my: 1 }} />
-        <ProjectsTablePagination /> */}
       </Paper>
     </Stack>
   );

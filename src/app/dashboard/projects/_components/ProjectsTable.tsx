@@ -1,6 +1,7 @@
 "use client";
 import {
   Box,
+  Button,
   Divider,
   IconButton,
   Stack,
@@ -18,13 +19,12 @@ import { getProjects } from "@/actions/projects/projects-action";
 import dayjs from "dayjs";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
-import DeleteIcon from "@mui/icons-material/Delete";
 import ProjectDeleteModal from "./ProjectDeleteModal";
 import ProjectsTablePagination from "./ProjectsTablePagination";
 import { Fragment, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Project } from "@prisma/client";
-import NoDataComponent from "../../employees/[id]/_components/EmployeeNoScheduleDisplay";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 type PaginationProps = {
   totalCount: number;
@@ -63,12 +63,24 @@ export default function ProjectsTable(props: Props) {
 
   return (
     <Fragment>
-      <Stack sx={{ my: 1, flexDirection: "row", justifyContent: "flex-end" }}>
-        {pagination && <ProjectsTablePagination pagination={pagination} />}
-        <Typography></Typography>
+      <Stack
+        sx={{ my: 1, flexDirection: "row", justifyContent: "space-between" }}
+      >
+        <ProjectsTablePagination
+          pagination={
+            pagination ?? { totalCount: 0, totalPages: 0, itemsPerPage: 0 }
+          }
+        />
+        <Button
+          startIcon={<FileDownloadIcon />}
+          variant="outlined"
+          color="success"
+        >
+          Export
+        </Button>
       </Stack>
       <Divider sx={{ my: 1 }} />
-      <TableContainer sx={{ height: "690px", position: "relative" }}>
+      <TableContainer sx={{ minHeight: "540px", position: "relative" }}>
         <Table
           sx={{ minWidth: 650, overflow: "auto" }}
           aria-label="simple table"
@@ -132,15 +144,7 @@ export default function ProjectsTable(props: Props) {
                           </IconButton>
                         </Tooltip>
                         <ProjectDeleteModal id={id} />
-                        {/* <Tooltip title="Delete Project">
-                          <IconButton
-                            component={Link}
-                            href="#delete"
-                            color="error"
-                          >
-                            <DeleteIcon fontSize="medium" />
-                          </IconButton>
-                        </Tooltip> */}
+
                         <Tooltip title="Edit Details">
                           <IconButton
                             component={Link}
@@ -149,14 +153,6 @@ export default function ProjectsTable(props: Props) {
                             <BorderColorIcon fontSize="medium" />
                           </IconButton>
                         </Tooltip>
-                        {/* <Button
-                          variant="outlined"
-                          //   LinkComponent={Link}
-                          //   href={`${pathname}/${id}`}
-                          // onClick={async () => await toggleUserIsActive(id)}
-                        >
-                          {isActive ? "Deactivate" : "Activate"}
-                        </Button> */}
                       </Stack>
                     </TableCell>
                   </TableRow>
@@ -171,42 +167,31 @@ export default function ProjectsTable(props: Props) {
                     border: "none",
                   }}
                 >
-                  <Box
+                  <Typography
+                    variant="h5"
+                    color="#9FA6B2"
                     sx={{
-                      height: "100%",
                       position: "absolute",
                       top: "50%",
                       left: "50%",
                       transform: "translate(-50%, -50%)",
                     }}
                   >
-                    <Typography variant="h5" color="#9FA6B2" sx={{ p: 2 }}>
-                      NO RECORD(S)
-                    </Typography>
-                  </Box>
+                    NO RECORD(S)
+                  </Typography>
                 </TableCell>
               </TableRow>
             )}
-            {/* <TableRow
-              sx={{
-                "&:last-child td, &:last-child th": { border: 0 },
-              }}
-            >
-              <TableCell component="th" scope="row">
-                -
-              </TableCell>
-              <TableCell align="left">-</TableCell>
-              <TableCell align="left">-</TableCell>
-              <TableCell align="left">-</TableCell>
-              <TableCell align="left">-</TableCell>
-              <TableCell align="left">-</TableCell>
-            </TableRow> */}
           </TableBody>
         </Table>
       </TableContainer>
 
       <Divider sx={{ my: 1 }} />
-      {pagination && <ProjectsTablePagination pagination={pagination} />}
+      <ProjectsTablePagination
+        pagination={
+          pagination ?? { totalCount: 0, totalPages: 0, itemsPerPage: 0 }
+        }
+      />
     </Fragment>
   );
 }
