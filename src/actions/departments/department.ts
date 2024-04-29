@@ -9,7 +9,7 @@ import { getErrorMessage } from "../action-utils";
 
 type Sort = Record<keyof Department, "asc" | "desc">;
 
-const ITEMS_PER_PAGE = 2;
+const ITEMS_PER_PAGE = 15;
 
 export async function findDepartment({
   page = 1,

@@ -14,7 +14,7 @@ interface SearchQUery {
   filter: Filter[];
 }
 
-const ITEMS_PER_PAGE = 2;
+const ITEMS_PER_PAGE = 15;
 
 export async function findUser({
   page = 1,
