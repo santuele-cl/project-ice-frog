@@ -1,5 +1,5 @@
 "use client";
-import { getDepartments } from "@/actions/departments/department";
+import { getDepartments } from "@/actions/departments/department-action";
 import { Autocomplete, Chip, TextField } from "@mui/material";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
