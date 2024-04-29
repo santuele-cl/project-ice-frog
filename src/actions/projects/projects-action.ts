@@ -150,6 +150,7 @@ export async function getProjects({
   date?: Date;
 }) {
   noStore();
+
   try {
     const query = {
       where: {
@@ -176,16 +177,14 @@ export async function getProjects({
         }),
       },
       orderBy: { createdAt: "desc" },
-      take: ITEMS_PER_PAGE,
-      skip: (Number(page) - 1) * ITEMS_PER_PAGE,
+      ...(page !== 0 && { take: ITEMS_PER_PAGE }),
+      ...(page !== 0 && { skip: (Number(page) - 1) * ITEMS_PER_PAGE }),
     } as Prisma.ProjectFindManyArgs;
 
     const [projects, count] = await db.$transaction([
       db.project.findMany(query),
       db.project.count({ where: query.where }),
     ]);
-
-    // if (!projects) return { error: "Something went wrong" };
 
     return {
       success: "Success",

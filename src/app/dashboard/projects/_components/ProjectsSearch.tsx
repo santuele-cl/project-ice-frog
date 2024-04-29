@@ -60,7 +60,6 @@ export default function EmployeeSearch() {
         alignItems: "center",
       }}
     >
-      {/* <ProjectsSearchByJobOrder /> */}
       <TextField
         sx={{
           width: "300px",
@@ -77,7 +76,6 @@ export default function EmployeeSearch() {
         defaultValue={searchParams.get("name")?.toString()}
         label="Project Name"
       />
-      {/* <ProjectsSearchByProjectName /> */}
       <TextField
         sx={{
           width: "300px",
@@ -86,7 +84,6 @@ export default function EmployeeSearch() {
         defaultValue={searchParams.get("location")?.toString()}
         label="Location"
       />
-      {/* <ProjectsSearchByLocation /> */}
     </Stack>
   );
 }
