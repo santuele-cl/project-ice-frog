@@ -150,7 +150,7 @@ export async function getProjects({
   date?: Date;
 }) {
   noStore();
-  console.log("location query : ", location, " arr: ");
+
   try {
     const query = {
       where: {
