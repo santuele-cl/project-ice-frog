@@ -1,4 +1,4 @@
-import { findDepartment } from "@/actions/departments/department";
+import { findDepartment } from "@/actions/departments/department-action";
 import {
   Button,
   IconButton,
@@ -18,6 +18,7 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import DeleteIcon from "@mui/icons-material/Delete";
+import DepartmentDeleteForm from "./DepartmentDeleteForm";
 
 export default async function DepartmentTable({
   email,
@@ -80,15 +81,9 @@ export default async function DepartmentTable({
                       direction="row-reverse"
                       sx={{ width: "100%" }}
                     >
-                      <Tooltip title="Delete Project">
-                        <IconButton
-                          component={Link}
-                          href="#delete"
-                          color="error"
-                        >
-                          <DeleteIcon fontSize="medium" />
-                        </IconButton>
-                      </Tooltip>
+                    <DepartmentDeleteForm id={id}/>
+
+                    
                       <Tooltip title="Edit Details">
                         <IconButton component={Link} href="#edit">
                           <BorderColorIcon fontSize="medium" />

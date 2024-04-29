@@ -1,5 +1,5 @@
 "use client";
-import { getDepartments } from "@/actions/departments/department";
+import { getDepartments } from "@/actions/departments/department-action";
 import AutoComplete from "@/app/_ui/AutoComplete";
 import { Box } from "@mui/material";
 import { Department } from "@prisma/client";

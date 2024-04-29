@@ -16,7 +16,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
-import { addDepartment } from "@/actions/departments/department";
+import { addDepartment } from "@/actions/departments/department-action";
 
 export default function DepartmentAddForm({
   setShow,

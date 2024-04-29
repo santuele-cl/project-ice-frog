@@ -23,7 +23,7 @@ import dayjs from "dayjs";
 import { SchedulesSchema } from "@/app/_schemas/zod/schema";
 import { useParams } from "next/navigation";
 import { Department, Prisma, Project, User } from "@prisma/client";
-import { getDepartments } from "@/actions/departments/department";
+import { getDepartments } from "@/actions/departments/department-action";
 import { getProjects } from "@/actions/projects/projects-action";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
