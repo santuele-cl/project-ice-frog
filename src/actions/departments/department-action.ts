@@ -90,3 +90,32 @@ export async function addDepartment({
     return { error: getErrorMessage(error) };
   }
 }
+
+
+
+export async function deleteDepartment(departmentId: string) {
+  if (!departmentId) return { error: "Department ID missing!" };
+
+  try {
+    const existingDepartment = await db.department.findUnique({
+      where: { id: departmentId },
+    });
+
+    if (!existingDepartment) return { error: "Department does not exist!" };
+
+    const deletedDepartment = await db.department.delete({
+      where: { id: departmentId },
+    });
+    if (!deletedDepartment) return { error: "Something went wrong" };
+
+    revalidatePath("/dashboard/department");
+    revalidatePath("/dashboard/archived/department");
+
+    return {
+      success: "Department Deleted successfully!",
+      data: { id: deletedDepartment.id },
+    };
+  } catch (error) {
+    return { error: getErrorMessage(error) };
+  }
+}
