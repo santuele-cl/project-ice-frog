@@ -13,9 +13,14 @@ export default function EmployeeDepartmentSelect() {
   const hanldeDepartmentChange = (department: any) => {
     const params = new URLSearchParams(searchParams);
 
-    if (department && !!department.length)
+    if (department && !!department.length) {
       params.set("department", department.toString());
-    else params.delete("department");
+      params.set("page", "1");
+    } else {
+      params.delete("department");
+      params.delete("page");
+    }
+
     replace(`${pathname}?${params.toString()}`);
   };
 

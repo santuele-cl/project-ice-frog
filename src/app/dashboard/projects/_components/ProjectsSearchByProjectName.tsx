@@ -10,8 +10,13 @@ export default function ProjectSearchByProjectName() {
   const handleProjectNameFilter = useDebouncedCallback((name: string) => {
     const params = new URLSearchParams(searchParams);
 
-    if (name) params.set("name", name);
-    else params.delete("name");
+    if (name) {
+      params.set("name", name);
+      params.set("page", "1");
+    } else {
+      params.delete("name");
+      params.delete("page");
+    }
 
     replace(`${pathname}?${params.toString()}`);
   }, 300);
@@ -20,7 +25,6 @@ export default function ProjectSearchByProjectName() {
     <TextField
       sx={{
         width: "300px",
-        // justifyContent: "center",
       }}
       onChange={(e) => handleProjectNameFilter(e.target.value)}
       defaultValue={searchParams.get("name")?.toString()}

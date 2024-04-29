@@ -36,17 +36,12 @@ export default async function page({
           </Button>
         </ProjectsTableHeader>
         <Divider sx={{ my: 1 }} />
-        <Suspense fallback={<TableSkeleton />}>
-          <ProjectsTable
-            name={name}
-            page={Number(page)}
-            location={location}
-            jobOrder={jobOrder}
-          />
-        </Suspense>
-
-        <Divider sx={{ my: 1 }} />
-        <ProjectsTablePagination />
+        <ProjectsTable
+          name={name}
+          page={Number(page)}
+          location={location}
+          jobOrder={jobOrder}
+        />
       </Paper>
     </Stack>
   );

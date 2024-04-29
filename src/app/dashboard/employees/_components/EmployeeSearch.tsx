@@ -12,24 +12,12 @@ export default function EmployeeSearch() {
   const { replace } = useRouter();
   const pathname = usePathname();
 
-  const handleStatusChange = (status: string) => {
-    const params = new URLSearchParams(searchParams);
-
-    if (status) params.set("status", status);
-    else params.delete("status");
-
-    replace(`${pathname}?${params.toString()}`);
-  };
-
   return (
     <Stack
-      // component="form"
-      // onSubmit={(e) => handleSearch(e)}
       direction="row"
       spacing={1}
       sx={{
         alignItems: "center",
-        // justifyContent: "center",
       }}
     >
       <EmployeeDepartmentSelect />

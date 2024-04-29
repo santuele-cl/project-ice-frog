@@ -5,6 +5,7 @@ import { EditProjectSchema, ProjectSchema } from "@/app/_schemas/zod/schema";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import { z } from "zod";
 import { getErrorMessage } from "../action-utils";
+import { Prisma } from "@prisma/client";
 
 const ITEMS_PER_PAGE = 15;
 
@@ -149,52 +150,52 @@ export async function getProjects({
   date?: Date;
 }) {
   noStore();
-  console.log("location", location);
-  console.log("name", name);
-  console.log("jobOrder", jobOrder);
-  console.log("page", page);
-  console.log("isCompleted", isCompleted);
-
   try {
-    const projects = await db.project.findMany({
+    const query = {
       where: {
-        name: { contains: name, mode: "insensitive" },
-        jobOrder: { contains: jobOrder, mode: "insensitive" },
-        isCompleted: isCompleted,
-        // barangay: { contains: location, mode: "insensitive" },
-        // street: { contains: location, mode: "insensitive" },
-        // city: { contains: location, mode: "insensitive" },
-        // building: { contains: location, mode: "insensitive" },
-        // OR: [
-        //   {
-        //     barangay: { contains: name, mode: "insensitive" },
-        //   },
-        //   {
-        //     street: { contains: name, mode: "insensitive" },
-        //   },
-        //   {
-        //     city: { contains: name, mode: "insensitive" },
-        //   },
-        //   {
-        //     building: { contains: name, mode: "insensitive" },
-        //   },
-        //   {
-        //     AND: [
-        //       { barangay: { contains: name, mode: "insensitive" } },
-        //       { street: { contains: name, mode: "insensitive" } },
-        //       { city: { contains: name, mode: "insensitive" } },
-        //       { building: { contains: name, mode: "insensitive" } },
-        //     ],
-        //   },
-        // ],
+        ...(name && { name: { contains: name, mode: "insensitive" } }),
+        ...(jobOrder && {
+          jobOrder: { contains: jobOrder, mode: "insensitive" },
+        }),
+        ...(isCompleted && { isCompleted: isCompleted }),
+        ...(location && {
+          OR: [
+            {
+              barangay: { contains: location, mode: "insensitive" },
+            },
+            {
+              street: { contains: location, mode: "insensitive" },
+            },
+            {
+              city: { contains: location, mode: "insensitive" },
+            },
+            {
+              building: { contains: location, mode: "insensitive" },
+            },
+          ],
+        }),
       },
       orderBy: { createdAt: "desc" },
       take: ITEMS_PER_PAGE,
       skip: (Number(page) - 1) * ITEMS_PER_PAGE,
-    });
+    } as Prisma.ProjectFindManyArgs;
 
-    // if (!projects) return { error: "Cannot find requested resources" };
-    return { success: "Success!", data: projects };
+    const [projects, count] = await db.$transaction([
+      db.project.findMany(query),
+      db.project.count({ where: query.where }),
+    ]);
+
+    // if (!projects) return { error: "Something went wrong" };
+
+    return {
+      success: "Success",
+      data: projects,
+      pagination: {
+        totalCount: count,
+        itemsPerPage: ITEMS_PER_PAGE,
+        totalPages: Math.ceil(count / ITEMS_PER_PAGE),
+      },
+    };
   } catch (error: unknown) {
     return { error: getErrorMessage(error) };
   }

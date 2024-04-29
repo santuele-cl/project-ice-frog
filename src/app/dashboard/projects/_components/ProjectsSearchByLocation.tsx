@@ -10,8 +10,12 @@ export default function ProjectSearchByLocation() {
   const handleLocationFilter = useDebouncedCallback((location: string) => {
     const params = new URLSearchParams(searchParams);
 
-    if (location) params.set("location", location);
-    else params.delete("location");
+    if (location) {
+      params.set("location", location);
+      params.set("page", "1");
+    } else {
+      params.delete("location");
+    }
 
     replace(`${pathname}?${params.toString()}`);
   }, 300);

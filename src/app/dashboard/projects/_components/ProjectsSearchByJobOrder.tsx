@@ -10,8 +10,13 @@ export default function ProjectSearchByJobOrder() {
   const handleJobOrderFilter = useDebouncedCallback((jobOrder: string) => {
     const params = new URLSearchParams(searchParams);
 
-    if (jobOrder) params.set("jobOrder", jobOrder);
-    else params.delete("jobOrder");
+    if (jobOrder) {
+      params.set("jobOrder", jobOrder);
+      params.set("page", "1");
+    } else {
+      params.delete("jobOrder");
+      params.delete("page");
+    }
 
     replace(`${pathname}?${params.toString()}`);
   }, 300);
