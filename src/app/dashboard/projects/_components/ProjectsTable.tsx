@@ -46,12 +46,21 @@ export default function ProjectsTable(props: Props) {
   const [data, setData] = useState<Project[]>([]);
   const [pagination, setPagination] = useState<PaginationProps>();
 
-  const handleExport = () => {
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(data);
+  const handleExport = async () => {
+    const projects = await getProjects({
+      page: 0,
+      ...(name && { name }),
+      ...(location && { location }),
+      ...(jobOrder && { jobOrder }),
+    });
 
-    XLSX.utils.book_append_sheet(wb, ws, "sheet 1");
-    XLSX.writeFile(wb, "book.xlsx");
+    if (projects.success && projects.data) {
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(projects.data);
+
+      XLSX.utils.book_append_sheet(wb, ws, "sheet 1");
+      XLSX.writeFile(wb, "book.xlsx");
+    }
   };
 
   useEffect(() => {
@@ -134,10 +143,10 @@ export default function ProjectsTable(props: Props) {
                     <TableCell align="left">{name}</TableCell>
                     <TableCell align="left">{`${building} ${street} ${barangay}, ${city}`}</TableCell>
                     <TableCell>
-                      {dayjs(startDate).format("MMM DD, YYYY hh:mm a")}
+                      {dayjs(startDate).format("MMM DD, YYYY")}
                     </TableCell>
                     <TableCell>
-                      {dayjs(endDate).format("MMM DD, YYYY hh:mm a")}
+                      {dayjs(endDate).format("MMM DD, YYYY")}
                     </TableCell>
                     <TableCell align="center">
                       <Stack
