@@ -36,11 +36,8 @@ export default async function EmployeeSchedulesTable({
   // console.log("data ", response.data);
 
   return (
-    <TableContainer sx={{ position: "relative" }}>
-      <Table
-        sx={{ minHeight: "50vh", overflow: "auto" }}
-        aria-label="simple table"
-      >
+    <TableContainer sx={{ minHeight: "50vh", position: "relative" }}>
+      <Table sx={{ overflow: "auto" }} aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell align="left">No</TableCell>
