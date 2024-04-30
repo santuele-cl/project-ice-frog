@@ -37,7 +37,7 @@ export default function Sidebar({ open }: { open: boolean }) {
         <ListItem key={path} disablePadding sx={{ display: "block" }}>
           <Tooltip title={label} placement="right">
             <NewListItemButton
-              selected={pathname === path}
+              selected={path.startsWith(pathname)}
               sx={{
                 minHeight: 48,
                 justifyContent: open ? "initial" : "center",

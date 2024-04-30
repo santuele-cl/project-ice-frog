@@ -50,7 +50,7 @@ const links = [
 export default function AdminSidebar({ open }: { open: boolean }) {
   const pathname = usePathname();
   const { push } = useRouter();
-
+  console.log("path : ", pathname);
   return (
     <Fragment>
       {links.map(({ icon, label, path }) => (
@@ -63,7 +63,7 @@ export default function AdminSidebar({ open }: { open: boolean }) {
         >
           <Tooltip title={label} placement="right">
             <NewListItemButton
-              selected={pathname === path}
+              selected={path.startsWith(pathname)}
               sx={{
                 minHeight: 48,
                 justifyContent: open ? "initial" : "center",
