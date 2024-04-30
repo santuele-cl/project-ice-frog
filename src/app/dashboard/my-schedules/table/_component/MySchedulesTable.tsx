@@ -149,10 +149,10 @@ export default function MySchedulesTable(props: Props) {
                     </TableCell>
                     <TableCell align="left">{`${building} ${street} ${barangay}, ${city}`}</TableCell>
                     <TableCell>
-                      {dayjs(startDate).format("MMM DD, YYYY")}
+                      {dayjs(startDate).format("MMM DD, YYYY  hh:mm a")}
                     </TableCell>
                     <TableCell>
-                      {dayjs(endDate).format("MMM DD, YYYY")}
+                      {dayjs(endDate).format("MMM DD, YYYY hh:mm a")}
                     </TableCell>
                     {/* <TableCell align="center">
                       <Stack

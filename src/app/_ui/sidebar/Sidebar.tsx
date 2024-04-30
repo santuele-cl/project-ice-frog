@@ -9,8 +9,10 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Tooltip,
 } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { NewListItemButton } from "../CustomListItemButton";
 
 const links = [
   {
@@ -26,31 +28,36 @@ const links = [
 ];
 
 export default function Sidebar({ open }: { open: boolean }) {
+  const pathname = usePathname();
   const { push } = useRouter();
 
   return (
     <Fragment>
       {links.map(({ icon, label, path }) => (
         <ListItem key={path} disablePadding sx={{ display: "block" }}>
-          <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? "initial" : "center",
-              px: 2.5,
-            }}
-            onClick={() => push(path)}
-          >
-            <ListItemIcon
+          <Tooltip title={label} placement="right">
+            <NewListItemButton
+              selected={pathname === path}
               sx={{
-                minWidth: 0,
-                mr: open ? 3 : "auto",
-                justifyContent: "center",
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
               }}
+              onClick={() => push(path)}
             >
-              {icon()}
-            </ListItemIcon>
-            <ListItemText primary={label} sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                  color: "inherit",
+                }}
+              >
+                {icon()}
+              </ListItemIcon>
+              <ListItemText primary={label} sx={{ opacity: open ? 1 : 0 }} />
+            </NewListItemButton>
+          </Tooltip>
         </ListItem>
       ))}
     </Fragment>
