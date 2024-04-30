@@ -6,10 +6,17 @@ import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import { z } from "zod";
 import { getErrorMessage } from "../action-utils";
 import { Prisma } from "@prisma/client";
+import { auth } from "@/auth";
 
 const ITEMS_PER_PAGE = 15;
 
 export async function deleteProject(projectId: string) {
+  const session = await auth();
+
+  if (!session) return { error: "Unauthorized" };
+
+  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
   if (!projectId) return { error: "Project ID missing!" };
 
   try {
@@ -37,6 +44,11 @@ export async function deleteProject(projectId: string) {
 }
 
 export async function restoreProject(projectId: string) {
+  const session = await auth();
+
+  if (!session) return { error: "Unauthorized" };
+
+  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
   if (!projectId) return { error: "Project ID missing!" };
 
   try {
@@ -71,6 +83,11 @@ export async function editProject({
   projectId: string;
   data: z.infer<typeof EditProjectSchema>;
 }) {
+  const session = await auth();
+
+  if (!session) return { error: "Unauthorized" };
+
+  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
   try {
     if (!projectId || !data) return { error: "Missing data" };
 
@@ -112,6 +129,12 @@ export async function editProject({
 export async function addProject(values: z.infer<typeof ProjectSchema>) {
   const parse = ProjectSchema.safeParse(values);
 
+  const session = await auth();
+
+  if (!session) return { error: "Unauthorized" };
+
+  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
   if (!parse.success) return { error: "Parse error. Invalid data input!" };
 
   const { schedules, ...otherFields } = parse.data;
@@ -149,6 +172,12 @@ export async function getProjects({
   location?: string;
   date?: Date;
 }) {
+  const session = await auth();
+
+  if (!session) return { error: "Unauthorized" };
+
+  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
   noStore();
 
   try {
@@ -203,6 +232,12 @@ export async function getProjects({
 export async function getProjectScheduleGroupByUserId(projectId: string) {
   noStore();
 
+  const session = await auth();
+
+  if (!session) return { error: "Unauthorized" };
+
+  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
   const projects = await db.schedule.groupBy({
     by: ["userId"],
     where: { projectId },
@@ -215,6 +250,12 @@ export async function getProjectScheduleGroupByUserId(projectId: string) {
 
 export async function getProjectById(id: string) {
   noStore();
+
+  const session = await auth();
+
+  if (!session) return { error: "Unauthorized" };
+
+  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
   try {
     const project = await db.project.findUnique({

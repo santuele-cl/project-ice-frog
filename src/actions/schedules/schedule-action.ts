@@ -4,6 +4,7 @@ import { unstable_noStore as noStore, revalidatePath } from "next/cache";
 import { db } from "@/app/_lib/db";
 import { EditScheduleSchema, SchedulesSchema } from "@/app/_schemas/zod/schema";
 import { getErrorMessage } from "../action-utils";
+import { auth } from "@/auth";
 
 // async function filterAsyncArray(array: any, employeeId: string) {
 //   const filteredResults = await Promise.all(
@@ -34,6 +35,12 @@ export async function getSchedulesByUserIdAndProjectId({
   projectId: string;
 }) {
   noStore();
+
+  const session = await auth();
+
+  if (!session) return { error: "Unauthorized" };
+
+  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
   try {
     const schedules = await db.schedule.findMany({
@@ -67,6 +74,12 @@ export async function addMultipleScheduleByProject(
 ) {
   const parse = SchedulesSchema.safeParse(schedules);
 
+  const session = await auth();
+
+  if (!session) return { error: "Unauthorized" };
+
+  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
   if (!parse.success) return { error: "Parse error. Invalid data input!" };
 
   try {
@@ -89,6 +102,11 @@ export async function addMultipleScheduleByEmployeeId(
   employeeId: string,
   schedules: z.infer<typeof SchedulesSchema>
 ) {
+  const session = await auth();
+
+  if (!session) return { error: "Unauthorized" };
+
+  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
   const isExisting = await db.user.findUnique({ where: { id: employeeId } });
 
   if (!isExisting) return { error: "Employee does not exist." };
@@ -148,6 +166,12 @@ export async function addMultipleScheduleByEmployeeId(
 export async function getScheduleByEmployeeId(employeeId: string) {
   noStore();
 
+  const session = await auth();
+
+  if (!session) return { error: "Unauthorized" };
+
+  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
   const isExisting = await db.user.findUnique({ where: { id: employeeId } });
 
   if (!isExisting) return { error: "Employee does not exist." };
@@ -171,6 +195,12 @@ export async function getScheduleByEmployeeId(employeeId: string) {
 
 export async function getScheduleById(id: string) {
   noStore();
+
+  const session = await auth();
+
+  if (!session) return { error: "Unauthorized" };
+
+  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
   if (!id) return { error: "Missing ID" };
 
   try {
@@ -190,6 +220,12 @@ export async function getSchedulesByDate(
   endDate: Date
 ) {
   noStore();
+
+  const session = await auth();
+
+  if (!session) return { error: "Unauthorized" };
+
+  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
   try {
     const schedules = await db.schedule.findMany({
@@ -218,6 +254,11 @@ export async function editSchedule({
   scheduleId: string;
   data: z.infer<typeof EditScheduleSchema>;
 }) {
+  const session = await auth();
+
+  if (!session) return { error: "Unauthorized" };
+
+  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
   try {
     const schedule = await db.schedule.findUnique({
       where: { id: scheduleId },
@@ -259,6 +300,12 @@ export async function editSchedule({
 }
 
 export async function deleteSchedule(scheduleId: string) {
+  const session = await auth();
+
+  if (!session) return { error: "Unauthorized" };
+
+  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
   if (!scheduleId) return { error: "Missing schedule ID" };
   try {
     const schedule = await db.schedule.findUnique({
