@@ -1,12 +1,9 @@
 "use client";
 import { Stack, TextField } from "@mui/material";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import ProjectsSearchByProjectName from "./ProjectsSearchByProjectName";
-import ProjectsSearchByJobOrder from "./ProjectsSearchByJobOrder";
-import ProjectsSearchByLocation from "./ProjectsSearchByLocation";
 import { useDebouncedCallback } from "use-debounce";
 
-export default function ProjectsSearch() {
+export default function MySchedulesSearch() {
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   const pathname = usePathname();

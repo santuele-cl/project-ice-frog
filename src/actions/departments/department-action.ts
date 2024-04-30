@@ -91,8 +91,6 @@ export async function addDepartment({
   }
 }
 
-
-
 export async function deleteDepartment(departmentId: string) {
   if (!departmentId) return { error: "Department ID missing!" };
 

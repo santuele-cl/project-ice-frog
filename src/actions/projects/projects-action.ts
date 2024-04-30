@@ -141,6 +141,7 @@ export async function getProjects({
   location,
   date,
   isCompleted = false,
+  employeeId,
 }: {
   isCompleted?: boolean;
   page?: number;
@@ -148,12 +149,14 @@ export async function getProjects({
   jobOrder?: string;
   location?: string;
   date?: Date;
+  employeeId?: string;
 }) {
   noStore();
 
   try {
     const query = {
       where: {
+        ...(employeeId && { schedules: { some: { userId: employeeId } } }),
         ...(name && { name: { contains: name, mode: "insensitive" } }),
         ...(jobOrder && {
           jobOrder: { contains: jobOrder, mode: "insensitive" },

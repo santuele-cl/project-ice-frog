@@ -15,12 +15,12 @@ import { useRouter } from "next/navigation";
 const links = [
   {
     label: "Schedules",
-    path: "/dashboard/schedules",
+    path: "/dashboard/my-schedules/table",
     icon: () => <CalendarMonthIcon />,
   },
   {
     label: "Projects",
-    path: "/dashboard/projects",
+    path: "/dashboard/my-projects",
     icon: () => <AssignmentIcon />,
   },
 ];

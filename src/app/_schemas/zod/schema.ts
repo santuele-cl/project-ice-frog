@@ -14,7 +14,6 @@ export const DepartmentSchema = z.object({
 });
 
 export const RegisterSchema = z.object({
-  // PROFILE
   fname: z
     .string()
     .min(1, "First Name is required!")
@@ -35,9 +34,7 @@ export const RegisterSchema = z.object({
     .string()
     .min(1, "Occupation is required!")
     .regex(new RegExp(/^[a-zA-Z .]+$/), "Invalid input"),
-  // department: z.nativeEnum(Department),O
   department: z.string().min(1, "Department is required"),
-  // USER
   email: z.string().email("Email is required!"),
   password: z.string().min(1, "Password is required!"),
   confirmPassword: z.string().min(1, "Password is required!"),
@@ -230,14 +227,8 @@ export const EditProjectSchema = z
     path: ["endDate"],
   });
 
-// export const SchedulesSchema = z.object({
-//   projects: z.array(ScheduleSchema),
-// });
-
 export const AppointmentSchema = z.object({
   title: z.string().min(1, "Required field"),
-  // status: z.nativeEnum(AppointmentStatus),
-
   room: z.string().min(1, "Required field"),
   reason: z.string().min(1, "Required field"),
   startDate: z.coerce.date(),

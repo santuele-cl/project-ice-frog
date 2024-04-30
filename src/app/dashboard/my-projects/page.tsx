@@ -1,14 +1,12 @@
 import { Button, Divider, Paper, Box, Typography, Stack } from "@mui/material";
 import React, { FormEvent, Suspense } from "react";
 import Link from "next/link";
-import ProjectsTableHeader from "./_components/ProjectsTableHeader";
-import ProjectsTable from "./_components/ProjectsTable";
-import ProjectsTablePagination from "./_components/ProjectsTablePagination";
-import ProjectsSearch from "./_components/ProjectsSearch";
 import TableSkeleton from "@/app/_ui/TableSkeleton";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { auth } from "@/auth";
-import AdminProjectsTable from "./_components/AdminProjectsTable";
+import ProjectsSearch from "../projects/_components/ProjectsSearch";
+import ProjectSchedulesTableHeader from "../projects/[id]/_components/ProjectSchedulesTableHeader";
+import MyProjectsTable from "./_component/MyProjectsTable";
 
 export default async function page({
   searchParams: { jobOrder, page, name, location },
@@ -26,22 +24,15 @@ export default async function page({
   return (
     <Stack sx={{ gap: 2 }}>
       <Box>
-        <Typography variant="h5">List of Projects</Typography>
+        <Typography variant="h5">My Projects</Typography>
       </Box>
       <Paper elevation={1} sx={{ p: 2 }}>
-        <ProjectsTableHeader>
+        <ProjectSchedulesTableHeader>
           <ProjectsSearch />
-          <Button
-            LinkComponent={Link}
-            href="/dashboard/projects/add"
-            variant="contained"
-            startIcon={<AddOutlinedIcon />}
-          >
-            Add Project
-          </Button>
-        </ProjectsTableHeader>
+        </ProjectSchedulesTableHeader>
         <Divider sx={{ my: 1 }} />
-        <AdminProjectsTable
+        <MyProjectsTable
+          employeeId={session?.user.id!}
           name={name}
           page={Number(page)}
           location={location}
