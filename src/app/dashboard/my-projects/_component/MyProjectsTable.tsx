@@ -18,14 +18,12 @@ import Link from "next/link";
 import { getProjects } from "@/actions/projects/projects-action";
 import dayjs from "dayjs";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import BorderColorIcon from "@mui/icons-material/BorderColor";
-import ProjectDeleteModal from "./ProjectDeleteModal";
-import ProjectsTablePagination from "./ProjectsTablePagination";
 import { Fragment, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Project } from "@prisma/client";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import * as XLSX from "xlsx";
+import ProjectsTablePagination from "../../projects/_components/ProjectsTablePagination";
 
 type PaginationProps = {
   totalCount: number;
@@ -41,7 +39,7 @@ type Props = {
   jobOrder: string;
 };
 
-export default function ProjectsTable(props: Props) {
+export default function MyProjectsTable(props: Props) {
   const { name, page, location, jobOrder, employeeId } = props;
   const params = useSearchParams();
   const [data, setData] = useState<Project[]>([]);
@@ -113,7 +111,6 @@ export default function ProjectsTable(props: Props) {
               <TableCell align="left">Location</TableCell>
               <TableCell align="left">Start Date</TableCell>
               <TableCell align="left">End Date</TableCell>
-              <TableCell align="right">Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -127,8 +124,6 @@ export default function ProjectsTable(props: Props) {
                   street,
                   barangay,
                   city,
-                  createdAt,
-                  updatedAt,
                   startDate,
                   endDate,
                 } = project;
@@ -149,22 +144,6 @@ export default function ProjectsTable(props: Props) {
                     </TableCell>
                     <TableCell>
                       {dayjs(endDate).format("MMM DD, YYYY")}
-                    </TableCell>
-                    <TableCell align="center">
-                      <Stack
-                        spacing={2}
-                        direction="row-reverse"
-                        sx={{ width: "100%" }}
-                      >
-                        <Tooltip title="View Details">
-                          <IconButton
-                            component={Link}
-                            href={`/dashboard/projects/${id}`}
-                          >
-                            <VisibilityIcon fontSize="medium" />
-                          </IconButton>
-                        </Tooltip>
-                      </Stack>
                     </TableCell>
                   </TableRow>
                 );

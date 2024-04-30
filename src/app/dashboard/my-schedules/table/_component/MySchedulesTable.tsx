@@ -1,6 +1,5 @@
 "use client";
 import {
-  Box,
   Button,
   Divider,
   IconButton,
@@ -18,14 +17,13 @@ import Link from "next/link";
 import { getProjects } from "@/actions/projects/projects-action";
 import dayjs from "dayjs";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import BorderColorIcon from "@mui/icons-material/BorderColor";
-import ProjectDeleteModal from "./ProjectDeleteModal";
-import ProjectsTablePagination from "./ProjectsTablePagination";
 import { Fragment, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Project } from "@prisma/client";
+import { Prisma, Project } from "@prisma/client";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import * as XLSX from "xlsx";
+import TablePagination from "@/app/_ui/TablePagination";
+import { getSchedulesByUserIdGroupByProject } from "@/actions/schedules/schedule-action";
 
 type PaginationProps = {
   totalCount: number;
@@ -41,14 +39,19 @@ type Props = {
   jobOrder: string;
 };
 
-export default function ProjectsTable(props: Props) {
+type ScheduleWithProject = Prisma.ScheduleGetPayload<{
+  include: { project: true };
+}>;
+
+export default function MySchedulesTable(props: Props) {
   const { name, page, location, jobOrder, employeeId } = props;
   const params = useSearchParams();
-  const [data, setData] = useState<Project[]>([]);
+  const [data, setData] = useState<ScheduleWithProject[]>([]);
   const [pagination, setPagination] = useState<PaginationProps>();
 
+  console.log("data : ", data);
   const handleExport = async () => {
-    const projects = await getProjects({
+    const projects = await getSchedulesByUserIdGroupByProject({
       page: 0,
       ...(name && { name }),
       ...(location && { location }),
@@ -66,7 +69,7 @@ export default function ProjectsTable(props: Props) {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      const response = await getProjects({
+      const response = await getSchedulesByUserIdGroupByProject({
         employeeId,
         ...(name && { name }),
         ...(page && { page }),
@@ -74,6 +77,7 @@ export default function ProjectsTable(props: Props) {
         ...(jobOrder && { jobOrder }),
       });
       if (response.data && response.pagination) {
+        // @ts-expect-error
         setData(response.data);
         setPagination(response.pagination);
       }
@@ -83,10 +87,10 @@ export default function ProjectsTable(props: Props) {
 
   return (
     <Fragment>
-      <Stack
+      {/* <Stack
         sx={{ my: 1, flexDirection: "row", justifyContent: "space-between" }}
       >
-        <ProjectsTablePagination
+        <TablePagination
           pagination={
             pagination ?? { totalCount: 0, totalPages: 0, itemsPerPage: 0 }
           }
@@ -95,12 +99,12 @@ export default function ProjectsTable(props: Props) {
           startIcon={<FileDownloadIcon />}
           variant="outlined"
           color="success"
-          onClick={handleExport}
+          // onClick={handleExport}
         >
           Export
         </Button>
       </Stack>
-      <Divider sx={{ my: 1 }} />
+      <Divider sx={{ my: 1 }} /> */}
       <TableContainer sx={{ minHeight: "540px", position: "relative" }}>
         <Table
           sx={{ minWidth: 650, overflow: "auto" }}
@@ -108,30 +112,28 @@ export default function ProjectsTable(props: Props) {
         >
           <TableHead>
             <TableRow>
-              <TableCell align="left">Job Order</TableCell>
               <TableCell align="left">Project</TableCell>
               <TableCell align="left">Location</TableCell>
-              <TableCell align="left">Start Date</TableCell>
-              <TableCell align="left">End Date</TableCell>
-              <TableCell align="right">Action</TableCell>
+              <TableCell align="left" colSpan={2}>
+                Schedule
+              </TableCell>
+              {/* <TableCell align="right">Action</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
             {data && data.length ? (
-              data.map((project) => {
+              data.map((schedule) => {
                 const {
                   id,
-                  name,
-                  jobOrder,
-                  building,
-                  street,
-                  barangay,
-                  city,
+                  project,
                   createdAt,
                   updatedAt,
                   startDate,
                   endDate,
-                } = project;
+                } = schedule;
+
+                const { jobOrder, name, barangay, building, city, street } =
+                  project;
                 return (
                   <TableRow
                     key={id}
@@ -140,9 +142,11 @@ export default function ProjectsTable(props: Props) {
                     }}
                   >
                     <TableCell component="th" scope="row" align="left">
-                      {jobOrder}
+                      <Stack>
+                        <Typography>{jobOrder}</Typography>
+                        <Typography>{name}</Typography>
+                      </Stack>
                     </TableCell>
-                    <TableCell align="left">{name}</TableCell>
                     <TableCell align="left">{`${building} ${street} ${barangay}, ${city}`}</TableCell>
                     <TableCell>
                       {dayjs(startDate).format("MMM DD, YYYY")}
@@ -150,7 +154,7 @@ export default function ProjectsTable(props: Props) {
                     <TableCell>
                       {dayjs(endDate).format("MMM DD, YYYY")}
                     </TableCell>
-                    <TableCell align="center">
+                    {/* <TableCell align="center">
                       <Stack
                         spacing={2}
                         direction="row-reverse"
@@ -165,7 +169,7 @@ export default function ProjectsTable(props: Props) {
                           </IconButton>
                         </Tooltip>
                       </Stack>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 );
               })
@@ -198,7 +202,7 @@ export default function ProjectsTable(props: Props) {
       </TableContainer>
 
       <Divider sx={{ my: 1 }} />
-      <ProjectsTablePagination
+      <TablePagination
         pagination={
           pagination ?? { totalCount: 0, totalPages: 0, itemsPerPage: 0 }
         }

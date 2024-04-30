@@ -1,8 +1,6 @@
 "use client";
-import * as React from "react";
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
-import CssBaseline from "@mui/material/CssBaseline";
 import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
@@ -15,8 +13,10 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import {
   Avatar,
+  Breadcrumbs,
   Button,
   IconButton,
+  Link,
   Stack,
   Theme,
   styled,
@@ -30,6 +30,9 @@ import { useSession } from "next-auth/react";
 import { logout } from "@/actions/auth";
 import ExitToAppOutlinedIcon from "@mui/icons-material/ExitToAppOutlined";
 import Sidebar from "../_ui/sidebar/Sidebar";
+import NextLink from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const drawerWidth = 240;
 
@@ -86,7 +89,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   const session = useSession();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -96,6 +99,26 @@ export default function DashboardLayout({
     setOpen(false);
   };
 
+  const pathname = usePathname();
+  const [breadcrumbs, setBreadcrumbs] = useState<
+    {
+      breadcrumb: string;
+      href: string;
+    }[]
+  >([]);
+
+  useEffect(() => {
+    if (pathname) {
+      const segments = pathname.split("/").slice(2);
+      const pathArray = segments.map((path, i) => {
+        return {
+          breadcrumb: path,
+          href: "/dashboard/" + segments.slice(0, i + 1).join("/"),
+        };
+      });
+      setBreadcrumbs(pathArray);
+    }
+  }, [pathname]);
   console.log(session);
   return (
     <Box sx={{ display: "flex" }}>
@@ -188,7 +211,23 @@ export default function DashboardLayout({
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 2, overflowX: "auto" }}>
         <DrawerHeader />
-
+        <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 2 }}>
+          {breadcrumbs.map((item, i) => {
+            const { breadcrumb, href } = item;
+            return (
+              <Link
+                href={href}
+                key={href + i}
+                component={NextLink}
+                underline={href === pathname ? "always" : "hover"}
+                color={href === pathname ? "primary" : "common.black"}
+                sx={{ textTransform: "capitalize", fontSize: "1rem" }}
+              >
+                {breadcrumb}
+              </Link>
+            );
+          })}
+        </Breadcrumbs>
         {children}
       </Box>
     </Box>

@@ -2,7 +2,6 @@ import { Paper } from "@mui/material";
 import { Fragment, Suspense } from "react";
 import dayjs from "dayjs";
 import ScheduleTable from "./_components/ScheduleTable";
-import ScheduleTab from "./_components/ScheduleTab";
 
 export default function AppointmentPage({
   searchParams: { week = dayjs().week().toString() },

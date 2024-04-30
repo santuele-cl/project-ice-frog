@@ -1,4 +1,3 @@
-// import "react-big-calendar/lib/css/react-big-calendar.css";
 import type { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
@@ -9,8 +8,8 @@ import { CssBaseline } from "@mui/material";
 import { auth } from "@/auth";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import MuiXDateProvider from "@/providers/MuiXDateProvider";
-import SnackbarContextProvider from "@/providers/SnackbarProvider";
+import MuiXDateProvider from "@/app/_context/MuiXDateProvider";
+import SnackbarContextProvider from "@/app/_context/SnackbarProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
