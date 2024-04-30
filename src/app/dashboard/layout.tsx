@@ -33,6 +33,8 @@ import Sidebar from "../_ui/sidebar/Sidebar";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const drawerWidth = 240;
 
@@ -137,6 +139,11 @@ export default function DashboardLayout({
             edge="start"
             sx={{
               marginRight: 2,
+              color: "secondary.main",
+              "&:hover, &:active, &:focus": {
+                color: "secondary.main",
+                backgroundColor: "unset",
+              },
             }}
           >
             {open ? <MenuOpenOutlinedIcon /> : <MenuOutlinedIcon />}
@@ -185,7 +192,7 @@ export default function DashboardLayout({
         )}
         <Divider />
         <List>
-          {["Account Settings"].map((text, index) => (
+          {["Profile"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
               <ListItemButton
                 sx={{
@@ -201,7 +208,7 @@ export default function DashboardLayout({
                     justifyContent: "center",
                   }}
                 >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  <AccountCircleIcon />
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
