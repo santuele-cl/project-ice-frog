@@ -156,9 +156,9 @@ export default function DashboardLayout({
         <DrawerHeader />
         <Divider />
         {session.data?.user.role !== "ADMIN" ? (
-          <AdminSidebar open={open} />
-        ) : (
           <Sidebar open={open} />
+        ) : (
+          <AdminSidebar open={open} />
         )}
         <Divider />
         <List>
