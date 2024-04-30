@@ -11,6 +11,7 @@ import {
   ListItemText,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
+import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 
 const links = [
   {
@@ -33,6 +34,12 @@ const links = [
     // TODO: Create Tech, PID, and Customized departments
     path: "/dashboard/departments",
     icon: () => <DomainIcon />,
+  },
+  {
+    label: "Archive",
+    // TODO: Create Tech, PID, and Customized departments
+    path: "/dashboard/archived",
+    icon: () => <DeleteForeverOutlinedIcon />,
   },
 ];
 
