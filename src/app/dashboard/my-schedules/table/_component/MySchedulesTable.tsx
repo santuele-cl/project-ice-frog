@@ -49,7 +49,6 @@ export default function MySchedulesTable(props: Props) {
   const [data, setData] = useState<ScheduleWithProject[]>([]);
   const [pagination, setPagination] = useState<PaginationProps>();
 
-  console.log("data : ", data);
   const handleExport = async () => {
     const projects = await getSchedulesByUserIdGroupByProject({
       page: 0,
