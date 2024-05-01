@@ -72,7 +72,6 @@ export default function EmployeeTable(props: Props) {
     fetchEmployees();
   }, [props]);
 
-  console.log("data : ", data);
   return (
     <Fragment>
       <TableContainer sx={{ height: "690px" }}>

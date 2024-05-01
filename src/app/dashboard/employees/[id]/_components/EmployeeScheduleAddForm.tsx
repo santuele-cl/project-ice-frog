@@ -97,7 +97,7 @@ export default function EmployeeScheduleAddForm({
 
   useEffect(() => {
     async function fetchProjects() {
-      const res = await getProjects();
+      const res = await getProjects({ page: 0 });
       if (res?.data) setProjects(res.data);
     }
     fetchProjects();

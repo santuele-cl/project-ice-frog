@@ -21,7 +21,6 @@ export default async function page({
   };
 }) {
   const session = await auth();
-  console.log("sess : ", session);
 
   return (
     <Stack sx={{ gap: 2 }}>

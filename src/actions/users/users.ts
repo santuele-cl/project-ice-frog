@@ -32,10 +32,6 @@ export async function findUser({
   isArchived?: boolean;
 }) {
   noStore();
-  console.log("occupation : ", occupation);
-  console.log("name : ", name);
-  console.log("department : ", department);
-  console.log("page : ", page);
   try {
     const findUserQuery = {
       where: {

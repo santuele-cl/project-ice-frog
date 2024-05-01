@@ -37,8 +37,6 @@ export default async function DepartmentTable({
 
   const departments = response.data;
 
-  console.log("data ", response.data);
-
   return (
     <TableContainer sx={{ height: "690px" }}>
       <Table sx={{ minWidth: 650, overflow: "auto" }} aria-label="simple table">
