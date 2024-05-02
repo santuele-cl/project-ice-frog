@@ -11,15 +11,13 @@ import { auth } from "@/auth";
 const ITEMS_PER_PAGE = 15;
 
 export async function deleteProject(projectId: string) {
-  const session = await auth();
-
-  if (!session) return { error: "Unauthorized" };
-
-  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
-
-  if (!projectId) return { error: "Project ID missing!" };
-
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
+    if (!projectId) return { error: "Project ID missing!" };
+
     const existingProject = await db.project.findUnique({
       where: { id: projectId },
     });
@@ -44,14 +42,13 @@ export async function deleteProject(projectId: string) {
 }
 
 export async function restoreProject(projectId: string) {
-  const session = await auth();
-
-  if (!session) return { error: "Unauthorized" };
-
-  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
-  if (!projectId) return { error: "Project ID missing!" };
-
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
+    if (!projectId) return { error: "Project ID missing!" };
+
     const existingProject = await db.project.findUnique({
       where: { id: projectId },
     });
@@ -83,12 +80,11 @@ export async function editProject({
   projectId: string;
   data: z.infer<typeof EditProjectSchema>;
 }) {
-  const session = await auth();
-
-  if (!session) return { error: "Unauthorized" };
-
-  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
     if (!projectId || !data) return { error: "Missing data" };
 
     const existingProject = await db.project.findUnique({
@@ -127,19 +123,17 @@ export async function editProject({
 }
 
 export async function addProject(values: z.infer<typeof ProjectSchema>) {
-  const parse = ProjectSchema.safeParse(values);
-
-  const session = await auth();
-
-  if (!session) return { error: "Unauthorized" };
-
-  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
-
-  if (!parse.success) return { error: "Parse error. Invalid data input!" };
-
-  const { schedules, ...otherFields } = parse.data;
-
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
+    const parse = ProjectSchema.safeParse(values);
+
+    if (!parse.success) return { error: "Parse error. Invalid data input!" };
+
+    const { schedules, ...otherFields } = parse.data;
+
     const newProject = await db.project.create({
       data: {
         ...otherFields,
@@ -174,15 +168,13 @@ export async function getProjects({
   date?: Date;
   employeeId?: string;
 }) {
-  const session = await auth();
-
-  if (!session) return { error: "Unauthorized" };
-
-  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
-
   noStore();
 
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
     const query = {
       where: {
         ...(employeeId && { schedules: { some: { userId: employeeId } } }),
@@ -234,33 +226,32 @@ export async function getProjects({
 
 export async function getProjectScheduleGroupByUserId(projectId: string) {
   noStore();
+  try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
-  const session = await auth();
+    const projects = await db.schedule.groupBy({
+      by: ["userId"],
+      where: { projectId },
+    });
 
-  if (!session) return { error: "Unauthorized" };
+    if (!projects) return { error: "Database error. Fetch unsuccessful!" };
 
-  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
-
-  const projects = await db.schedule.groupBy({
-    by: ["userId"],
-    where: { projectId },
-  });
-
-  if (!projects) return { error: "Database error. Fetch unsuccessful!" };
-
-  return { success: "Success!", data: projects };
+    return { success: "Success!", data: projects };
+  } catch (error: unknown) {
+    return { error: getErrorMessage(error) };
+  }
 }
 
 export async function getProjectById(id: string) {
   noStore();
 
-  const session = await auth();
-
-  if (!session) return { error: "Unauthorized" };
-
-  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
-
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
     const project = await db.project.findUnique({
       where: { id },
     });
