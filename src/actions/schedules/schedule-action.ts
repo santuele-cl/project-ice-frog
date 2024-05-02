@@ -4,32 +4,8 @@ import { unstable_noStore as noStore, revalidatePath } from "next/cache";
 import { db } from "@/app/_lib/db";
 import { EditScheduleSchema, SchedulesSchema } from "@/app/_schemas/zod/schema";
 import { getErrorMessage } from "../action-utils";
-<<<<<<< HEAD
-=======
 import { Prisma } from "@prisma/client";
->>>>>>> dev
 import { auth } from "@/auth";
-
-// async function filterAsyncArray(array: any, employeeId: string) {
-//   const filteredResults = await Promise.all(
-//     array.map(async (schedule: any) => {
-//       const isEven = await db.schedule.findMany({
-//         where: {
-//           userId: employeeId,
-//           AND: [
-//             {
-//               startDate: { lt: schedule.endDate },
-//               endDate: { gt: schedule.startDate },
-//             },
-//           ],
-//         },
-//       });;
-//       return isEven ? schedule : null;
-//     })
-//   );
-
-//   return filteredResults.filter((result) => result !== null);
-// }
 
 const ITEMS_PER_PAGE = 1;
 
@@ -51,18 +27,16 @@ export async function getSchedulesByUserIdGroupByProject({
   employeeId?: string;
 }) {
   noStore();
-  const session = await auth();
-
-  if (!session) return { error: "Unauthorized" };
-
-  if (session.user.id !== employeeId && session.user.role !== "ADMIN")
-    return { error: "Unauthorized" };
-
-  if (!employeeId) return { error: "Missing ID" };
 
   try {
-    const isExisting = await db.user.findUnique({ where: { id: employeeId } });
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.id !== employeeId && session.user.role !== "ADMIN")
+      return { error: "Unauthorized" };
 
+    if (!employeeId) return { error: "Missing ID" };
+
+    const isExisting = await db.user.findUnique({ where: { id: employeeId } });
     if (!isExisting) return { error: "Employee does not exist." };
 
     const query = {
@@ -103,13 +77,11 @@ export async function getSchedulesByUserIdAndProjectId({
 }) {
   noStore();
 
-  const session = await auth();
-
-  if (!session) return { error: "Unauthorized" };
-
-  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
-
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
     const schedules = await db.schedule.findMany({
       where: { projectId, userId },
       orderBy: { startDate: "asc" },
@@ -139,17 +111,15 @@ export async function getSchedulesByUserIdAndProjectId({
 export async function addMultipleScheduleByProject(
   schedules: z.infer<typeof SchedulesSchema>
 ) {
-  const parse = SchedulesSchema.safeParse(schedules);
-
-  const session = await auth();
-
-  if (!session) return { error: "Unauthorized" };
-
-  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
-
-  if (!parse.success) return { error: "Parse error. Invalid data input!" };
-
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
+    const parse = SchedulesSchema.safeParse(schedules);
+
+    if (!parse.success) return { error: "Parse error. Invalid data input!" };
+
     const createdSchedules = await db.schedule.createMany({
       data: parse.data.schedules,
     });
@@ -232,21 +202,11 @@ export async function addMultipleScheduleByEmployeeId(
 
 export async function getScheduleByEmployeeId(employeeId: string) {
   noStore();
-<<<<<<< HEAD
-
-  const session = await auth();
-
-  if (!session) return { error: "Unauthorized" };
-
-  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
-
-  const isExisting = await db.user.findUnique({ where: { id: employeeId } });
-
-  if (!isExisting) return { error: "Employee does not exist." };
-
-=======
->>>>>>> dev
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
     const isExisting = await db.user.findUnique({ where: { id: employeeId } });
 
     if (!isExisting) return { error: "Employee does not exist." };
@@ -269,15 +229,13 @@ export async function getScheduleByEmployeeId(employeeId: string) {
 
 export async function getScheduleById(id: string) {
   noStore();
-
-  const session = await auth();
-
-  if (!session) return { error: "Unauthorized" };
-
-  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
-  if (!id) return { error: "Missing ID" };
-
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
+    if (!id) return { error: "Missing ID" };
+
     const existingSchedule = await db.schedule.findUnique({ where: { id } });
 
     if (!existingSchedule) return { error: "Schedule does not exist." };
@@ -295,13 +253,11 @@ export async function getSchedulesByDate(
 ) {
   noStore();
 
-  const session = await auth();
-
-  if (!session) return { error: "Unauthorized" };
-
-  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
-
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
     const schedules = await db.schedule.findMany({
       where: {
         userId: employeeId,
@@ -328,12 +284,11 @@ export async function editSchedule({
   scheduleId: string;
   data: z.infer<typeof EditScheduleSchema>;
 }) {
-  const session = await auth();
-
-  if (!session) return { error: "Unauthorized" };
-
-  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
     const schedule = await db.schedule.findUnique({
       where: { id: scheduleId },
     });
@@ -374,14 +329,13 @@ export async function editSchedule({
 }
 
 export async function deleteSchedule(scheduleId: string) {
-  const session = await auth();
-
-  if (!session) return { error: "Unauthorized" };
-
-  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
-
-  if (!scheduleId) return { error: "Missing schedule ID" };
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
+    if (!scheduleId) return { error: "Missing schedule ID" };
+
     const schedule = await db.schedule.findUnique({
       where: { id: scheduleId },
     });
