@@ -4,7 +4,21 @@
  * @type {string[]}
  */
 
-export const publicRoutes = ["/auth/new-verification"];
+import { Role } from "@prisma/client";
+
+type ERROR_ROUTES_TYPE = {
+  [index: string]: string;
+};
+
+export const ERROR_ROUTES: ERROR_ROUTES_TYPE = {
+  "not-found": "/error/not-found",
+  unauthorized: "/error/unauthorized",
+};
+
+export const PUBLIC_ROUTES = [
+  "/auth/new-verification",
+  ...Object.keys(ERROR_ROUTES).map((route) => ERROR_ROUTES[route]),
+];
 
 /**
  * An array of routes that are used for authentication
@@ -12,7 +26,7 @@ export const publicRoutes = ["/auth/new-verification"];
  * @type {string[]}
  */
 
-export const authRoutes = [
+export const AUTH_ROUTES = [
   "/",
   "/auth/login",
   "/auth/register",
@@ -26,18 +40,22 @@ export const authRoutes = [
  * Routes that start with this prefix are used for API authentication purposes
  * @type {string}
  */
-export const apiRoutePrefix = "/api/auth";
+export const API_ROUTE_PREFIX = "/api/auth";
 
 /**
  * The default redirect route after loggin in
  * @type {string}
  */
-export const DEFAULT_LOGIN_REDIRECT = "/dashboard/schedules";
+export const DEFAULT_LOGIN_REDIRECT = {
+  [Role.ADMIN]: "/dashboard/schedules",
+  [Role.EMPLOYEE]: "/dashboard/my-schedules/table",
+  [Role.SUPER_ADMIN]: "/dashboard/schedules",
+};
 
-// export const DEFAULT_EMPLOYEE_LOGIN_REDIRECT = "/dashboard/patients";
-// export const DEFAULT_PATIENT_LOGIN_REDIRECT = "/";
-
-// export const roleRoute = {
-//   EMPLOYEE: "/dashboard/patients",
-//   PATIENT: "/",
-// };
+export const ADMIN_ROUTES = [
+  "/dashboard/schedules",
+  "/dashboard/projects",
+  "/dashboard/employees",
+  "/dashboard/departments",
+  "/dashboard/archive",
+];
