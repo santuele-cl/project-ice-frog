@@ -9,6 +9,7 @@ import {
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import dayjs from "dayjs";
+import { auth } from "@/auth";
 
 export async function updateEmployeeDetails({
   employeeId,
@@ -18,6 +19,10 @@ export async function updateEmployeeDetails({
   values: z.infer<typeof EditEmployeeSchema>;
 }) {
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
     const user = await db.user.findUnique({ where: { id: employeeId } });
 
     if (!user) return { error: "Employee does not exist!" };
@@ -50,35 +55,36 @@ export async function updateEmployeeDetails({
 export async function createUserByAdminAcc(
   registerData: z.infer<typeof NewEmployeeSchema>
 ) {
-  if (!registerData) return { error: "Missing data" };
-
-  const validatedData = NewEmployeeSchema.safeParse(registerData);
-
-  if (!validatedData.success) return { error: "Data parse error" };
-
-  const {
-    email,
-    role,
-    password,
-    confirmPassword,
-    bdate,
-    departmentId,
-    ...profileData
-  } = validatedData.data;
-
-  const isEmailTaken = await db.user.findUnique({ where: { email } });
-
-  if (isEmailTaken) return { error: "Email already taken." };
-
-  const isValidDepartment = await db.department.findUnique({
-    where: { id: departmentId },
-  });
-
-  if (!isValidDepartment) return { error: "Invalid department" };
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
+    if (!registerData) return { error: "Missing data" };
+
+    const validatedData = NewEmployeeSchema.safeParse(registerData);
+    if (!validatedData.success) return { error: "Data parse error" };
+
+    const {
+      email,
+      role,
+      password,
+      confirmPassword,
+      bdate,
+      departmentId,
+      ...profileData
+    } = validatedData.data;
+
+    const isEmailTaken = await db.user.findUnique({ where: { email } });
+    if (isEmailTaken) return { error: "Email already taken." };
+
+    const isValidDepartment = await db.department.findUnique({
+      where: { id: departmentId },
+    });
+    if (!isValidDepartment) return { error: "Invalid department" };
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = await db.user.create({
       data: {
         email,
@@ -108,6 +114,10 @@ export async function getEmployeeIds() {
   noStore();
 
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
     const user = await db.user.findMany({
       where: { isArchived: false },
       select: {
@@ -126,8 +136,11 @@ export async function getEmployeeIds() {
 
 export async function getCompleteEmployeeDetailsById(id: string) {
   noStore();
-
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
     const user = await db.user.findUnique({
       where: { id, isArchived: false },
       include: {
@@ -145,8 +158,11 @@ export async function getCompleteEmployeeDetailsById(id: string) {
 }
 export async function getEmployeeById(id: string) {
   noStore();
-
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
     const user = await db.user.findUnique({
       where: { id, isArchived: false },
       select: {
@@ -171,23 +187,34 @@ export async function getEmployeeById(id: string) {
 
 export async function getEmployeesByDepartment() {
   noStore();
+  try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
-  const users = await db.user.findMany({
-    where: { isArchived: false },
-    include: { schedules: true, profile: true },
-  });
-  if (!users) {
-    const error = "Database error. Users fetch unsuccessful!";
-    console.log(error);
-    return { error };
+    const users = await db.user.findMany({
+      where: { isArchived: false },
+      include: { schedules: true, profile: true },
+    });
+    if (!users) {
+      const error = "Database error. Users fetch unsuccessful!";
+      console.log(error);
+      return { error };
+    }
+    return { success: "Users fetch successul!", data: users };
+  } catch (error: unknown) {
+    return { error: getErrorMessage(error) };
   }
-  return { success: "Users fetch successul!", data: users };
 }
 
 export async function EmployeeArchive(employeeId: string) {
-  if (!employeeId) return { error: "Employee ID missing!" };
-
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
+    if (!employeeId) return { error: "Employee ID missing!" };
+
     const existingEmployee = await db.user.findUnique({
       where: { id: employeeId },
     });
@@ -210,9 +237,13 @@ export async function EmployeeArchive(employeeId: string) {
 }
 
 export async function EmployeeRestore(employeeId: string) {
-  if (!employeeId) return { error: "Employee ID missing!" };
-
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
+    if (!employeeId) return { error: "Employee ID missing!" };
+
     const existingEmployee = await db.user.findUnique({
       where: { id: employeeId },
     });
@@ -235,9 +266,9 @@ export async function EmployeeRestore(employeeId: string) {
 }
 
 export async function EmployeeDelete(employeeId: string) {
-  if (!employeeId) return { error: "Employee ID missing!" };
-
   try {
+    if (!employeeId) return { error: "Employee ID missing!" };
+
     const existingEmployee = await db.user.findUnique({
       where: { id: employeeId, isArchived: true },
     });
