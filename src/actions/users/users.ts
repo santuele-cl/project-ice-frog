@@ -75,7 +75,7 @@ export async function findUser({
       },
       take: ITEMS_PER_PAGE,
       skip: (Number(page) - 1) * ITEMS_PER_PAGE,
-    } as Prisma.UserFindManyArgs;
+    } satisfies Prisma.UserFindManyArgs;
 
     const [users, count] = await db.$transaction([
       db.user.findMany(findUserQuery),
