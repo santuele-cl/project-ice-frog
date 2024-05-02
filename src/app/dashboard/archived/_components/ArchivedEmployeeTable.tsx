@@ -12,6 +12,7 @@ import {
 import ArchivedRestore from "./ArchivedRestore";
 import TablePagination from "@/app/_ui/TablePagination";
 import TableNoRecord from "@/app/_ui/TableNoRecord";
+import ArchivedEmployeeDelete from "./ArchivedEmployeeDelete";
 
 export default async function ArchivedEmployeeTable({
   email,
@@ -76,6 +77,7 @@ export default async function ArchivedEmployeeTable({
                         direction="row"
                         sx={{ width: "100%", justifyContent: "flex-end" }}
                       >
+                        <ArchivedEmployeeDelete id={id} />
                         <ArchivedRestore id={id} />
                       </Stack>
                     </TableCell>
