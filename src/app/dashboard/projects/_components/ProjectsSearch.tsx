@@ -6,7 +6,7 @@ import ProjectsSearchByJobOrder from "./ProjectsSearchByJobOrder";
 import ProjectsSearchByLocation from "./ProjectsSearchByLocation";
 import { useDebouncedCallback } from "use-debounce";
 
-export default function EmployeeSearch() {
+export default function ProjectsSearch() {
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   const pathname = usePathname();

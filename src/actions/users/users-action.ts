@@ -126,6 +126,7 @@ export async function getEmployeeIds() {
 
   try {
     const user = await db.user.findMany({
+      where: { isArchived: false },
       select: {
         id: true,
         profile: { select: { fname: true, lname: true } },
@@ -151,7 +152,7 @@ export async function getCompleteEmployeeDetailsById(id: string) {
 
   try {
     const user = await db.user.findUnique({
-      where: { id },
+      where: { id, isArchived: false },
       include: {
         profile: { include: { department: true } },
         schedules: { include: { project: true } },
@@ -176,7 +177,7 @@ export async function getEmployeeById(id: string) {
 
   try {
     const user = await db.user.findUnique({
-      where: { id },
+      where: { id, isArchived: false },
       select: {
         id: true,
         role: true,
@@ -206,6 +207,7 @@ export async function getEmployeesByDepartment() {
   if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
   const users = await db.user.findMany({
+    where: { isArchived: false },
     include: { schedules: true, profile: true },
   });
   if (!users) {
@@ -271,6 +273,33 @@ export async function EmployeeRestore(employeeId: string) {
     revalidatePath("/dashboard/archived");
 
     return { success: "Data archived successfully!", data: { id: archive.id } };
+  } catch (error) {
+    return { error: getErrorMessage(error) };
+  }
+}
+
+export async function EmployeeDelete(employeeId: string) {
+  if (!employeeId) return { error: "Employee ID missing!" };
+
+  try {
+    const existingEmployee = await db.user.findUnique({
+      where: { id: employeeId, isArchived: true },
+    });
+
+    if (!existingEmployee) return { error: "Employee does not exist!" };
+
+    const deletedUser = await db.user.delete({
+      where: { id: employeeId },
+    });
+    if (!deletedUser) return { error: "Something went wrong" };
+
+    revalidatePath("/dashboard/employees");
+    revalidatePath("/dashboard/archived");
+
+    return {
+      success: "Deleted successfully!",
+      data: { id: deletedUser.id },
+    };
   } catch (error) {
     return { error: getErrorMessage(error) };
   }

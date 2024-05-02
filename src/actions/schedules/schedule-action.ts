@@ -4,6 +4,10 @@ import { unstable_noStore as noStore, revalidatePath } from "next/cache";
 import { db } from "@/app/_lib/db";
 import { EditScheduleSchema, SchedulesSchema } from "@/app/_schemas/zod/schema";
 import { getErrorMessage } from "../action-utils";
+<<<<<<< HEAD
+=======
+import { Prisma } from "@prisma/client";
+>>>>>>> dev
 import { auth } from "@/auth";
 
 // async function filterAsyncArray(array: any, employeeId: string) {
@@ -26,6 +30,69 @@ import { auth } from "@/auth";
 
 //   return filteredResults.filter((result) => result !== null);
 // }
+
+const ITEMS_PER_PAGE = 1;
+
+export async function getSchedulesByUserIdGroupByProject({
+  page = 1,
+  name,
+  jobOrder,
+  location,
+  date,
+  isCompleted = false,
+  employeeId,
+}: {
+  isCompleted?: boolean;
+  page?: number;
+  name?: string;
+  jobOrder?: string;
+  location?: string;
+  date?: Date;
+  employeeId?: string;
+}) {
+  noStore();
+  const session = await auth();
+
+  if (!session) return { error: "Unauthorized" };
+
+  if (session.user.id !== employeeId && session.user.role !== "ADMIN")
+    return { error: "Unauthorized" };
+
+  if (!employeeId) return { error: "Missing ID" };
+
+  try {
+    const isExisting = await db.user.findUnique({ where: { id: employeeId } });
+
+    if (!isExisting) return { error: "Employee does not exist." };
+
+    const query = {
+      where: {
+        userId: employeeId,
+      },
+      include: { project: true },
+      orderBy: { project: { startDate: "desc" } },
+      ...(page !== 0 && { take: ITEMS_PER_PAGE }),
+      ...(page !== 0 && { skip: (Number(page) - 1) * ITEMS_PER_PAGE }),
+    } as Prisma.ScheduleFindManyArgs;
+
+    const [schedules, count] = await db.$transaction([
+      db.schedule.findMany(query),
+      db.schedule.count({ where: query.where }),
+    ]);
+
+    return {
+      success: "Success",
+      data: schedules,
+      pagination: {
+        totalCount: count,
+        itemsPerPage: ITEMS_PER_PAGE,
+        totalPages: Math.ceil(count / ITEMS_PER_PAGE),
+      },
+    };
+  } catch (error: unknown) {
+    return { error: getErrorMessage(error) };
+  }
+}
 
 export async function getSchedulesByUserIdAndProjectId({
   userId,
@@ -165,6 +232,7 @@ export async function addMultipleScheduleByEmployeeId(
 
 export async function getScheduleByEmployeeId(employeeId: string) {
   noStore();
+<<<<<<< HEAD
 
   const session = await auth();
 
@@ -176,7 +244,13 @@ export async function getScheduleByEmployeeId(employeeId: string) {
 
   if (!isExisting) return { error: "Employee does not exist." };
 
+=======
+>>>>>>> dev
   try {
+    const isExisting = await db.user.findUnique({ where: { id: employeeId } });
+
+    if (!isExisting) return { error: "Employee does not exist." };
+
     const schedules = await db.schedule.findMany({
       where: {
         userId: employeeId,

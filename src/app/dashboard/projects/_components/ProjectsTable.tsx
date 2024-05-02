@@ -34,6 +34,7 @@ type PaginationProps = {
 };
 
 type Props = {
+  employeeId: string;
   name: string;
   page: number;
   location: string;
@@ -41,7 +42,7 @@ type Props = {
 };
 
 export default function ProjectsTable(props: Props) {
-  const { name, page, location, jobOrder } = props;
+  const { name, page, location, jobOrder, employeeId } = props;
   const params = useSearchParams();
   const [data, setData] = useState<Project[]>([]);
   const [pagination, setPagination] = useState<PaginationProps>();
@@ -66,6 +67,7 @@ export default function ProjectsTable(props: Props) {
   useEffect(() => {
     const fetchProjects = async () => {
       const response = await getProjects({
+        employeeId,
         ...(name && { name }),
         ...(page && { page }),
         ...(location && { location }),
@@ -160,16 +162,6 @@ export default function ProjectsTable(props: Props) {
                             href={`/dashboard/projects/${id}`}
                           >
                             <VisibilityIcon fontSize="medium" />
-                          </IconButton>
-                        </Tooltip>
-                        <ProjectDeleteModal id={id} />
-
-                        <Tooltip title="Edit Details">
-                          <IconButton
-                            component={Link}
-                            href={`/dashboard/projects/${id}/edit`}
-                          >
-                            <BorderColorIcon fontSize="medium" />
                           </IconButton>
                         </Tooltip>
                       </Stack>

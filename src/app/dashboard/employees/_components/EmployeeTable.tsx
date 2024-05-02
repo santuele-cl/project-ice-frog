@@ -64,7 +64,6 @@ export default function EmployeeTable(props: Props) {
         ...(department && { department }),
       });
       if (response.data && response.pagination) {
-        // @ts-expect-error
         setData(response.data);
         setPagination(response.pagination);
       }
@@ -72,7 +71,6 @@ export default function EmployeeTable(props: Props) {
     fetchEmployees();
   }, [props]);
 
-  console.log("data : ", data);
   return (
     <Fragment>
       <TableContainer sx={{ height: "690px" }}>

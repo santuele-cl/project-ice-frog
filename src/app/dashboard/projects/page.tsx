@@ -7,6 +7,8 @@ import ProjectsTablePagination from "./_components/ProjectsTablePagination";
 import ProjectsSearch from "./_components/ProjectsSearch";
 import TableSkeleton from "@/app/_ui/TableSkeleton";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import { auth } from "@/auth";
+import AdminProjectsTable from "./_components/AdminProjectsTable";
 
 export default async function page({
   searchParams: { jobOrder, page, name, location },
@@ -18,6 +20,8 @@ export default async function page({
     location: string;
   };
 }) {
+  const session = await auth();
+
   return (
     <Stack sx={{ gap: 2 }}>
       <Box>
@@ -36,7 +40,7 @@ export default async function page({
           </Button>
         </ProjectsTableHeader>
         <Divider sx={{ my: 1 }} />
-        <ProjectsTable
+        <AdminProjectsTable
           name={name}
           page={Number(page)}
           location={location}
