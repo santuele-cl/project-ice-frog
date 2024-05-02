@@ -3,7 +3,7 @@ import { Stack, TextField } from "@mui/material";
 import { useDebouncedCallback } from "use-debounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { LoadingButton } from "@mui/lab";
-import EmployeeDepartmentSelect from "./ArchivedEmployeeDepartmentSelect";
+// import EmployeeDepartmentSelect from "./ArchivedEmployeeDepartmentSelect";
 import EmployeeSearchByEmail from "./ArchivedEmployeeSearchByEmail";
 
 export default function ArchivedEmployeeSearch() {
@@ -31,7 +31,7 @@ export default function ArchivedEmployeeSearch() {
         // justifyContent: "center",
       }}
     >
-      <EmployeeDepartmentSelect />
+      {/* <EmployeeDepartmentSelect /> */}
       <EmployeeSearchByEmail />
       {/* <FormControl sx={{ width: 300 }}>
         <InputLabel id="department-label">Department</InputLabel>

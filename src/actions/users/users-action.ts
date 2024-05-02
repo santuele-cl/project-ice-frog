@@ -178,7 +178,6 @@ export async function getEmployeesByDepartment() {
   });
   if (!users) {
     const error = "Database error. Users fetch unsuccessful!";
-    console.log(error);
     return { error };
   }
   return { success: "Users fetch successul!", data: users };

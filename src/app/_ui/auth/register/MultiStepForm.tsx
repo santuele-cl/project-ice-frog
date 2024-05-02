@@ -65,10 +65,7 @@ const MultiStepForm = () => {
   };
 
   const onSubmit = async (values: any) => {
-    console.log(values);
     const validatedFields = RegisterSchema.safeParse(values);
-    // console.log(val);
-    // console.log("data", data);
     setError("");
     setSuccess("");
 
@@ -87,8 +84,6 @@ const MultiStepForm = () => {
     }
   };
 
-  console.log("errors", errors);
-  // console.log(getValues());
   return (
     <Paper
       elevation={3}

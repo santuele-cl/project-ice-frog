@@ -16,7 +16,6 @@ export default function DepartmentSelect({
 }: DepartmentSelectProps) {
   const [departments, setDepartments] = useState<Department[]>([]);
 
-  console.log("dept", departments);
   useEffect(() => {
     async function fetchDepartments() {
       const res = await getDepartments();

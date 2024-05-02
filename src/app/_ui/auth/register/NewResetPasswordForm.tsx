@@ -13,14 +13,14 @@ import {
   Typography,
 } from "@mui/material";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import LockIcon from '@mui/icons-material/Lock';
+import LockIcon from "@mui/icons-material/Lock";
 import { resetPassword, updatePassword } from "@/actions/auth";
 import {
   NewPasswordSchema,
   ResetPasswordSchema,
 } from "@/app/_schemas/zod/schema";
 import { useRouter, useSearchParams } from "next/navigation";
-import Logo from "../../dashboard/Logo";
+import Logo from "../../Logo";
 import FormStatusText from "../FormStatusText";
 
 const NewResetPasswordForm = () => {
@@ -50,8 +50,8 @@ const NewResetPasswordForm = () => {
     setPending(false);
   };
   return (
-    <Container sx={{ width: 550}}>
-      <Paper sx={{ p: 4, borderRadius: "8px", height: "450px"}}>
+    <Container sx={{ width: 550 }}>
+      <Paper sx={{ p: 4, borderRadius: "8px", height: "450px" }}>
         <Stack spacing={3}>
           {/* HEADER */}
           <Stack spacing={3} paddingBottom={4}>
@@ -67,7 +67,7 @@ const NewResetPasswordForm = () => {
               >
                 <Logo size={45} />
               </Link> */}
-              <LockIcon sx={{ fontSize: 60,  color: "common.black"}}></LockIcon>
+              <LockIcon sx={{ fontSize: 60, color: "common.black" }}></LockIcon>
               {/* <Typography
                 component={Link}
                 href="/"
@@ -80,8 +80,10 @@ const NewResetPasswordForm = () => {
                 Synx
               </Typography> */}
             </Stack>
-            <Stack sx={{ alignItems: "center", pt: 0}}>
-              <Typography variant="h4" fontWeight={600}>Password Recovery</Typography>
+            <Stack sx={{ alignItems: "center", pt: 0 }}>
+              <Typography variant="h4" fontWeight={600}>
+                Password Recovery
+              </Typography>
               <Typography variant="subtitle1">
                 Please input your registerd email
               </Typography>
@@ -103,10 +105,20 @@ const NewResetPasswordForm = () => {
               placeholder="example@email.com"
             />
 
-            <Button type="submit" variant="contained" disabled={pending}  sx={{ p: 2 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={pending}
+              sx={{ p: 2 }}
+            >
               Continue
             </Button>
-            <Stack direction="row" justifyContent="center" paddingBottom={4} fontSize={15}>
+            <Stack
+              direction="row"
+              justifyContent="center"
+              paddingBottom={4}
+              fontSize={15}
+            >
               <Link href="/auth/login">Login</Link>
             </Stack>
           </Stack>

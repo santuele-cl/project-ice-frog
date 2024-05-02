@@ -182,10 +182,8 @@ export const SchedulesSchema = z.object({
             return false;
           }
         });
-        console.log("is overlapping: ", isOverlapping);
         return isOverlapping;
       });
-      console.log("status: ", overlaps, !overlaps.length);
       return !overlaps.length;
     },
     { message: "Schedule overlaps" }

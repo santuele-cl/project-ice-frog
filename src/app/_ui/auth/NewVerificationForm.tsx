@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import FormStatusText from "./FormStatusText";
 import { Button, Container, Paper, Stack, Typography } from "@mui/material";
 import Link from "next/link";
-import Logo from "../dashboard/Logo";
+import Logo from "../Logo";
 
 const NewVerificationForm = () => {
   const searchParams = useSearchParams();

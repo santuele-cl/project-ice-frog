@@ -70,11 +70,7 @@ export default function ProjectAddForm({
     name: "schedules",
   });
 
-  console.log("project add form errors : ", errors);
-
   const onSubmit = async (data: z.infer<typeof ProjectSchema>) => {
-    console.log("project add data", data);
-
     setPending(true);
     setError("");
     setSuccess("");

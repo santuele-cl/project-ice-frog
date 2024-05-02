@@ -70,7 +70,7 @@ export async function getSchedulesByUserIdGroupByProject({
       orderBy: { project: { startDate: "desc" } },
       ...(page !== 0 && { take: ITEMS_PER_PAGE }),
       ...(page !== 0 && { skip: (Number(page) - 1) * ITEMS_PER_PAGE }),
-    } as Prisma.ScheduleFindManyArgs;
+    } satisfies Prisma.ScheduleFindManyArgs;
 
     const [schedules, count] = await db.$transaction([
       db.schedule.findMany(query),
@@ -179,7 +179,6 @@ export async function addMultipleScheduleByEmployeeId(
     })
   )
     .then((results) => {
-      console.log("results", results);
       return results;
     })
     .catch((e) => console.log(e));
@@ -188,7 +187,6 @@ export async function addMultipleScheduleByEmployeeId(
     overlap &&
     !!overlap.length &&
     overlap.some((item) => {
-      console.log("item is true: ", !!true);
       return !!item;
     })
   )

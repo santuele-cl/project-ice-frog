@@ -34,7 +34,7 @@ export default async function ArchivedEmployeeTable({
 
   return (
     <Stack>
-      <TableContainer sx={{ height: "690px" }}>
+      <TableContainer sx={{ minHeight: "690px", position: "relative" }}>
         <Table
           sx={{ minWidth: 650, overflow: "auto" }}
           aria-label="simple table"
@@ -46,7 +46,7 @@ export default async function ArchivedEmployeeTable({
               <TableCell align="left">Email</TableCell>
               <TableCell align="left">Department</TableCell>
               <TableCell align="left">Status</TableCell>
-              <TableCell align="right">Details</TableCell>
+              <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

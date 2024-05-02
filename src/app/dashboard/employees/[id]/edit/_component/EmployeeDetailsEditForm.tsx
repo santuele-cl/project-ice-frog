@@ -20,7 +20,7 @@ import {
 import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
 import { getErrorMessage } from "@/actions/action-utils";
 import { enqueueSnackbar } from "notistack";
-import DepartmentSelect from "../../../_components/DepartmentSelect";
+import DepartmentSelect from "../../../../../_ui/DepartmentSelect";
 import { useRouter } from "next/navigation";
 
 type OptionType = { value: string; label: string };
@@ -87,7 +87,6 @@ export default function EmployeeDetailsEditForm({
 }: {
   user: UserWithOtherDetails;
 }) {
-  console.log("user : ", user);
   const profile = user.profile;
   const router = useRouter();
   const [pending, setPending] = useState(false);
@@ -133,7 +132,6 @@ export default function EmployeeDetailsEditForm({
         enqueueSnackbar(res.success, { variant: "success" });
       }
     } catch (error) {
-      console.log(error);
       enqueueSnackbar(getErrorMessage(error), { variant: "error" });
     }
     setPending(false);

@@ -38,13 +38,11 @@ export default function DepartmentAddForm({
   });
 
   const onSubmit = async (data: z.infer<typeof DepartmentSchema>) => {
-    console.log(data);
     setPending(true);
     setError("");
     setSuccess("");
     try {
       const res = await addDepartment({ data });
-      console.log("res", res);
       if (res?.error) {
         reset();
         setError(res.error);

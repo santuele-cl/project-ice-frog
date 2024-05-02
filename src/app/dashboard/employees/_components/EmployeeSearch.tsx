@@ -1,11 +1,9 @@
 "use client";
-import { Stack, TextField } from "@mui/material";
-import { useDebouncedCallback } from "use-debounce";
+import { Stack } from "@mui/material";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { LoadingButton } from "@mui/lab";
-import EmployeeDepartmentSelect from "./EmployeeDepartmentSelect";
 import EmployeeSearchByName from "./EmployeeSearchByName";
 import EmployeeSearchByOccupation from "./EmployeeSearchByOccupation";
+import DepartmentSelectSearch from "../../../_ui/DepartmentSelectSearch";
 
 export default function EmployeeSearch() {
   const searchParams = useSearchParams();
@@ -13,14 +11,8 @@ export default function EmployeeSearch() {
   const pathname = usePathname();
 
   return (
-    <Stack
-      direction="row"
-      spacing={1}
-      sx={{
-        alignItems: "center",
-      }}
-    >
-      <EmployeeDepartmentSelect />
+    <Stack direction="row" spacing={1} sx={{}}>
+      <DepartmentSelectSearch />
       <EmployeeSearchByName />
       <EmployeeSearchByOccupation />
     </Stack>

@@ -13,7 +13,7 @@ const FormStatusText = ({ message, status }: FormStatusTextType) => {
       borderRadius={2}
     >
       <Typography color={status === "error" ? "error.dark" : "success.dark"}>
-        {message}
+        {`${message}`}
       </Typography>
     </Box>
   );
