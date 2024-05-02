@@ -20,7 +20,6 @@ import { login } from "@/actions/auth";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Logo from "../Logo";
-import { getErrorMessage } from "@/actions/action-utils";
 
 const LoginForm = () => {
   const searchParams = useSearchParams();
@@ -57,7 +56,8 @@ const LoginForm = () => {
 
       if (res.twoFactor) setShowTwoFactorInput(true);
     } catch (error) {
-      setError(getErrorMessage(error));
+      console.log(error);
+      // setError(JSON.stringify(error));
     }
 
     setPending(false);
