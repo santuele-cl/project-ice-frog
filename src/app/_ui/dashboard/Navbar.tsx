@@ -24,7 +24,7 @@ import { Dispatch, SetStateAction } from "react";
 
 // import Logo from "../common/Logo";
 import Link from "next/link";
-import Logo from "./Logo";
+import Logo from "../Logo";
 import useCurrentUser from "@/app/_hooks/useCurrentUser";
 import { logout } from "@/actions/auth";
 

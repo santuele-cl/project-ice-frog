@@ -47,7 +47,6 @@ export default function AddProjectSchedulesForm({
   setShow: Dispatch<SetStateAction<boolean>>;
 }) {
   const params = useParams();
-  console.log("params", params);
   const [pending, setPending] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -77,8 +76,6 @@ export default function AddProjectSchedulesForm({
     control,
     name: "schedules",
   });
-
-  console.log("form erros : ", errors);
 
   const onSubmit = async (data: z.infer<typeof SchedulesSchema>) => {
     // console.log("data", data);

@@ -19,7 +19,7 @@ import { LoginSchema } from "../../_schemas/zod/schema";
 import { login } from "@/actions/auth";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import Logo from "../dashboard/Logo";
+import Logo from "../Logo";
 
 const LoginForm = () => {
   const searchParams = useSearchParams();
@@ -47,11 +47,7 @@ const LoginForm = () => {
 
     try {
       const res = await login(data, callbackUrl);
-      // console.log("res", res);
-
-      if (res?.error) {
-        setError(res.error);
-      }
+      if (res?.error) setError(res.error);
 
       if (res?.success) {
         reset();
@@ -61,14 +57,15 @@ const LoginForm = () => {
       if (res.twoFactor) setShowTwoFactorInput(true);
     } catch (error) {
       console.log(error);
+      // setError(JSON.stringify(error));
     }
 
     setPending(false);
   };
 
   return (
-    <Container sx={{ width: 550}}>
-      <Paper sx={{ p: 4, borderRadius: "8px", height: "600px"}}>
+    <Container sx={{ width: 550 }}>
+      <Paper sx={{ p: 4, borderRadius: "8px", height: "600px" }}>
         <Stack spacing={3}>
           {/* HEADER */}
           <Stack spacing={3} paddingBottom={4}>
@@ -81,9 +78,8 @@ const LoginForm = () => {
               <Link
                 href="/"
                 style={{ lineHeight: 0, transition: "all 2s ease" }}
-               
               >
-                <Logo size={50}/>
+                <Logo size={50} />
               </Link>
               {/* <Typography
                 component={Link}
@@ -98,9 +94,7 @@ const LoginForm = () => {
               </Typography>*/}
             </Stack>
             <Stack sx={{ textAlign: "center" }}>
-              <Typography 
-                variant="h4"
-                fontWeight={800}>
+              <Typography variant="h4" fontWeight={800}>
                 Welcome to Synx!
               </Typography>
               <Typography variant="subtitle1">

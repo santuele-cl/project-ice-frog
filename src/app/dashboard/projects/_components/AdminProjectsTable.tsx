@@ -26,6 +26,7 @@ import { useSearchParams } from "next/navigation";
 import { Project } from "@prisma/client";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import * as XLSX from "xlsx";
+import TableNoRecord from "@/app/_ui/TableNoRecord";
 
 type PaginationProps = {
   totalCount: number;
@@ -99,7 +100,7 @@ export default function AdminProjectsTable(props: Props) {
         </Button>
       </Stack>
       <Divider sx={{ my: 1 }} />
-      <TableContainer sx={{ minHeight: "540px", position: "relative" }}>
+      <TableContainer sx={{ minHeight: "690px", position: "relative" }}>
         <Table
           sx={{ minWidth: 650, overflow: "auto" }}
           aria-label="simple table"
@@ -178,28 +179,7 @@ export default function AdminProjectsTable(props: Props) {
                 );
               })
             ) : (
-              <TableRow sx={{ height: "100%" }}>
-                <TableCell
-                  colSpan={8}
-                  sx={{
-                    height: "100%",
-                    border: "none",
-                  }}
-                >
-                  <Typography
-                    variant="h5"
-                    color="#9FA6B2"
-                    sx={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                    }}
-                  >
-                    NO RECORD(S)
-                  </Typography>
-                </TableCell>
-              </TableRow>
+              <TableNoRecord />
             )}
           </TableBody>
         </Table>

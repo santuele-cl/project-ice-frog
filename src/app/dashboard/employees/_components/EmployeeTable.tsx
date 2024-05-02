@@ -20,6 +20,7 @@ import { Fragment, useEffect, useState } from "react";
 import { Prisma } from "@prisma/client";
 import EmployeeTablePagination from "./EmployeeTablePagination";
 import { useParams, useSearchParams } from "next/navigation";
+import TableNoRecord from "@/app/_ui/TableNoRecord";
 
 type UserWithDetails = Prisma.UserGetPayload<{
   include: {
@@ -73,7 +74,7 @@ export default function EmployeeTable(props: Props) {
 
   return (
     <Fragment>
-      <TableContainer sx={{ height: "690px" }}>
+      <TableContainer sx={{ minHeight: "690px", position: "relative" }}>
         <Table
           sx={{ minWidth: 650, overflow: "auto" }}
           aria-label="simple table"
@@ -143,20 +144,7 @@ export default function EmployeeTable(props: Props) {
                 );
               })
             ) : (
-              <TableRow
-                sx={{
-                  "&:last-child td, &:last-child th": { border: 0 },
-                }}
-              >
-                <TableCell component="th" scope="row">
-                  -
-                </TableCell>
-                <TableCell align="left">-</TableCell>
-                <TableCell align="left">-</TableCell>
-                <TableCell align="left">-</TableCell>
-                <TableCell align="left">-</TableCell>
-                <TableCell align="left">-</TableCell>
-              </TableRow>
+              <TableNoRecord />
             )}
           </TableBody>
         </Table>

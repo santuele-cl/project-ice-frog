@@ -2,7 +2,7 @@ import { Drawer, Grow, ListItem, Stack, Typography } from "@mui/material";
 import Sidebar from "./Sidebar";
 import { Dispatch, SetStateAction } from "react";
 import Link from "next/link";
-import Logo from "./Logo";
+import Logo from "../Logo";
 
 export default function TemporaryDrawer({
   showTemporarySidebar,

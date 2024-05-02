@@ -14,7 +14,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { createUserByAdminAcc } from "@/actions/users/users-action";
 import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
-import DepartmentSelect from "./DepartmentSelect";
+import DepartmentSelect from "../../../_ui/DepartmentSelect";
 import { getErrorMessage } from "@/actions/action-utils";
 import { enqueueSnackbar } from "notistack";
 
@@ -99,13 +99,11 @@ export default function EmployeeAddForm() {
         enqueueSnackbar(res.success, { variant: "success" });
       }
     } catch (error) {
-      console.log(error);
       enqueueSnackbar(getErrorMessage(error), { variant: "error" });
     }
     setPending(false);
   };
 
-  console.log("errors", errors);
   return (
     <Stack
       component="form"

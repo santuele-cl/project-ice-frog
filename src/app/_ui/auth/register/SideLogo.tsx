@@ -1,6 +1,6 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import Link from "next/link";
-import Logo from "../../dashboard/Logo";
+import Logo from "../../Logo";
 import { FaAlignJustify } from "react-icons/fa";
 
 const SideLogo = () => {

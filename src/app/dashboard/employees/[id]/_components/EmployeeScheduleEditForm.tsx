@@ -33,7 +33,6 @@ export default function EmployeeScheduleEditForm({
   schedule: Schedule;
   setShow: Dispatch<SetStateAction<boolean>>;
 }) {
-  console.log("edit sched", schedule);
   const { endDate, startDate, projectId, userId, id } = schedule;
   const params = useParams();
   const [pending, setPending] = useState(false);
@@ -57,10 +56,7 @@ export default function EmployeeScheduleEditForm({
     },
   });
 
-  console.log("form erros : ", errors);
-
   const onSubmit = async (data: z.infer<typeof EditScheduleSchema>) => {
-    // console.log(data);
     setPending(true);
     setError("");
     setSuccess("");

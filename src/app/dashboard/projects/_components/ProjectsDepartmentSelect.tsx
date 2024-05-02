@@ -19,8 +19,6 @@ export default function EmployeeDepartmentSelect() {
     replace(`${pathname}?${params.toString()}`);
   };
 
-  console.log(searchParams.get("department")?.split(","));
-
   useEffect(() => {
     async function fetchDepartments() {
       const res = await getDepartments();
@@ -42,10 +40,7 @@ export default function EmployeeDepartmentSelect() {
           ? searchParams.get("department")?.split(",") ?? []
           : []
       }
-      // defaultValue={searchParams.get("department")?.split(",") ?? undefined}
       onChange={(e, value) => {
-        console.log("new value : ", value);
-        console.log("string value : ", value.toString());
         hanldeDepartmentChange(value);
       }}
       renderOption={(props, option) => {
