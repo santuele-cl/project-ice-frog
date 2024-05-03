@@ -51,7 +51,7 @@ export default function ArchivedEmployeeDelete({ id }: { id: string }) {
             component="h2"
             sx={{ display: "flex", justifyContent: "center" }}
           >
-            "Are you sure you want to restore this Employee?"
+            "Are you sure you want to delete this Employee?"
           </Typography>
           <Stack
             id="modal-modal-description"
@@ -75,7 +75,7 @@ export default function ArchivedEmployeeDelete({ id }: { id: string }) {
             </Button>
             <Stack sx={{ flex: "1" }}>
               <Stack component="form" action={EmployeeDeleteWithId}>
-                <Tooltip title="Restore">
+                <Tooltip title="Delete">
                   <Button
                     type="submit"
                     sx={{

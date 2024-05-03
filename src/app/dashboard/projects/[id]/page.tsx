@@ -46,7 +46,6 @@ export default async function ProjectId({
           employeeIds={employeeIds.data}
           projectId={id}
         />
-        <AddProjectSchedulesFormModal />
       </Paper>
     </Stack>
   );

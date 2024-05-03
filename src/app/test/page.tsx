@@ -19,27 +19,35 @@ export default function Test() {
   const [state, setState] = useState();
 
   const handleLogin = async () => {
-    const response = await fetch("http://115.85.30.212:8383/api/method/login", {
-      method: "POST",
-      body: JSON.stringify({ usr: "tope@gmail.com", pwd: "comfac123" }),
-    });
-    const parsedResponse = await response.json();
-    setState(parsedResponse);
+    try {
+      const response = await fetch(
+        "http://115.85.30.212:8383/api/method/login",
+        {
+          method: "POST",
+          body: JSON.stringify({ usr: "tope@gmail.com", pwd: "comfac123" }),
+        }
+      );
+      const parsedResponse = await response.json();
+      setState(parsedResponse);
+    } catch (error) {
+      console.log("error : ", error);
+    }
   };
 
   const handleLogout = () => {};
 
   return (
-    <div>
-      <Loading />
-      <pre>{JSON.stringify(state, null, 4)}</pre>
-      <Button onClick={handleLogin} variant="contained">
-        Login
-      </Button>
-      <Button onClick={handleLogout} variant="contained">
-        Logout
-      </Button>
-      <DataGrid rows={rows} columns={columns} />
-    </div>
+    <Loading />
+    // <div>
+    //   <Loading />
+    //   <pre>{JSON.stringify(state, null, 4)}</pre>
+    //   <Button onClick={handleLogin} variant="contained">
+    //     Login
+    //   </Button>
+    //   <Button onClick={handleLogout} variant="contained">
+    //     Logout
+    //   </Button>
+    //   <DataGrid rows={rows} columns={columns} />
+    // </div>
   );
 }

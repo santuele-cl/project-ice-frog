@@ -1,23 +1,32 @@
 "use client";
-import { CircularProgress, Stack } from "@mui/material";
+import { Box, CircularProgress, Paper, Stack, Typography } from "@mui/material";
 
 export default function Loading() {
   return (
-    <Stack
+    <Box
       sx={{
-        height: "100%",
-        width: "100%",
         position: "relative",
+        height: "690px",
+        minHeight: "cal(100vh - 64pxs)",
       }}
     >
-      <CircularProgress
+      <Stack
         sx={{
+          color: "gray.main",
           position: "absolute",
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 2,
         }}
-      />
-    </Stack>
+      >
+        <CircularProgress size={50} color="inherit" />
+        <Typography variant="h6" sx={{ color: "gray.main" }}>
+          Loading
+        </Typography>
+      </Stack>
+    </Box>
   );
 }
