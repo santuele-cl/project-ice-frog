@@ -44,23 +44,7 @@ export default async function ProjectId({
       </Paper>
 
       <Paper elevation={1} sx={{ p: 2 }}>
-        <Stack
-          sx={{ my: 1, flexDirection: "row", justifyContent: "space-between" }}
-        >
-          {/* <ProjectsTablePagination
-            pagination={
-              pagination ?? { totalCount: 0, totalPages: 0, itemsPerPage: 0 }
-            }
-          /> */}
-          <Button
-            startIcon={<FileDownloadIcon />}
-            variant="outlined"
-            color="success"
-            // onClick={handleExport}
-          >
-            Export
-          </Button>
-        </Stack>
+        
 
         <ProjectSchedulesTableBody
           employeeIds={employeeIds.data}
