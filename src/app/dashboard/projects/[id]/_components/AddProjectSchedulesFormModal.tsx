@@ -1,22 +1,24 @@
 "use client";
+import { useState } from "react";
 import { Button, Modal, Stack } from "@mui/material";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import { useState } from "react";
+
 import AddProjectSchedulesForm from "./AddProjectSchedulesForm";
-// import EmployeeScheduleAddForm from "./EmployeeScheduleAddForm";
 
 export default function AddProjectSchedulesFormModal() {
   const [show, setShow] = useState(false);
 
   return (
-    <Stack gap={2} direction="row">
+    <Stack sx={{ m: 3, minWidth: 100 }} gap={2} direction="row">
       <Button
-        variant="contained"
-        startIcon={<AddOutlinedIcon />}
+        fullWidth
+        sx={{ bgcolor: "gray.light", fontSize: 14, p: 2 }}
         onClick={() => setShow(true)}
+        startIcon={<AddOutlinedIcon />}
       >
         Assign Employee
       </Button>
+
       <Modal open={show} onClose={() => setShow(false)}>
         <Stack
           sx={{
