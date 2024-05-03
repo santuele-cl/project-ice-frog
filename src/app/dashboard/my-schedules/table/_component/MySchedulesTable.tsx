@@ -24,6 +24,7 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import * as XLSX from "xlsx";
 import TablePagination from "@/app/_ui/TablePagination";
 import { getSchedulesByUserIdGroupByProject } from "@/actions/schedules/schedule-action";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
 
 type PaginationProps = {
   totalCount: number;
@@ -76,7 +77,6 @@ export default function MySchedulesTable(props: Props) {
         ...(jobOrder && { jobOrder }),
       });
       if (response.data && response.pagination) {
-        // @ts-expect-error
         setData(response.data);
         setPagination(response.pagination);
       }
@@ -111,17 +111,21 @@ export default function MySchedulesTable(props: Props) {
         >
           <TableHead>
             <TableRow>
-              <TableCell align="left">Project</TableCell>
+              <TableCell align="left">No.</TableCell>
+              <TableCell align="left">Start Date</TableCell>
+              <TableCell align="left">End Date</TableCell>
+              <TableCell align="left">Start Time</TableCell>
+              <TableCell align="left">End Time</TableCell>
+              <TableCell align="left">Project Name</TableCell>
               <TableCell align="left">Location</TableCell>
-              <TableCell align="left" colSpan={2}>
-                Schedule
-              </TableCell>
+              <TableCell align="left">Actions</TableCell>
+
               {/* <TableCell align="right">Action</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
             {data && data.length ? (
-              data.map((schedule) => {
+              data.map((schedule, i) => {
                 const {
                   id,
                   project,
@@ -135,24 +139,49 @@ export default function MySchedulesTable(props: Props) {
                   project;
                 return (
                   <TableRow
-                    key={id}
+                    key={i}
                     sx={{
                       "&:last-child td, &:last-child th": { border: 0 },
                     }}
                   >
                     <TableCell component="th" scope="row" align="left">
-                      <Stack>
-                        <Typography>{jobOrder}</Typography>
-                        <Typography>{name}</Typography>
+                      {i + 1}
+                    </TableCell>
+                    <TableCell>
+                      {dayjs(startDate).format("MMM DD, YYYY")}
+                    </TableCell>
+                    <TableCell>
+                      {dayjs(endDate).format("MMM DD, YYYY")}
+                    </TableCell>
+                    <TableCell>{dayjs(startDate).format("hh:mm a")}</TableCell>
+                    <TableCell>{dayjs(endDate).format("hh:mm a")}</TableCell>
+                    <TableCell>{name}</TableCell>
+                    <TableCell align="left">{`${building} ${street} ${barangay}, ${city}`}</TableCell>
+                    <TableCell align="left">
+                      <Stack
+                        spacing={2}
+                        direction="row-reverse"
+                        sx={{ width: "100%", justifyContent: "start" }}
+                      >
+                        <Tooltip title="View Details">
+                          <IconButton
+                            component={Link}
+                            href={`/dashboard/employees/${id}`}
+                          >
+                            <VisibilityIcon fontSize="medium" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Edit Details">
+                          <IconButton
+                            component={Link}
+                            href={`/dashboard/employees/${id}/edit`}
+                          >
+                            <BorderColorIcon fontSize="medium" />
+                          </IconButton>
+                        </Tooltip>
                       </Stack>
                     </TableCell>
-                    <TableCell align="left">{`${building} ${street} ${barangay}, ${city}`}</TableCell>
-                    <TableCell>
-                      {dayjs(startDate).format("MMM DD, YYYY  hh:mm a")}
-                    </TableCell>
-                    <TableCell>
-                      {dayjs(endDate).format("MMM DD, YYYY hh:mm a")}
-                    </TableCell>
+
                     {/* <TableCell align="center">
                       <Stack
                         spacing={2}
