@@ -1,5 +1,5 @@
 "use client";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { useSession } from "next-auth/react";
 import { logout } from "@/actions/auth";
 
@@ -10,9 +10,13 @@ import {
   Avatar,
   IconButton,
   Stack,
+  Button,
+  Box,
 } from "@mui/material";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import ExitToAppOutlinedIcon from "@mui/icons-material/ExitToAppOutlined";
+import Logo from "./Logo";
+import { useRouter } from "next/navigation";
 
 type Props = {
   open: boolean;
@@ -20,6 +24,7 @@ type Props = {
 };
 
 export default function CustomAppBar({ open, setOpen }: Props) {
+  const router = useRouter();
   const session = useSession();
   const handleToggleOpen = () => setOpen((prev) => !prev);
 
@@ -49,9 +54,18 @@ export default function CustomAppBar({ open, setOpen }: Props) {
           <MenuOutlinedIcon />
         </IconButton>
 
-        <Typography variant="h6" noWrap component="div">
-          Synx
-        </Typography>
+        <Stack sx={{ flexDirection: "row", alignItems: "center", gap: 1 }}>
+          <Logo size={24} />
+          <Typography
+            onClick={() => router.push("/")}
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ fontWeight: "bold", cursor: "pointer" }}
+          >
+            Synx
+          </Typography>
+        </Stack>
         <Stack
           sx={{
             ml: "auto",

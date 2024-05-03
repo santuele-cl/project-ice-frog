@@ -266,7 +266,7 @@ export default function EmployeeScheduleAddForm({
                   }
                   disabled={isSubmitting}
                 />
-                {index !== 0 && (
+                {fields.length > 1 && (
                   <Button onClick={() => remove(index)}>
                     <DeleteOutlinedIcon color="error" />
                   </Button>

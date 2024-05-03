@@ -92,7 +92,6 @@ export default function AddProjectSchedulesForm({
       const res = await addMultipleScheduleByProject(data);
 
       if (res?.error) {
-        reset();
         setError(res.error);
       }
       if (res?.success) {
@@ -118,13 +117,6 @@ export default function AddProjectSchedulesForm({
 
   return (
     <Paper sx={{ p: 3 }}>
-      {/* <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        message="Note archived"
-        action={action}
-      /> */}
       <Stack
         sx={{
           flexDirection: "row",
@@ -133,7 +125,6 @@ export default function AddProjectSchedulesForm({
         }}
       >
         <Typography variant="h6">
-          New Schedule for{" "}
           <Typography
             component="span"
             variant="h6"
