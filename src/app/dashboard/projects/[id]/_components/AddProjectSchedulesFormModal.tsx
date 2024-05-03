@@ -12,6 +12,7 @@ export default function AddProjectSchedulesFormModal() {
     <Stack sx={{ m: 3, minWidth: 100 }} gap={2} direction="row">
       <Button
         sx={{ width: "100%", bgcolor: "rgba(0,0,255,0.1)", fontSize: 14 }}
+        onClick={() => setShow(true)}
       >
         <AddOutlinedIcon /> Assign Employee
       </Button>
