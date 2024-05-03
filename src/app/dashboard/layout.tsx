@@ -16,7 +16,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   const session = useSession();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -29,7 +29,10 @@ export default function DashboardLayout({
           open={open}
         />
       </CustomDrawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 2, overflowX: "auto" }}>
+      <Box
+        component="main"
+        sx={{ flexGrow: 1, p: 2, overflowX: "auto", position: "relative" }}
+      >
         <CustomDrawerHeader />
         <CustomBreadcrumbs />
         {children}

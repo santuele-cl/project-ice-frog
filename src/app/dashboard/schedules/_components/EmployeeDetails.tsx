@@ -18,6 +18,8 @@ import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
 import dayjs from "dayjs";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
+import EditIcon from "@mui/icons-material/Edit";
+import { useRouter } from "next/navigation";
 
 type UserWithProfile = Prisma.UserGetPayload<{
   select: {
@@ -41,6 +43,8 @@ const SectionHeaderStyle: SxProps = {
 };
 
 export default function EmployeeDetails({ details }: Props) {
+  const router = useRouter();
+
   const [showDetails, setShowDetails] = useState(false);
 
   const {
@@ -87,7 +91,13 @@ export default function EmployeeDetails({ details }: Props) {
               <Typography>{" | " + profile?.departmentId}</Typography>
             </Stack>
           </Stack>
-          <Box sx={{ ml: "auto" }}>
+          <Stack sx={{ ml: "auto", gap: 1, flexDirection: "row" }}>
+            <IconButton
+              onClick={() => router.push(`/dashboard/employees/${id}/edit`)}
+              size="small"
+            >
+              <EditIcon fontSize="large" />
+            </IconButton>
             <IconButton
               onClick={() => setShowDetails((prevState) => !prevState)}
             >
@@ -97,7 +107,7 @@ export default function EmployeeDetails({ details }: Props) {
                 <ExpandMoreOutlinedIcon />
               )}
             </IconButton>
-          </Box>
+          </Stack>
         </Stack>
       </Stack>
 

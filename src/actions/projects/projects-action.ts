@@ -27,6 +27,7 @@ export async function deleteProject(projectId: string) {
     const deletedProject = await db.project.delete({
       where: { id: projectId },
     });
+    
     if (!deletedProject) return { error: "Something went wrong" };
 
     revalidatePath("/dashboard/projects");
@@ -36,7 +37,7 @@ export async function deleteProject(projectId: string) {
       success: "Project Deleted successfully!",
       data: { id: deletedProject.id },
     };
-  } catch (error) {
+  } catch (error: unknown) {
     return { error: getErrorMessage(error) };
   }
 }
@@ -129,10 +130,40 @@ export async function addProject(values: z.infer<typeof ProjectSchema>) {
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     const parse = ProjectSchema.safeParse(values);
-
     if (!parse.success) return { error: "Parse error. Invalid data input!" };
-
     const { schedules, ...otherFields } = parse.data;
+
+    if (schedules) {
+      const overlap = await Promise.all(
+        schedules.map(async (schedule) => {
+          const existingSchedules = await db.schedule.findFirst({
+            where: {
+              userId: schedule.userId,
+              AND: [
+                {
+                  startDate: { lt: schedule.endDate },
+                  endDate: { gt: schedule.startDate },
+                },
+              ],
+            },
+          });
+          return existingSchedules;
+        })
+      )
+        .then((results) => {
+          return results;
+        })
+        .catch((e) => console.log(e));
+
+      if (
+        overlap &&
+        !!overlap.length &&
+        overlap.some((item) => {
+          return !!item;
+        })
+      )
+        return { error: "Schedule overlap. Schedules not saved.", overlap };
+    }
 
     const newProject = await db.project.create({
       data: {

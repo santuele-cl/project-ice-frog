@@ -10,6 +10,8 @@ import {
   Typography,
 } from "@mui/material";
 import ProjectSchedulesEmployeeRow from "./ProjectSchedulesEmployeeRow";
+import TableNoRecord from "@/app/_ui/TableNoRecord";
+import AddProjectSchedulesFormModal from "./AddProjectSchedulesFormModal";
 
 type Props = {
   employeeIds: { userId: string }[];
@@ -22,10 +24,13 @@ export default async function ProjectSchedulesTableBody({
 }: Props) {
   return (
     <Stack sx={{ gap: 2 }}>
-      <Box sx={{ mb: 1 }}>
+      <Stack
+        sx={{ mb: 1, justifyContent: "space-between", flexDirection: "row" }}
+      >
         <Typography variant="h6">Employee Schedules</Typography>
-      </Box>
-      <TableContainer>
+        <AddProjectSchedulesFormModal />
+      </Stack>
+      <TableContainer sx={{ minHeight: "690px", position: "relative" }}>
         <Table
           sx={{ minWidth: 650, overflow: "auto" }}
           aria-label="simple table"
@@ -52,21 +57,7 @@ export default async function ProjectSchedulesTableBody({
                 />
               ))
             ) : (
-              <TableRow
-                sx={{
-                  "&:last-child td, &:last-child th": { border: 0 },
-                }}
-              >
-                <TableCell component="th" scope="row">
-                  -
-                </TableCell>
-                <TableCell align="left">-</TableCell>
-                <TableCell align="left">-</TableCell>
-                <TableCell align="left">-</TableCell>
-                <TableCell align="left">-</TableCell>
-                <TableCell align="left">-</TableCell>
-                <TableCell align="left">-</TableCell>
-              </TableRow>
+              <TableNoRecord />
             )}
           </TableBody>
         </Table>

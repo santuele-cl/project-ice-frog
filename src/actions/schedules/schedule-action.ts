@@ -120,6 +120,38 @@ export async function addMultipleScheduleByProject(
 
     if (!parse.success) return { error: "Parse error. Invalid data input!" };
 
+    if (parse.data.schedules) {
+      const overlap = await Promise.all(
+        parse.data.schedules.map(async (schedule) => {
+          const existingSchedules = await db.schedule.findFirst({
+            where: {
+              userId: schedule.userId,
+              AND: [
+                {
+                  startDate: { lt: schedule.endDate },
+                  endDate: { gt: schedule.startDate },
+                },
+              ],
+            },
+          });
+          return existingSchedules;
+        })
+      )
+        .then((results) => {
+          return results;
+        })
+        .catch((e) => console.log(e));
+
+      if (
+        overlap &&
+        !!overlap.length &&
+        overlap.some((item) => {
+          return !!item;
+        })
+      )
+        return { error: "Schedule overlap. Schedules not saved.", overlap };
+    }
+
     const createdSchedules = await db.schedule.createMany({
       data: parse.data.schedules,
     });

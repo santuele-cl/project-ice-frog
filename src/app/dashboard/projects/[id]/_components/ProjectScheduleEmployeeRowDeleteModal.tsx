@@ -76,7 +76,7 @@ export default function ProjectScheduleEmployeeRowDeleteModal({
               variant="outlined"
             >
               Close
-            </Button>   
+            </Button>
             <Stack component="form" action={deleteScheduleWithId}>
               <Button
                 type="submit"
@@ -92,7 +92,7 @@ export default function ProjectScheduleEmployeeRowDeleteModal({
                 color="error"
                 variant="outlined"
               >
-                Delete Project
+                Delete Schedule
               </Button>
             </Stack>
           </Stack>
