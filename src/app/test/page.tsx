@@ -1,8 +1,9 @@
 "use client";
-import { Button } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import { useState } from "react";
 import Loading from "../_ui/Loading";
+import RootLoadingPage from "../loading";
 
 const rows: GridRowsProp = [
   { id: 1, col1: "Hello", col2: "World" },
@@ -37,17 +38,19 @@ export default function Test() {
   const handleLogout = () => {};
 
   return (
-    <Loading />
-    // <div>
-    //   <Loading />
-    //   <pre>{JSON.stringify(state, null, 4)}</pre>
-    //   <Button onClick={handleLogin} variant="contained">
-    //     Login
-    //   </Button>
-    //   <Button onClick={handleLogout} variant="contained">
-    //     Logout
-    //   </Button>
-    //   <DataGrid rows={rows} columns={columns} />
-    // </div>
+    <Stack>
+      <RootLoadingPage />
+      <Loading />
+      <div>
+        <pre>{JSON.stringify(state, null, 4)}</pre>
+        <Button onClick={handleLogin} variant="contained">
+          Login
+        </Button>
+        <Button onClick={handleLogout} variant="contained">
+          Logout
+        </Button>
+        <DataGrid rows={rows} columns={columns} />
+      </div>
+    </Stack>
   );
 }
