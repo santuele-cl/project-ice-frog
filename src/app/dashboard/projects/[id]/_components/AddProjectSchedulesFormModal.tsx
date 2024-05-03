@@ -13,7 +13,7 @@ export default function AddProjectSchedulesFormModal() {
       <Button
         sx={{ width: "100%", bgcolor: "rgba(0,0,255,0.1)", fontSize: 14 }}
       >
-        <AddOutlinedIcon /> Add Employee
+        <AddOutlinedIcon /> Assign Employee
       </Button>
 
       <Modal open={show} onClose={() => setShow(false)}>
