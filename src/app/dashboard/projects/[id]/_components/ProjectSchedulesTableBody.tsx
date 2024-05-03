@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import ProjectSchedulesEmployeeRow from "./ProjectSchedulesEmployeeRow";
 import TableNoRecord from "@/app/_ui/TableNoRecord";
-import AddProjectSchedulesFormModal from "./AddProjectSchedulesFormModal";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import ProjectsTablePagination from "../../_components/ProjectsTablePagination";
 
@@ -35,10 +34,7 @@ export default async function ProjectSchedulesTableBody({
 
       <Stack sx={{ flexDirection: "row", justifyContent: "space-between" }}>
         <ProjectsTablePagination
-          pagination={
-            // pagination ??
-            { totalCount: 0, totalPages: 0, itemsPerPage: 0 }
-          }
+          pagination={{ totalCount: 0, totalPages: 0, itemsPerPage: 0 }}
         />
         <Button
           startIcon={<FileDownloadIcon />}
