@@ -49,7 +49,7 @@ export default async function ProjectSchedulesTableBody({
                   index={index}
                   userId={employee.userId}
                   projectId={projectId}
-                  />
+                />
               ))
             ) : (
               <TableRow

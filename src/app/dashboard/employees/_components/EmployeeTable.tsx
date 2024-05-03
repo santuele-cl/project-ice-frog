@@ -1,6 +1,7 @@
 "use client";
 import { findUser } from "@/actions/users/users";
 import {
+  Button,
   Divider,
   IconButton,
   Stack,
@@ -21,6 +22,9 @@ import { Prisma } from "@prisma/client";
 import EmployeeTablePagination from "./EmployeeTablePagination";
 import { useParams, useSearchParams } from "next/navigation";
 import TableNoRecord from "@/app/_ui/TableNoRecord";
+import * as XLSX from "xlsx";
+import ProjectsTablePagination from "../../projects/_components/ProjectsTablePagination";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 type UserWithDetails = Prisma.UserGetPayload<{
   include: {
@@ -75,6 +79,23 @@ export default function EmployeeTable(props: Props) {
   return (
     <Fragment>
       <TableContainer sx={{ minHeight: "690px", position: "relative" }}>
+        <Stack
+          sx={{ my: 1, flexDirection: "row", justifyContent: "space-between" }}
+        >
+          <ProjectsTablePagination
+            pagination={
+              pagination ?? { totalCount: 0, totalPages: 0, itemsPerPage: 0 }
+            }
+          />
+          <Button
+            startIcon={<FileDownloadIcon />}
+            variant="outlined"
+            color="success"
+           // onClick={handleExport}
+          >
+            Export
+          </Button>
+        </Stack>
         <Table
           sx={{ minWidth: 650, overflow: "auto" }}
           aria-label="simple table"

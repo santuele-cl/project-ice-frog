@@ -2,12 +2,14 @@ import {
   getProjectById,
   getProjectScheduleGroupByUserId,
 } from "@/actions/projects/projects-action";
-import { Box, Paper, Stack, Typography } from "@mui/material";
+import { Box, Button, Paper, Stack, Typography } from "@mui/material";
 import ProjectSchedulesTableBody from "./_components/ProjectSchedulesTableBody";
 
 import ErrorComponent from "@/app/_ui/ErrorComponent";
 import AddProjectSchedulesFormModal from "./_components/AddProjectSchedulesFormModal";
 import ProjectDetails from "../_components/ProjectDetails";
+import ProjectsTablePagination from "../_components/ProjectsTablePagination";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 export default async function ProjectId({
   params: { id },
@@ -38,14 +40,33 @@ export default async function ProjectId({
   return (
     <Stack sx={{ gap: 2 }}>
       <Paper elevation={1} sx={{ p: 2 }}>
-        {project.data && <ProjectDetails details={project.data} />}
+        {project.data && <ProjectDetails details={project.data} />}{" "}
       </Paper>
-    
+
       <Paper elevation={1} sx={{ p: 2 }}>
+        <Stack
+          sx={{ my: 1, flexDirection: "row", justifyContent: "space-between" }}
+        >
+          {/* <ProjectsTablePagination
+            pagination={
+              pagination ?? { totalCount: 0, totalPages: 0, itemsPerPage: 0 }
+            }
+          /> */}
+          <Button
+            startIcon={<FileDownloadIcon />}
+            variant="outlined"
+            color="success"
+            // onClick={handleExport}
+          >
+            Export
+          </Button>
+        </Stack>
+
         <ProjectSchedulesTableBody
           employeeIds={employeeIds.data}
           projectId={id}
         />
+
         <AddProjectSchedulesFormModal />
       </Paper>
     </Stack>
