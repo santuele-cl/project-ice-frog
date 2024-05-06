@@ -44,10 +44,12 @@ export default async function EmployeeSchedulesTable({
             <TableCell align="left">Schedule ID</TableCell>
             <TableCell align="left">Project</TableCell>
             <TableCell align="left">Location</TableCell>
-            <TableCell align="left">Start</TableCell>
-            <TableCell align="left">End</TableCell>
+            <TableCell align="left">Start date</TableCell>
+            <TableCell align="left">End date</TableCell>
+            <TableCell align="left">Start time</TableCell>
+            <TableCell align="left">End time</TableCell>
             <TableCell align="left">Date created</TableCell>
-            <TableCell align="right">Details</TableCell>
+            <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -79,10 +81,16 @@ export default async function EmployeeSchedulesTable({
                     {`${project?.building} ${project?.street} ${project?.barangay}, ${project?.city}`}
                   </TableCell>
                   <TableCell align="left">
-                    {dayjs(startDate).format("MMM DD, YYYY hh:mm a")}
+                    {dayjs(startDate).format("MMM DD, YYYY")}
                   </TableCell>
                   <TableCell align="left">
-                    {dayjs(endDate).format("MMM DD, YYYY hh:mm a")}
+                    {dayjs(endDate).format("MMM DD, YYYY")}
+                  </TableCell>
+                  <TableCell align="left">
+                    {dayjs(startDate).format("hh:mm a")}
+                  </TableCell>
+                  <TableCell align="left">
+                    {dayjs(endDate).format("hh:mm a")}
                   </TableCell>
                   <TableCell align="left">
                     {dayjs(createdAt).format("MMM DD, YYYY hh:mm a")}
