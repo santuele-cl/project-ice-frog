@@ -128,7 +128,10 @@ export default async function EmployeeSchedulesTable({
             })
           ) : (
             <TableRow>
-              <TableCell colSpan={8} sx={{ position: "relative" }}>
+              <TableCell
+                colSpan={10}
+                sx={{ position: "relative", p: 2, borderBottom: "none" }}
+              >
                 <NoDataComponent />
               </TableCell>
             </TableRow>

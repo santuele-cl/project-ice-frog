@@ -11,7 +11,7 @@ export default function NoDataComponent() {
         transform: "translate(-50%, -50%)",
       }}
     >
-      <Typography variant="h5" color="#9FA6B2" sx={{ p: 2 }}>
+      <Typography variant="h5" color="#9FA6B2" sx={{ p: 3 }}>
         NO SCHEDULE YET
       </Typography>
     </Box>
