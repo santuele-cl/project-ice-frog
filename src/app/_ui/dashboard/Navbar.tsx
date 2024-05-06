@@ -24,7 +24,7 @@ import { Dispatch, SetStateAction } from "react";
 
 // import Logo from "../common/Logo";
 import Link from "next/link";
-import Logo from "./Logo";
+import Logo from "../Logo";
 import useCurrentUser from "@/app/_hooks/useCurrentUser";
 import { logout } from "@/actions/auth";
 
@@ -78,7 +78,7 @@ export default function Navbar({
                 sx={{ textDecoration: "none", color: "common.black" }}
                 fontWeight={900}
               >
-                Salus
+                Synx
               </Typography>
             </Grow>
           )}

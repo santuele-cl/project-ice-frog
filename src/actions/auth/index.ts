@@ -30,7 +30,6 @@ import {
   getTwoFactorTokenByEmail,
 } from "@/app/_data/two-factor";
 import { Gender } from "@prisma/client";
-import { createLoginLog, updateLoginLogStatus } from "../logs/login-logs";
 import { revalidatePath, unstable_noStore } from "next/cache";
 import { headers } from "next/headers";
 
@@ -152,21 +151,16 @@ export async function logout() {
 }
 
 export async function createUser(registerData: z.infer<typeof RegisterSchema>) {
-  console.log(registerData);
   const validatedData = RegisterSchema.safeParse(registerData);
 
-  if (!validatedData.success) {
-    return { error: "Invalid register data." };
-  }
+  if (!validatedData.success) return { error: "Invalid register data." };
 
   const { email, role, password, consent, confirmPassword, ...profileData } =
     validatedData.data;
 
-  const isEmailTaken = await getUserByEmail(email);
+  const isEmailTaken = await db.user.findUnique({ where: { email } });
 
-  if (isEmailTaken) {
-    return { error: "Email already taken." };
-  }
+  if (isEmailTaken) return { error: "Email already taken." };
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -177,9 +171,9 @@ export async function createUser(registerData: z.infer<typeof RegisterSchema>) {
       role,
       consent,
       profile: {
-        create: {
-          ...profileData,
-        },
+        // create: {
+        //   ...profileData,
+        // },
       },
     },
   });

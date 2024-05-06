@@ -1,78 +1,42 @@
 "use client";
-import Sidebar from "../_ui/dashboard/Sidebar";
-import Navbar from "../_ui/dashboard/Navbar";
-import {
-  Box,
-  Collapse,
-  Paper,
-  Stack,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import TemporaryDrawer from "../_ui/dashboard/TemporaryDrawer";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useSession } from "next-auth/react";
+
+import { Box, Divider } from "@mui/material";
+
+import UserSidebar from "../_ui/sidebar/UserSidebar";
+import { SIDEBAR_LINKS } from "../_ui/sidebar/SidebarLinks";
+import { CustomDrawer, CustomDrawerHeader } from "../_ui/CustomDrawer";
+import CustomBreadcrumbs from "../_ui/CustomBreadcrumbs";
+import CustomAppBar from "../_ui/CustomAppBar";
 
 export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-
-  const [showTemporarySidebar, setShowTemporarySidebar] = useState(false);
-
-  useEffect(() => {
-    setShowTemporarySidebar(false);
-  }, [isSmallScreen]);
+  const session = useSession();
+  const [open, setOpen] = useState(true);
 
   return (
-    <Box position="relative">
-      <Navbar setShowTemporarySidebar={setShowTemporarySidebar} />
-      <TemporaryDrawer
-        isSmallScreen={isSmallScreen}
-        showTemporarySidebar={showTemporarySidebar}
-        setShowTemporarySidebar={setShowTemporarySidebar}
-      />
-      <Stack
-        direction="row"
-        position="relative"
-        height="calc(100vh - 70px)"
-        bgcolor="background.paper"
+    <Box sx={{ display: "flex" }}>
+      <CustomAppBar setOpen={setOpen} open={open} />
+      <CustomDrawer variant="permanent" open={open}>
+        <CustomDrawerHeader />
+        <Divider />
+        <UserSidebar
+          sidebarLinks={SIDEBAR_LINKS[session.data?.user.role!]}
+          open={open}
+        />
+      </CustomDrawer>
+      <Box
+        component="main"
+        sx={{ flexGrow: 1, p: 2, overflowX: "auto", position: "relative" }}
       >
-        <Box>
-          <Stack
-            direction="row"
-            height="100%"
-            sx={{ overflowY: "auto", overflowX: "hidden" }}
-            bgcolor="general"
-            borderRight="1px solid rgba(0,0,0,.1)"
-          >
-            <Collapse
-              in={!isSmallScreen}
-              orientation="horizontal"
-              timeout={500}
-            >
-              <Sidebar />
-            </Collapse>
-          </Stack>
-        </Box>
-        <Box
-          sx={{
-            flexGrow: "1",
-            width: {
-              xs: "100%",
-              sm: "calc(100vw - 250px)",
-            },
-            p: 2,
-            bgcolor: "gray.light",
-            overflowX: "hidden",
-            overflowY: "auto",
-          }}
-        >
-          {children}
-        </Box>
-      </Stack>
+        <CustomDrawerHeader />
+        <CustomBreadcrumbs />
+        {children}
+      </Box>
     </Box>
   );
 }

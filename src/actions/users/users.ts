@@ -1,47 +1,98 @@
 "use server";
 
 import { db } from "@/app/_lib/db";
+import { Prisma, Profile, User } from "@prisma/client";
 import { unstable_noStore as noStore } from "next/cache";
+import { getErrorMessage } from "../action-utils";
 
-export async function findUser(term: string) {
+type Sort = Record<keyof User, "asc" | "desc">;
+type Filter = Record<keyof User | keyof Profile, string>;
+
+interface SearchQUery {
+  page: number;
+  sort: Sort[];
+  filter: Filter[];
+}
+
+const ITEMS_PER_PAGE = 15;
+
+export async function findUser({
+  page = 1,
+  occupation,
+  name,
+  department,
+  active,
+  isArchived = false,
+}: {
+  page?: number;
+  occupation?: string;
+  name?: string;
+  department?: string;
+  active?: boolean;
+  isArchived?: boolean;
+}) {
   noStore();
-
-  if (!term) return { error: "No search term found!" };
-
   try {
-    const users = await db.user.findMany({
+    const findUserQuery = {
       where: {
-        OR: [
-          { id: { contains: term, mode: "insensitive" } },
-          {
-            email: {
-              contains: term,
-              mode: "insensitive",
+        isArchived: isArchived,
+        ...(name && {
+          OR: [
+            {
+              profile: {
+                fname: { contains: name, mode: "insensitive" },
+              },
             },
-          },
-          {
-            username: {
-              contains: term,
-              mode: "insensitive",
+            {
+              profile: {
+                mname: { contains: name, mode: "insensitive" },
+              },
             },
-          },
-          {
-            id: {
-              contains: term,
-              mode: "insensitive",
+            {
+              profile: {
+                lname: { contains: name, mode: "insensitive" },
+              },
             },
-          },
-        ],
+          ],
+        }),
+        profile: {
+          department: { name: { in: department?.split(",") } },
+          occupation: { contains: occupation, mode: "insensitive" },
+        },
+        isActive: { equals: active },
       },
-    });
+      orderBy: { createdAt: "desc" },
+      include: {
+        profile: {
+          select: {
+            contactNumber: true,
+            department: true,
+            fname: true,
+            lname: true,
+            occupation: true,
+          },
+        },
+      },
+      take: ITEMS_PER_PAGE,
+      skip: (Number(page) - 1) * ITEMS_PER_PAGE,
+    } satisfies Prisma.UserFindManyArgs;
 
-    if (!users || users.length < 1) {
-      return { error: "No users found!" };
-    } else {
-      return { success: "Users found!", data: users };
-    }
+    const [users, count] = await db.$transaction([
+      db.user.findMany(findUserQuery),
+      db.user.count({ where: findUserQuery.where }),
+    ]);
+
+    return {
+      success: "Success",
+      data: users,
+      pagination: {
+        totalCount: count,
+        itemsPerPage: ITEMS_PER_PAGE,
+        totalPages: Math.ceil(count / ITEMS_PER_PAGE),
+      },
+    };
   } catch (error) {
-    return { error: "Something went wrong!" };
+    return { error: getErrorMessage(error) };
   }
 }
 
@@ -52,7 +103,7 @@ export async function getUserById(id: string) {
 
   const user = await db.user.findUnique({
     where: { id },
-    include: { profile: { select: { isEmployee: true, isPatient: true } } },
+    include: { profile: true },
   });
 
   if (!user) return { error: "User not found!" };

@@ -17,7 +17,7 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 import { updatePassword } from "@/actions/auth";
 import { NewPasswordSchema } from "@/app/_schemas/zod/schema";
 import { useRouter, useSearchParams } from "next/navigation";
-import Logo from "../../dashboard/Logo";
+import Logo from "../../Logo";
 import FormStatusText from "../FormStatusText";
 
 const NewPassword = () => {

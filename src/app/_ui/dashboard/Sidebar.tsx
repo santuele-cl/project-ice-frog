@@ -18,7 +18,9 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { toKebabCase } from "@/app/_utils/utils";
-
+import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import BadgeIcon from "@mui/icons-material/Badge";
 type SidebarLink = {
   label: string;
   path?: string;
@@ -42,12 +44,12 @@ const sidebarLinks: SidebarLinks[] = [
       {
         label: "Projects",
         path: "projects",
-        icon: () => <FamilyRestroomIcon />,
+        icon: () => <AssignmentIcon />,
       },
       {
         label: "Employees",
         path: "employees",
-        icon: () => <GroupIcon />,
+        icon: () => <BadgeIcon />,
       },
       {
         label: "Departments",
@@ -75,6 +77,11 @@ const sidebarLinks: SidebarLinks[] = [
         path: "settings",
         icon: () => <SettingsIcon />,
       },
+      {
+        label: "Archived",
+        path: "archived",
+        icon: () => <DeleteForeverOutlinedIcon />,
+      },
     ],
   },
 ];
@@ -86,7 +93,7 @@ export default function Sidebar({ children }: { children?: React.ReactNode }) {
     <List
       sx={{
         height: "100%",
-        width: 330,
+        width: 250,
 
         p: 2,
       }}
