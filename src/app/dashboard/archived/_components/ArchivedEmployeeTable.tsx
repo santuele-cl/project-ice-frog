@@ -40,13 +40,43 @@ export default async function ArchivedEmployeeTable({
           aria-label="simple table"
         >
           <TableHead>
-            <TableRow>
-              <TableCell align="left">ID</TableCell>
-              <TableCell align="left">Name</TableCell>
-              <TableCell align="left">Email</TableCell>
-              <TableCell align="left">Department</TableCell>
-              <TableCell align="left">Status</TableCell>
-              <TableCell align="right">Actions</TableCell>
+            <TableRow sx={{ backgroundColor: "rgba(124,35,216,255)" }}>
+              <TableCell
+                sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+                align="left"
+              >
+                ID
+              </TableCell>
+              <TableCell
+                sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+                align="left"
+              >
+                Name
+              </TableCell>
+              <TableCell
+                sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+                align="left"
+              >
+                Email
+              </TableCell>
+              <TableCell
+                sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+                align="left"
+              >
+                Department
+              </TableCell>
+              <TableCell
+                sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+                align="left"
+              >
+                Status
+              </TableCell>
+              <TableCell
+                sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+                align="right"
+              >
+                Actions
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

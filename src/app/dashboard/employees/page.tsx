@@ -1,4 +1,4 @@
-import { Button, Divider, Paper, Stack, Typography } from "@mui/material";
+import { Box, Button, Divider, Paper, Stack, Typography } from "@mui/material";
 import Link from "next/link";
 import EmployeeTableHeader from "./_components/EmployeeTableHeader";
 import EmployeeTable from "./_components/EmployeeTable";
@@ -17,8 +17,12 @@ export default async function page({
 }) {
   return (
     <Stack sx={{ gap: 2 }}>
-      <Typography variant="h5">List of Employees</Typography>
       <Paper elevation={1} sx={{ p: 2 }}>
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+            LIST OF EMPLOYEES
+          </Typography>
+        </Box>
         <EmployeeTableHeader>
           <EmployeeSearch />
           <Button
@@ -30,7 +34,8 @@ export default async function page({
             Add employee
           </Button>
         </EmployeeTableHeader>
-        <Divider sx={{ my: 1 }} />
+      </Paper>
+      <Paper elevation={1} sx={{ p: 2 }}>
         <EmployeeTable
           occupation={occupation}
           name={name}

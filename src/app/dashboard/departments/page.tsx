@@ -1,5 +1,5 @@
 import TableSkeleton from "@/app/_ui/TableSkeleton";
-import { Divider, Paper } from "@mui/material";
+import { Box, Divider, Paper, Stack, Typography } from "@mui/material";
 import { Suspense } from "react";
 import DepartmentTable from "./_components/DepartmentTable";
 import DepartmentTableHeader from "./_components/DepartmentTableHeader";
@@ -17,23 +17,32 @@ export default async function page({
   };
 }) {
   return (
-    <Paper elevation={1} sx={{ p: 2 }}>
-      <DepartmentTableHeader>
-        <DepartmentSearch />
-        <DepartmentAddFormModal />
-      </DepartmentTableHeader>
-      <Divider sx={{ my: 1 }} />
-      <Suspense fallback={<TableSkeleton />}>
-        <DepartmentTable
-          email={email}
-          page={Number(page)}
-          department={department}
-          status={status}
-        />
-      </Suspense>
+    <Stack sx={{ gap: 2 }}>
+      <Paper elevation={1} sx={{ p: 2 }}>
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+            LIST OF DEPARTMENTS
+          </Typography>
+        </Box>
+        <DepartmentTableHeader>
+          <DepartmentSearch />
+          <DepartmentAddFormModal />
+        </DepartmentTableHeader>
+      </Paper>
+      <Paper elevation={1} sx={{ p: 2 }}>
+        <Divider sx={{ my: 1 }} />
+        <Suspense fallback={<TableSkeleton />}>
+          <DepartmentTable
+            email={email}
+            page={Number(page)}
+            department={department}
+            status={status}
+          />
+        </Suspense>
 
-      <Divider sx={{ my: 1 }} />
-      {/* <EmployeeTablePagination /> */}
-    </Paper>
+        <Divider sx={{ my: 1 }} />
+        {/* <EmployeeTablePagination /> */}
+      </Paper>
+    </Stack>
   );
 }

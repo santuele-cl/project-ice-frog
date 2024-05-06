@@ -41,13 +41,43 @@ export default async function DepartmentTable({
     <TableContainer sx={{ height: "690px" }}>
       <Table sx={{ minWidth: 650, overflow: "auto" }} aria-label="simple table">
         <TableHead>
-          <TableRow>
-            <TableCell align="left">ID</TableCell>
-            <TableCell align="left">Department</TableCell>
-            <TableCell align="left">Department Head</TableCell>
-            <TableCell align="left">Date Created</TableCell>
-            <TableCell align="left">Last update</TableCell>
-            <TableCell align="right">Actions</TableCell>
+          <TableRow sx={{ backgroundColor: "rgba(124,35,216,255)" }}>
+            <TableCell
+              sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+              align="left"
+            >
+              ID
+            </TableCell>
+            <TableCell
+              sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+              align="left"
+            >
+              Department
+            </TableCell>
+            <TableCell
+              sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+              align="left"
+            >
+              Department Head
+            </TableCell>
+            <TableCell
+              sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+              align="left"
+            >
+              Date Created
+            </TableCell>
+            <TableCell
+              sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+              align="left"
+            >
+              Last update
+            </TableCell>
+            <TableCell
+              sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+              align="right"
+            >
+              Actions
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -79,9 +109,8 @@ export default async function DepartmentTable({
                       direction="row-reverse"
                       sx={{ width: "100%" }}
                     >
-                    <DepartmentDeleteForm id={id}/>
+                      <DepartmentDeleteForm id={id} />
 
-                    
                       <Tooltip title="Edit Details">
                         <IconButton component={Link} href="#edit">
                           <BorderColorIcon fontSize="medium" />
