@@ -7,7 +7,6 @@ export default function ProjectSchedulesTableHeader({
 }) {
   return (
     <Stack sx={{ gap: 2 }}>
-      
       <Stack
         direction="row"
         sx={{

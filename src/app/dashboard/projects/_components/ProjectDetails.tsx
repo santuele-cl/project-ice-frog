@@ -29,7 +29,7 @@ const SectionHeaderStyle: SxProps = {
 };
 
 export default function ProjectDetails({ details }: Props) {
-  const [showDetails, setShowDetails] = useState(false);
+  const [showDetails, setShowDetails] = useState(true);
 
   const {
     id,

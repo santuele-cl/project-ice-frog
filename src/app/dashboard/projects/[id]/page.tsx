@@ -1,10 +1,11 @@
+import { Paper, Stack } from "@mui/material";
+
 import {
   getProjectById,
   getProjectScheduleGroupByUserId,
 } from "@/actions/projects/projects-action";
-import { Box, Paper, Stack, Typography } from "@mui/material";
-import ProjectSchedulesTableBody from "./_components/ProjectSchedulesTableBody";
 
+import ProjectSchedulesTableBody from "./_components/ProjectSchedulesTableBody";
 import ErrorComponent from "@/app/_ui/ErrorComponent";
 import AddProjectSchedulesFormModal from "./_components/AddProjectSchedulesFormModal";
 import ProjectDetails from "../_components/ProjectDetails";
@@ -40,12 +41,12 @@ export default async function ProjectId({
       <Paper elevation={1} sx={{ p: 2 }}>
         {project.data && <ProjectDetails details={project.data} />}
       </Paper>
-    
       <Paper elevation={1} sx={{ p: 2 }}>
         <ProjectSchedulesTableBody
           employeeIds={employeeIds.data}
           projectId={id}
         />
+        <AddProjectSchedulesFormModal />
       </Paper>
     </Stack>
   );
