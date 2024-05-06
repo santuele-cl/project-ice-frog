@@ -17,6 +17,7 @@ export const ERROR_ROUTES: ERROR_ROUTES_TYPE = {
 
 export const PUBLIC_ROUTES = [
   "/auth/new-verification",
+  "/test",
   ...Object.keys(ERROR_ROUTES).map((route) => ERROR_ROUTES[route]),
 ];
 

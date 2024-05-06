@@ -193,6 +193,74 @@ export const SchedulesSchema = z.object({
   ),
 });
 
+export const ProjectScheduleSchema = z.object({
+  projectId: z.string().min(1, "Required field"),
+  userId: z.string().min(1, "Required field"),
+  id: z.string().min(1, "Required field"),
+  notes: z.string().optional(),
+  startDate: z.date(),
+  endDate: z.date(),
+});
+
+export const ProjectScheduleSchemaWithDateRefine = ProjectScheduleSchema.refine(
+  (data) => {
+    return (
+      data.startDate > new Date(dayjs().year(), dayjs().month(), dayjs().date())
+    );
+  },
+  {
+    message: "Cannot set past date as start date",
+    path: ["startDate"],
+  }
+).refine((data) => data.endDate > data.startDate, {
+  message: "End date must be greater than start date.",
+  path: ["endDate"],
+});
+
+export const ProjectMultpleSchedulesSchema = z.object({
+  schedules: z.array(ProjectScheduleSchemaWithDateRefine).refine(
+    (schedules) => {
+      console.log("sched : ", schedules);
+
+      const overlaps = schedules.filter((scheduleA, i) => {
+        const isOverlapping = schedules.some((scheduleB, j) => {
+          if (i !== j) {
+            if (scheduleA.userId === scheduleB.userId) {
+              return (
+                scheduleA.startDate < scheduleB.endDate &&
+                scheduleA.endDate > scheduleB.startDate
+              );
+            } else return false;
+          } else return false;
+        });
+        return isOverlapping;
+      });
+      return !overlaps.length;
+    },
+    (schedules) => {
+      const overlaps = schedules.filter((scheduleA, i) => {
+        const isOverlapping = schedules.some((scheduleB, j) => {
+          if (i !== j) {
+            if (scheduleA.userId === scheduleB.userId) {
+              return (
+                scheduleA.startDate < scheduleB.endDate &&
+                scheduleA.endDate > scheduleB.startDate
+              );
+            } else return false;
+          } else return false;
+        });
+        return isOverlapping;
+      });
+
+      const overlapsId = overlaps.map((overlap) => overlap.id);
+      return {
+        message: `Schedule overlaps`,
+        path: [`${overlapsId[0]}`],
+      };
+    }
+  ),
+});
+
 export const ProjectSchema = z
   .object({
     name: z.string().min(1, "Required"),

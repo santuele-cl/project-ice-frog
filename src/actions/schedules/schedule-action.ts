@@ -2,7 +2,11 @@
 import { z } from "zod";
 import { unstable_noStore as noStore, revalidatePath } from "next/cache";
 import { db } from "@/app/_lib/db";
-import { EditScheduleSchema, SchedulesSchema } from "@/app/_schemas/zod/schema";
+import {
+  EditScheduleSchema,
+  ProjectMultpleSchedulesSchema,
+  SchedulesSchema,
+} from "@/app/_schemas/zod/schema";
 import { getErrorMessage } from "../action-utils";
 import { Prisma } from "@prisma/client";
 import { auth } from "@/auth";
@@ -109,7 +113,7 @@ export async function getSchedulesByUserIdAndProjectId({
 }
 
 export async function addMultipleScheduleByProject(
-  schedules: z.infer<typeof SchedulesSchema>
+  schedules: z.infer<typeof ProjectMultpleSchedulesSchema>
 ) {
   try {
     const session = await auth();
@@ -122,8 +126,8 @@ export async function addMultipleScheduleByProject(
 
     if (parse.data.schedules) {
       const overlap = await Promise.all(
-        parse.data.schedules.map(async (schedule) => {
-          const existingSchedules = await db.schedule.findFirst({
+        parse.data.schedules.filter(async (schedule) => {
+          const existingSchedules = await db.schedule.findMany({
             where: {
               userId: schedule.userId,
               AND: [
@@ -134,7 +138,7 @@ export async function addMultipleScheduleByProject(
               ],
             },
           });
-          return existingSchedules;
+          return existingSchedules && existingSchedules.length > 0;
         })
       )
         .then((results) => {
