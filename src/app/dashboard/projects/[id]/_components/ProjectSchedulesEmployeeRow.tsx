@@ -58,6 +58,7 @@ export default async function ProjectSchedulesEmployeeRow({
         <ErrorComponent errMessage={String(error)} />
       </Paper>
     );
+  const filteredSchedules = data.filter(schedule => !schedule.isArchived);
 
   return (
     <TableRow
@@ -70,7 +71,7 @@ export default async function ProjectSchedulesEmployeeRow({
       </TableCell>
       <TableCell align="left">
         <Typography>
-          <Link href={`/dashboard/employees/${data[0].userId}`}>
+          <Link href={`/dashboard/employees/${userId}`}>
             {`${data[0].user.profile?.fname} ${data[0].user.profile?.lname}`}
           </Link>
         </Typography>
@@ -79,7 +80,7 @@ export default async function ProjectSchedulesEmployeeRow({
 
       <TableCell align="left">
         <Stack sx={{ gap: 1 }}>
-          {data
+          {filteredSchedules
             .map(({ startDate }) => (
               <Stack
                 sx={{
@@ -101,7 +102,7 @@ export default async function ProjectSchedulesEmployeeRow({
 
       <TableCell align="left">
         <Stack sx={{ gap: 1 }}>
-          {data
+          {filteredSchedules
             .map(({ startDate }) => (
               <Stack
                 sx={{
@@ -121,7 +122,7 @@ export default async function ProjectSchedulesEmployeeRow({
 
       <TableCell align="left">
         <Stack sx={{ gap: 1 }}>
-          {data
+          {filteredSchedules
             .map(({ endDate }) => (
               <Stack
                 sx={{
@@ -141,7 +142,7 @@ export default async function ProjectSchedulesEmployeeRow({
 
       <TableCell align="left">
         <Stack sx={{ gap: 1 }}>
-          {data
+          {filteredSchedules
             .map(({ endDate }, i) => (
               <Stack
                 key={i}
@@ -162,7 +163,7 @@ export default async function ProjectSchedulesEmployeeRow({
 
       <TableCell align="right">
         {/* <Stack sx={{ gap: 1 }}> */}
-        {data
+        {filteredSchedules
           .map(({ startDate, id }, i) => (
             <Stack
               key={i}

@@ -91,6 +91,7 @@ model Schedule {
   projectId String
   startDate DateTime
   endDate   DateTime
+  isArchived            Boolean                @default(false)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   notes     String?

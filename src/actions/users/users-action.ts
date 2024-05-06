@@ -217,20 +217,30 @@ export async function EmployeeArchive(employeeId: string) {
 
     const existingEmployee = await db.user.findUnique({
       where: { id: employeeId },
+      include: { schedules: true }, // Include schedules associated with the employee
     });
 
     if (!existingEmployee) return { error: "Employee does not exist!" };
 
-    const archive = await db.user.update({
+    // Archive employee
+    const archiveEmployee = await db.user.update({
       where: { id: employeeId },
       data: { isArchived: true, isActive: false },
     });
-    if (!archive) return { error: "Something went wrong" };
+
+    if (!archiveEmployee) return { error: "Something went wrong" };
+
+    // Archive employee's schedules
+    const archiveSchedules = await db.schedule.deleteMany({
+      where: { userId: employeeId },
+    });
+
+    if (!archiveSchedules) return { error: "Something went wrong" };
 
     revalidatePath("/dashboard/employees");
     revalidatePath("/dashboard/archived");
 
-    return { success: "Data archived successfully!", data: { id: archive.id } };
+    return { success: "Data archived successfully!", data: { id: archiveEmployee.id } };
   } catch (error) {
     return { error: getErrorMessage(error) };
   }
