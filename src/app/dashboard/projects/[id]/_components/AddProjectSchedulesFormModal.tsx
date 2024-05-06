@@ -9,12 +9,11 @@ export default function AddProjectSchedulesFormModal() {
   const [show, setShow] = useState(false);
 
   return (
-    <Stack sx={{ m: 3, minWidth: 100 }} gap={2} direction="row">
+    <Stack sx={{ minWidth: 100, ml: 1 }} gap={2} direction="row">
       <Button
-        fullWidth
-        sx={{ bgcolor: "gray.light", fontSize: 14, p: 2 }}
-        onClick={() => setShow(true)}
+        variant="contained"
         startIcon={<AddOutlinedIcon />}
+        onClick={() => setShow(true)}
       >
         Assign Employee
       </Button>
