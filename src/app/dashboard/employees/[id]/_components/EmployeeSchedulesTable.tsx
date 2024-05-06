@@ -39,15 +39,55 @@ export default async function EmployeeSchedulesTable({
     <TableContainer sx={{ minHeight: "50vh", position: "relative" }}>
       <Table sx={{ overflow: "auto" }} aria-label="simple table">
         <TableHead>
-          <TableRow>
-            <TableCell align="left">No</TableCell>
-            <TableCell align="left">Schedule ID</TableCell>
-            <TableCell align="left">Project</TableCell>
-            <TableCell align="left">Location</TableCell>
-            <TableCell align="left">Start</TableCell>
-            <TableCell align="left">End</TableCell>
-            <TableCell align="left">Date created</TableCell>
-            <TableCell align="right">Details</TableCell>
+          <TableRow sx={{ backgroundColor: "rgba(124,35,216,255)" }}>
+            <TableCell
+              sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+              align="left"
+            >
+              No
+            </TableCell>
+            <TableCell
+              sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+              align="left"
+            >
+              Schedule ID
+            </TableCell>
+            <TableCell
+              sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+              align="left"
+            >
+              Project
+            </TableCell>
+            <TableCell
+              sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+              align="left"
+            >
+              Location
+            </TableCell>
+            <TableCell
+              sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+              align="left"
+            >
+              Start
+            </TableCell>
+            <TableCell
+              sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+              align="left"
+            >
+              End
+            </TableCell>
+            <TableCell
+              sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+              align="left"
+            >
+              Date created
+            </TableCell>
+            <TableCell
+              sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+              align="right"
+            >
+              Details
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

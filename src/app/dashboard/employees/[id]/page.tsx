@@ -63,7 +63,7 @@ export default async function EmployeeDetailsPage({
           </Button>
         </Stack>
         <Box sx={{ mb: 1 }}>
-          <Typography variant="h6">Employee Schedules</Typography>
+          <Typography variant="h6">List of Employee Schedules</Typography>
         </Box>
         <EmployeeScheduleTableHeader>
           <EmployeeScheduleSearch />
