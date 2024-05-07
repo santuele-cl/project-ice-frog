@@ -8,7 +8,7 @@ import {
   SchedulesSchema,
 } from "@/app/_schemas/zod/schema";
 import { getErrorMessage } from "../action-utils";
-import { Prisma } from "@prisma/client";
+import { Prisma, Schedule } from "@prisma/client";
 import { auth } from "@/auth";
 
 const ITEMS_PER_PAGE = 1;
@@ -116,45 +116,85 @@ export async function addMultipleScheduleByProject(
   schedules: z.infer<typeof ProjectMultpleSchedulesSchema>
 ) {
   try {
+    /**
+     * Verify that user is authenticated
+     * and has the right permission to do this action
+     */
     const session = await auth();
     if (!session) return { error: "Unauthorized" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
-    const parse = SchedulesSchema.safeParse(schedules);
+    if (!schedules) return { error: "Missing data." };
+
+    /**
+     * Parse the data passed using zod
+     * to check if valid
+     */
+    const parse = ProjectMultpleSchedulesSchema.safeParse(schedules);
 
     if (!parse.success) return { error: "Parse error. Invalid data input!" };
+    if (!parse.data.schedules || parse.data.schedules.length < 0)
+      return { error: "No schedule(2) received" };
 
-    if (parse.data.schedules) {
-      const overlap = await Promise.all(
-        parse.data.schedules.filter(async (schedule) => {
-          const existingSchedules = await db.schedule.findMany({
-            where: {
-              userId: schedule.userId,
-              AND: [
-                {
-                  startDate: { lt: schedule.endDate },
-                  endDate: { gt: schedule.startDate },
-                },
-              ],
-            },
-          });
-          return existingSchedules && existingSchedules.length > 0;
-        })
-      )
-        .then((results) => {
-          return results;
-        })
-        .catch((e) => console.log(e));
+    /**Verify each employee schedule input(s)
+     * does not overlap with each other
+     * */
+    const overlaps: Partial<Schedule>[] = [];
 
-      if (
-        overlap &&
-        !!overlap.length &&
-        overlap.some((item) => {
-          return !!item;
-        })
-      )
-        return { error: "Schedule overlap. Schedules not saved.", overlap };
-    }
+    parse.data.schedules.forEach((scheduleA, i) => {
+      parse.data.schedules.forEach((scheduleB, j) => {
+        if (i !== j) {
+          if (
+            scheduleA.userId === scheduleB.userId &&
+            scheduleA.startDate < scheduleB.endDate &&
+            scheduleA.endDate > scheduleB.startDate
+          )
+            overlaps.push(scheduleA);
+        }
+      });
+    });
+
+    if (overlaps && overlaps.length > 0)
+      return {
+        error:
+          "Input contains schedules that overlap with each other. Each employee's schedule must not overlap with their other schedules",
+        overlaps: overlaps,
+      };
+
+    /**
+     * Verify each employee schedule does not overlap with
+     * his or her existing schedule(s) in the database
+     * */
+    const overlapsFromDB: Partial<Schedule>[] = [];
+
+    await Promise.all(
+      parse.data.schedules.map(async (schedule) => {
+        const existingSchedule = await db.schedule.findFirst({
+          where: {
+            userId: schedule.userId,
+            AND: [
+              {
+                startDate: { lt: schedule.endDate },
+                endDate: { gt: schedule.startDate },
+              },
+            ],
+          },
+        });
+
+        if (existingSchedule) overlapsFromDB.push(schedule);
+      })
+    )
+      .then((results) => {
+        return results;
+      })
+      .catch((e) => console.log(e));
+
+    if (overlapsFromDB && !!overlapsFromDB.length)
+      return {
+        error:
+          "Input contains employee's schedules that overlap with their existing schedules.",
+        overlaps: overlapsFromDB,
+      };
 
     const createdSchedules = await db.schedule.createMany({
       data: parse.data.schedules,
@@ -165,7 +205,12 @@ export async function addMultipleScheduleByProject(
     }
 
     revalidatePath("/dashboard/schedules");
-    return { success: "Schedule(s) added!", data: schedules };
+    revalidatePath("/dashboard/projects");
+
+    return {
+      success: "Schedule(s) has successfully been created.",
+      data: schedules,
+    };
   } catch (error: unknown) {
     return { error: getErrorMessage(error) };
   }
@@ -173,53 +218,119 @@ export async function addMultipleScheduleByProject(
 
 export async function addMultipleScheduleByEmployeeId(
   employeeId: string,
-  schedules: z.infer<typeof SchedulesSchema>
+  data: z.infer<typeof SchedulesSchema>
 ) {
-  const session = await auth();
-
-  if (!session) return { error: "Unauthorized" };
-
-  if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
-  const isExisting = await db.user.findUnique({ where: { id: employeeId } });
-
-  if (!isExisting) return { error: "Employee does not exist." };
-
-  const parse = SchedulesSchema.safeParse(schedules);
-
-  if (!parse.success) return { error: "Parse error. Invalid data input!" };
-
-  const overlap = await Promise.all(
-    parse.data.schedules.map(async (schedule) => {
-      const existingSchedules = await db.schedule.findFirst({
-        where: {
-          userId: employeeId,
-          AND: [
-            {
-              startDate: { lt: schedule.endDate },
-              endDate: { gt: schedule.startDate },
-            },
-          ],
-        },
-      });
-      return existingSchedules;
-    })
-  )
-    .then((results) => {
-      return results;
-    })
-    .catch((e) => console.log(e));
-
-  if (
-    overlap &&
-    !!overlap.length &&
-    overlap.some((item) => {
-      return !!item;
-    })
-  )
-    return { error: "Schedule overlap. Schedules not saved.", overlap };
-
   try {
-    // TODO: loop thru schedules then use create instead of create many
+    /**
+     * Verify that user is authenticated
+     * and has the right permission to call this action
+     */
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
+    if (!data) return { error: "Missing data." };
+
+    /**
+     * Verify if the target employee is existing
+     */
+    const isExisting = await db.user.findUnique({ where: { id: employeeId } });
+    if (!isExisting) return { error: "Employee does not exist." };
+
+    const parse = SchedulesSchema.safeParse(data);
+    if (!parse.success) return { error: "Parse error. Invalid data input!" };
+    if (!parse.data.schedules || parse.data.schedules.length < 0)
+      return { error: "No schedule(2) received" };
+
+    const overlap = await Promise.all(
+      parse.data.schedules.map(async (schedule) => {
+        const existingSchedules = await db.schedule.findFirst({
+          where: {
+            userId: employeeId,
+            AND: [
+              {
+                startDate: { lt: schedule.endDate },
+                endDate: { gt: schedule.startDate },
+              },
+            ],
+          },
+        });
+        return existingSchedules;
+      })
+    )
+      .then((results) => {
+        return results;
+      })
+      .catch((e) => console.log(e));
+
+    if (
+      overlap &&
+      !!overlap.length &&
+      overlap.some((item) => {
+        return !!item;
+      })
+    )
+      return { error: "Schedule overlap. Schedules not saved.", overlap };
+
+    /**Verify each employee schedule input(s)
+     * does not overlap with each other
+     * */
+    const overlaps: Partial<Schedule>[] = [];
+
+    parse.data.schedules.forEach((scheduleA, i) => {
+      parse.data.schedules.forEach((scheduleB, j) => {
+        if (i !== j) {
+          if (
+            scheduleA.startDate < scheduleB.endDate &&
+            scheduleA.endDate > scheduleB.startDate
+          )
+            overlaps.push(scheduleA);
+        }
+      });
+    });
+
+    if (overlaps && overlaps.length > 0)
+      return {
+        error:
+          "Input contains schedules that overlap with each other. Each employee's schedule must not overlap with their other schedules",
+        overlaps: overlaps,
+      };
+
+    /**
+     * Verify each employee schedule does not overlap with
+     * his or her existing schedule(s) in the database
+     * */
+    const overlapsFromDB: Partial<Schedule>[] = [];
+
+    await Promise.all(
+      parse.data.schedules.map(async (schedule) => {
+        const existingSchedule = await db.schedule.findFirst({
+          where: {
+            userId: schedule.userId,
+            AND: [
+              {
+                startDate: { lt: schedule.endDate },
+                endDate: { gt: schedule.startDate },
+              },
+            ],
+          },
+        });
+
+        if (existingSchedule) overlapsFromDB.push(schedule);
+      })
+    )
+      .then((results) => {
+        return results;
+      })
+      .catch((e) => console.log(e));
+
+    if (overlapsFromDB && !!overlapsFromDB.length)
+      return {
+        error:
+          "Input contains employee's schedules that overlap with their existing schedules.",
+        overlaps: overlapsFromDB,
+      };
+
     const createdSchedules = await db.schedule.createMany({
       data: parse.data.schedules,
     });
@@ -228,7 +339,7 @@ export async function addMultipleScheduleByEmployeeId(
 
     revalidatePath("/dashboard/schedules");
 
-    return { success: "Schedule(s) added!", data: schedules };
+    return { success: "Schedule(s) added!", data: createdSchedules };
   } catch (error: unknown) {
     return { error: getErrorMessage(error) };
   }

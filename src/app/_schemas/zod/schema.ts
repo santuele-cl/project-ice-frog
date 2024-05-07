@@ -119,6 +119,75 @@ export const EditEmployeeSchema = z
     path: ["confirmPassword"],
   });
 
+/**
+ * SCHEDULE V2
+ */
+type ZodDateSchema = z.infer<typeof ScheduleSchemaV2>;
+
+export const EndDateMustBeGreaterThanStartDate = <
+  T extends Partial<ZodDateSchema>
+>(
+  data: T
+) => {
+  if (data.endDate && data.startDate) {
+    return data.endDate > data.startDate;
+  }
+};
+export const ErrorEndDateMustBeGreaterThanStartDate = {
+  message: "End date must be greater than start date.",
+  path: ["endDate"],
+};
+
+export const CannotSetPastDateAsStartDateExcludeToday = <
+  T extends Partial<ZodDateSchema>
+>(
+  data: T
+) => {
+  if (data.startDate) {
+    return (
+      data.startDate > new Date(dayjs().year(), dayjs().month(), dayjs().date())
+    );
+  }
+};
+
+export const ErrorCannotSetPastDateAsStartDateExcludeToday = {
+  message: "Cannot set past date as start date",
+  path: ["startDate"],
+};
+
+export const ScheduleSchemaV2 = z.object({
+  projectId: z.string().min(1, "Required field"),
+  userId: z.string().min(1, "Required field"),
+  notes: z.string().optional(),
+  startDate: z.date(),
+  endDate: z.date(),
+  id: z.string().min(1, "Required field"),
+});
+
+export const RefinedScheduleSchema = ScheduleSchemaV2.refine(
+  EndDateMustBeGreaterThanStartDate,
+  ErrorEndDateMustBeGreaterThanStartDate
+).refine(
+  CannotSetPastDateAsStartDateExcludeToday,
+  ErrorCannotSetPastDateAsStartDateExcludeToday
+);
+
+export const OmitProjectIdScheduleSchema = ScheduleSchemaV2.omit({
+  projectId: true,
+})
+  .refine(
+    EndDateMustBeGreaterThanStartDate,
+    ErrorEndDateMustBeGreaterThanStartDate
+  )
+  .refine(
+    CannotSetPastDateAsStartDateExcludeToday,
+    ErrorCannotSetPastDateAsStartDateExcludeToday
+  );
+
+/**
+ * SCHEDULE V1
+ */
+
 export const ScheduleSchema = z.object({
   projectId: z.string().min(1, "Required field"),
   userId: z.string().min(1, "Required field"),
@@ -193,13 +262,8 @@ export const SchedulesSchema = z.object({
   ),
 });
 
-export const ProjectScheduleSchema = z.object({
-  projectId: z.string().min(1, "Required field"),
-  userId: z.string().min(1, "Required field"),
+export const ProjectScheduleSchema = ScheduleSchema.extend({
   id: z.string().min(1, "Required field"),
-  notes: z.string().optional(),
-  startDate: z.date(),
-  endDate: z.date(),
 });
 
 export const ProjectScheduleSchemaWithDateRefine = ProjectScheduleSchema.refine(
@@ -218,48 +282,28 @@ export const ProjectScheduleSchemaWithDateRefine = ProjectScheduleSchema.refine(
 });
 
 export const ProjectMultpleSchedulesSchema = z.object({
-  schedules: z.array(ProjectScheduleSchemaWithDateRefine).refine(
-    (schedules) => {
-      console.log("sched : ", schedules);
-
-      const overlaps = schedules.filter((scheduleA, i) => {
-        const isOverlapping = schedules.some((scheduleB, j) => {
-          if (i !== j) {
-            if (scheduleA.userId === scheduleB.userId) {
-              return (
-                scheduleA.startDate < scheduleB.endDate &&
-                scheduleA.endDate > scheduleB.startDate
-              );
-            } else return false;
-          } else return false;
-        });
-        return isOverlapping;
-      });
-      return !overlaps.length;
-    },
-    (schedules) => {
-      const overlaps = schedules.filter((scheduleA, i) => {
-        const isOverlapping = schedules.some((scheduleB, j) => {
-          if (i !== j) {
-            if (scheduleA.userId === scheduleB.userId) {
-              return (
-                scheduleA.startDate < scheduleB.endDate &&
-                scheduleA.endDate > scheduleB.startDate
-              );
-            } else return false;
-          } else return false;
-        });
-        return isOverlapping;
-      });
-
-      const overlapsId = overlaps.map((overlap) => overlap.id);
-      return {
-        message: `Schedule overlaps`,
-        path: [`${overlapsId[0]}`],
-      };
-    }
-  ),
+  schedules: z.array(ProjectScheduleSchemaWithDateRefine),
 });
+
+export const ScheduleSchemaWithIdWithouProjectId = ScheduleSchema.extend({
+  id: z.string().min(1, "Required field"),
+}).omit({
+  projectId: true,
+});
+
+export const ScheduleSchemaWithIdWithouProjectIdWithDateRefine =
+  ScheduleSchemaWithIdWithouProjectId.refine(
+    (data) =>
+      data.startDate >
+      new Date(dayjs().year(), dayjs().month(), dayjs().date()),
+    {
+      message: "Cannot set past date as start date",
+      path: ["startDate"],
+    }
+  ).refine((data) => data.endDate > data.startDate, {
+    message: "End date must be greater than start date.",
+    path: ["endDate"],
+  });
 
 export const ProjectSchema = z
   .object({
@@ -272,7 +316,9 @@ export const ProjectSchema = z
     startDate: z.date(),
     endDate: z.date(),
     notes: z.string().optional(),
-    schedules: z.array(ScheduleSchemaWithoutProjectIdWithDateRefine).optional(),
+    schedules: z
+      .array(ScheduleSchemaWithIdWithouProjectIdWithDateRefine)
+      .optional(),
   })
   .refine((data) => data.endDate >= data.startDate, {
     message: "End date must be greater than start date.",

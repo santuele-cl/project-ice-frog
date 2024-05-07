@@ -87,22 +87,16 @@ export default function AddProjectSchedulesForm({
   const onSubmit = async (
     data: z.infer<typeof ProjectMultpleSchedulesSchema>
   ) => {
-    console.log("data", data);
-    // const res = await addMultipleScheduleByEmployeeId(
-    //   params?.employeeId as string,
-    //   data
-    // );
-    // console.log(res);
-
     setPending(true);
     setError("");
     setSuccess("");
+    setOverlappingSchedules([]);
     try {
       const res = await addMultipleScheduleByProject(data);
       console.log("res : ", res);
       if (res?.error) {
         setError(res.error);
-        if (res.overlap) setOverlappingSchedules(res.overlap);
+        if (res.overlaps) setOverlappingSchedules(res.overlaps);
       }
       if (res?.success) {
         reset();
@@ -125,10 +119,6 @@ export default function AddProjectSchedulesForm({
     fetchEmployees();
   }, []);
 
-  console.log("errors : ", errors);
-  console.log("Overlapping sched : ", overlappingSchedules);
-  // console.log("fields : ", fields);
-
   return (
     <Paper sx={{ p: 3 }}>
       <Stack
@@ -145,39 +135,33 @@ export default function AddProjectSchedulesForm({
             sx={{ fontWeight: 700 }}
             color="secondary"
           >
-            {params?.employeeId}
+            New Schedules
           </Typography>
         </Typography>
-        {/* <IconButton onClick={() => setShow(false)} color="error" size="small">
-          <CloseOutlinedIcon fontSize="medium" />
-        </IconButton> */}
       </Stack>
 
       <Divider sx={{ my: 2 }} />
       <Stack component="form" onSubmit={handleSubmit(onSubmit)} sx={{ gap: 2 }}>
-        <Stack sx={{ maxHeight: 350, overflowY: "auto", gap: 2, p: 2 }}>
+        <Stack
+          sx={{
+            maxHeight: 350,
+            overflowY: "auto",
+            gap: 2,
+            p: 2,
+          }}
+        >
           {fields.map((field, index) => {
-            // console.log("field id : ", field.id);
-            const myoverlap_sched = field.userId
-              ? overlappingSchedules.filter(
-                  (sched) => sched.userId === field.userId
-                )
-              : [];
+            const hasOverlap = overlappingSchedules.find(
+              (sched) => sched.id === field.id
+            );
 
-            const hasOverlap = myoverlap_sched.filter((sched) => {
-              if (sched.startDate && sched.endDate) {
-                const bool =
-                  sched.startDate < field.endDate &&
-                  sched.endDate > field.startDate;
-
-                return bool;
-              } else return false;
-            });
-            console.log("has overlap : ", hasOverlap);
-            setValue(`schedules.${index}.id`, String(index));
+            setValue(`schedules.${index}.id`, field.id);
 
             return (
-              <Stack key={field.id}>
+              <Stack
+                key={field.id}
+                sx={{ color: hasOverlap ? "error.main" : "inherit" }}
+              >
                 <Stack
                   direction="row"
                   sx={{ gap: 2, alignItems: "center" }}
@@ -225,7 +209,7 @@ export default function AddProjectSchedulesForm({
                               label="Employee"
                               inputRef={ref}
                               helperText={error?.message}
-                              error={!!error}
+                              error={!!error || !!hasOverlap}
                             />
                           )}
                         />
@@ -239,11 +223,19 @@ export default function AddProjectSchedulesForm({
                     render={({ field }) => {
                       return (
                         <DateTimePicker
+                          minDate={dayjs(
+                            new Date(
+                              dayjs().year(),
+                              dayjs().month(),
+                              dayjs().date()
+                            )
+                          )}
                           slotProps={{
                             textField: {
                               error:
-                                !!errors.schedules &&
-                                !!errors.schedules[index]?.startDate,
+                                (!!errors.schedules &&
+                                  !!errors.schedules[index]?.startDate) ||
+                                !!hasOverlap,
                               helperText: (
                                 <FormHelperText sx={{ margin: 0 }}>
                                   {!!errors.schedules &&
@@ -270,11 +262,19 @@ export default function AddProjectSchedulesForm({
                     render={({ field }) => {
                       return (
                         <DateTimePicker
+                          minDate={dayjs(
+                            new Date(
+                              dayjs().year(),
+                              dayjs().month(),
+                              dayjs().date()
+                            )
+                          )}
                           slotProps={{
                             textField: {
                               error:
-                                !!errors.schedules &&
-                                !!errors.schedules[index]?.endDate,
+                                (!!errors.schedules &&
+                                  !!errors.schedules[index]?.endDate) ||
+                                !!hasOverlap,
                               helperText: (
                                 <FormHelperText sx={{ margin: 0 }}>
                                   {!!errors.schedules &&
@@ -298,7 +298,9 @@ export default function AddProjectSchedulesForm({
                     label="Notes"
                     {...register(`schedules.${index}.notes` as const)}
                     error={
-                      !!errors.schedules && !!errors.schedules[index]?.notes
+                      (!!errors.schedules &&
+                        !!errors.schedules[index]?.notes) ||
+                      !!hasOverlap
                         ? true
                         : false
                     }
@@ -317,7 +319,13 @@ export default function AddProjectSchedulesForm({
                       <DeleteOutlinedIcon color="inherit" />
                     </Button>
                   )}
-                  {((errors.schedules &&
+                  {!!hasOverlap && (
+                    <Tooltip title="This schedule overlaps with other schedule(s)">
+                      <WarningIcon color="error" />
+                    </Tooltip>
+                  )}
+
+                  {/* {((errors.schedules &&
                     errors.schedules[index]?.root?.message?.startsWith(
                       "Schedule overlap"
                     )) ||
@@ -325,24 +333,19 @@ export default function AddProjectSchedulesForm({
                     <Tooltip title="Overlapping schedule">
                       <WarningIcon color="error" />
                     </Tooltip>
-                  )}
+                  )} */}
                 </Stack>
-                {/* {errors.schedules && errors.schedules[index]?.root?.message && (
-                  <FormStatusText
-                    message={errors.schedules[index]?.root?.message!}
-                    status="error"
-                  />
+                {/* {hasOverlap && (
+                  <FormHelperText
+                    sx={{
+                      // margin: 0,
+                      ml: 3,
+                      color: "error.main",
+                    }}
+                  >
+                    This schedule overlaps with other schedule(s)
+                  </FormHelperText>
                 )} */}
-                {/* <FormStatusText
-                  message={
-                    "This schedule overlaps with another schedule of employee."
-                  }
-                  status="error"
-                />
-
-                <Typography color="error">
-                  This schedule overlaps with another schedule of employee.
-                </Typography> */}
               </Stack>
             );
           })}
