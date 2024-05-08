@@ -4,8 +4,7 @@ import { unstable_noStore as noStore, revalidatePath } from "next/cache";
 import { db } from "@/app/_lib/db";
 import {
   EditScheduleSchema,
-  ProjectMultpleSchedulesSchema,
-  SchedulesSchema,
+  RefinedMultipleScheduleSchema,
 } from "@/app/_schemas/zod/schema";
 import { getErrorMessage } from "../action-utils";
 import { Prisma, Schedule } from "@prisma/client";
@@ -113,7 +112,7 @@ export async function getSchedulesByUserIdAndProjectId({
 }
 
 export async function addMultipleScheduleByProject(
-  schedules: z.infer<typeof ProjectMultpleSchedulesSchema>
+  schedules: z.infer<typeof RefinedMultipleScheduleSchema>
 ) {
   try {
     /**
@@ -130,7 +129,7 @@ export async function addMultipleScheduleByProject(
      * Parse the data passed using zod
      * to check if valid
      */
-    const parse = ProjectMultpleSchedulesSchema.safeParse(schedules);
+    const parse = RefinedMultipleScheduleSchema.safeParse(schedules);
 
     if (!parse.success) return { error: "Parse error. Invalid data input!" };
     if (!parse.data.schedules || parse.data.schedules.length < 0)
@@ -218,7 +217,7 @@ export async function addMultipleScheduleByProject(
 
 export async function addMultipleScheduleByEmployeeId(
   employeeId: string,
-  data: z.infer<typeof SchedulesSchema>
+  data: z.infer<typeof RefinedMultipleScheduleSchema>
 ) {
   try {
     /**
@@ -237,40 +236,10 @@ export async function addMultipleScheduleByEmployeeId(
     const isExisting = await db.user.findUnique({ where: { id: employeeId } });
     if (!isExisting) return { error: "Employee does not exist." };
 
-    const parse = SchedulesSchema.safeParse(data);
+    const parse = RefinedMultipleScheduleSchema.safeParse(data);
     if (!parse.success) return { error: "Parse error. Invalid data input!" };
     if (!parse.data.schedules || parse.data.schedules.length < 0)
       return { error: "No schedule(2) received" };
-
-    const overlap = await Promise.all(
-      parse.data.schedules.map(async (schedule) => {
-        const existingSchedules = await db.schedule.findFirst({
-          where: {
-            userId: employeeId,
-            AND: [
-              {
-                startDate: { lt: schedule.endDate },
-                endDate: { gt: schedule.startDate },
-              },
-            ],
-          },
-        });
-        return existingSchedules;
-      })
-    )
-      .then((results) => {
-        return results;
-      })
-      .catch((e) => console.log(e));
-
-    if (
-      overlap &&
-      !!overlap.length &&
-      overlap.some((item) => {
-        return !!item;
-      })
-    )
-      return { error: "Schedule overlap. Schedules not saved.", overlap };
 
     /**Verify each employee schedule input(s)
      * does not overlap with each other
@@ -331,6 +300,9 @@ export async function addMultipleScheduleByEmployeeId(
         overlaps: overlapsFromDB,
       };
 
+    /**
+     * Schedule(s) creation
+     * */
     const createdSchedules = await db.schedule.createMany({
       data: parse.data.schedules,
     });
@@ -430,27 +402,42 @@ export async function editSchedule({
   data: z.infer<typeof EditScheduleSchema>;
 }) {
   try {
+    /**
+     * Verify that user is authenticated
+     * and has the right permission to call this action
+     */
     const session = await auth();
     if (!session) return { error: "Unauthorized" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
+    /**
+     * Verify that the "to edit schedule" is existing
+     */
     const schedule = await db.schedule.findUnique({
       where: { id: scheduleId },
     });
-
     if (!schedule) return { error: "Schedule does not exist!" };
 
+    /**
+     * Parse the data passed using zod
+     * to check if valid
+     */
     const parse = EditScheduleSchema.safeParse(data);
-
     if (!parse.success) return { error: "Parse error. Invalid data" };
+    const parsedDate = parse.data;
 
+    /**
+     * Verify each updated schedule does not overlap with
+     * his or her existing schedule(s)
+     * */
     const overlap = await db.schedule.findFirst({
       where: {
+        id: { not: schedule.id },
+        userId: parsedDate.userId,
         AND: [
           {
-            id: { not: scheduleId },
-            startDate: { lt: data.endDate },
-            endDate: { gt: data.startDate },
+            startDate: { lt: parsedDate.endDate },
+            endDate: { gt: parsedDate.startDate },
           },
         ],
       },
@@ -458,9 +445,12 @@ export async function editSchedule({
 
     if (overlap) return { error: "Schedule overlap" };
 
+    /**
+     * Update schedule
+     * */
     const updatedSchedule = await db.schedule.update({
       where: { id: scheduleId },
-      data,
+      data: parsedDate,
     });
 
     if (!updatedSchedule) return { error: "Something went wrong" };

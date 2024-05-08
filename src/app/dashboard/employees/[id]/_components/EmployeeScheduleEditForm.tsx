@@ -18,13 +18,14 @@ import {
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers";
 
-import { EditScheduleSchema } from "@/app/_schemas/zod/schema";
+// import { EditScheduleSchema } from "@/app/_schemas/zod/schema";
 import { Project, Schedule } from "@prisma/client";
 
 import { getProjects } from "@/actions/projects/projects-action";
 import { editSchedule } from "@/actions/schedules/schedule-action";
 import FormStatusText from "@/app/_ui/auth/FormStatusText";
 import { enqueueSnackbar } from "notistack";
+import { EditScheduleSchema } from "@/app/_schemas/zod/schema";
 
 export default function EmployeeScheduleEditForm({
   schedule,
@@ -50,6 +51,7 @@ export default function EmployeeScheduleEditForm({
   } = useForm<z.infer<typeof EditScheduleSchema>>({
     resolver: zodResolver(EditScheduleSchema),
     defaultValues: {
+      userId,
       endDate,
       startDate,
       projectId,

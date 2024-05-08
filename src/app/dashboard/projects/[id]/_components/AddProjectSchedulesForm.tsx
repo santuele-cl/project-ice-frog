@@ -2,37 +2,27 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   Autocomplete,
-  Box,
   Button,
   Divider,
   FormHelperText,
-  IconButton,
   Paper,
-  Snackbar,
   Stack,
   TextField,
   Tooltip,
   Typography,
-  formControlClasses,
 } from "@mui/material";
-import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import FormStatusText from "@/app/_ui/auth/FormStatusText";
 import dayjs from "dayjs";
-import { ProjectMultpleSchedulesSchema } from "@/app/_schemas/zod/schema";
+import { RefinedMultipleScheduleSchema } from "@/app/_schemas/zod/schema";
 import { useParams } from "next/navigation";
-import { Department, Prisma, Project, Schedule, User } from "@prisma/client";
-import { getDepartments } from "@/actions/departments/department-action";
-import { getProjects } from "@/actions/projects/projects-action";
+import { Prisma, Schedule } from "@prisma/client";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { DateTimePicker } from "@mui/x-date-pickers";
-import {
-  addMultipleScheduleByEmployeeId,
-  addMultipleScheduleByProject,
-} from "@/actions/schedules/schedule-action";
+import { addMultipleScheduleByProject } from "@/actions/schedules/schedule-action";
 import { getEmployeeIds } from "@/actions/users/users-action";
 import WarningIcon from "@mui/icons-material/Warning";
 
@@ -52,7 +42,6 @@ export default function AddProjectSchedulesForm({
   const [pending, setPending] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  const [overlapIds, setOverlapIds] = useState<string[]>([]);
   const [overlappingSchedules, setOverlappingSchedules] = useState<
     Partial<Schedule>[]
   >([]);
@@ -64,13 +53,14 @@ export default function AddProjectSchedulesForm({
     reset,
     control,
     setValue,
-  } = useForm<z.infer<typeof ProjectMultpleSchedulesSchema>>({
-    resolver: zodResolver(ProjectMultpleSchedulesSchema),
+  } = useForm<z.infer<typeof RefinedMultipleScheduleSchema>>({
+    resolver: zodResolver(RefinedMultipleScheduleSchema),
     defaultValues: {
       schedules: [
         {
           projectId: params.id as string,
           userId: "",
+          id: "",
           startDate: dayjs().toDate(),
           endDate: dayjs().add(8, "hour").toDate(),
           notes: "",
@@ -85,7 +75,7 @@ export default function AddProjectSchedulesForm({
   });
 
   const onSubmit = async (
-    data: z.infer<typeof ProjectMultpleSchedulesSchema>
+    data: z.infer<typeof RefinedMultipleScheduleSchema>
   ) => {
     setPending(true);
     setError("");

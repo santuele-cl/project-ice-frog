@@ -14,18 +14,20 @@ import {
   Paper,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 
-import { SchedulesSchema } from "@/app/_schemas/zod/schema";
-import { Project } from "@prisma/client";
+import { RefinedMultipleScheduleSchema } from "@/app/_schemas/zod/schema";
+import { Project, Schedule } from "@prisma/client";
 
 import { getProjects } from "@/actions/projects/projects-action";
 import { addMultipleScheduleByEmployeeId } from "@/actions/schedules/schedule-action";
 import FormStatusText from "@/app/_ui/auth/FormStatusText";
+import WarningIcon from "@mui/icons-material/Warning";
 
 export default function EmployeeScheduleAddForm({
   setShow,
@@ -36,6 +38,9 @@ export default function EmployeeScheduleAddForm({
   const [pending, setPending] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [overlappingSchedules, setOverlappingSchedules] = useState<
+    Partial<Schedule>[]
+  >([]);
 
   const {
     register,
@@ -45,13 +50,15 @@ export default function EmployeeScheduleAddForm({
     control,
     trigger,
     setError: setFormError,
-  } = useForm<z.infer<typeof SchedulesSchema>>({
-    resolver: zodResolver(SchedulesSchema),
+    setValue,
+  } = useForm<z.infer<typeof RefinedMultipleScheduleSchema>>({
+    resolver: zodResolver(RefinedMultipleScheduleSchema),
     defaultValues: {
       schedules: [
         {
           projectId: "",
           userId: params.id as string,
+          id: "",
           startDate: dayjs().toDate(),
           endDate: dayjs().add(8, "hour").toDate(),
           notes: "",
@@ -65,10 +72,13 @@ export default function EmployeeScheduleAddForm({
     name: "schedules",
   });
 
-  const onSubmit = async (data: z.infer<typeof SchedulesSchema>) => {
+  const onSubmit = async (
+    data: z.infer<typeof RefinedMultipleScheduleSchema>
+  ) => {
     setPending(true);
     setError("");
     setSuccess("");
+    setOverlappingSchedules([]);
 
     try {
       const res = await addMultipleScheduleByEmployeeId(
@@ -79,6 +89,9 @@ export default function EmployeeScheduleAddForm({
       if (res?.error) {
         setFormError("root", { type: "Custom", message: res.error });
       }
+
+      if (res?.overlaps) setOverlappingSchedules(res.overlaps);
+
       if (res?.success) {
         reset();
         setSuccess(res.success);
@@ -120,19 +133,26 @@ export default function EmployeeScheduleAddForm({
             Christia "Roy" Sarguet-Castro
           </Typography>
         </Typography>
-        {/* <IconButton onClick={() => setShow(false)} color="error" size="small">
-          <CloseOutlinedIcon fontSize="medium" />
-        </IconButton> */}
       </Stack>
 
       <Divider sx={{ my: 2 }} />
       <Stack component="form" onSubmit={handleSubmit(onSubmit)} sx={{ gap: 2 }}>
         <Stack sx={{ maxHeight: 350, overflowY: "auto", gap: 2, p: 2 }}>
           {fields.map((field, index) => {
+            const hasOverlap = overlappingSchedules.find(
+              (sched) => sched.id === field.id
+            );
+
+            setValue(`schedules.${index}.id`, field.id);
+
             return (
               <Stack
                 direction="row"
-                sx={{ gap: 2, alignItems: "center" }}
+                sx={{
+                  gap: 2,
+                  alignItems: "center",
+                  color: hasOverlap ? "error.main" : "inherit",
+                }}
                 key={index}
               >
                 <Typography
@@ -174,7 +194,7 @@ export default function EmployeeScheduleAddForm({
                             label="Project"
                             inputRef={ref}
                             helperText={error?.message}
-                            error={!!error}
+                            error={!!error || !!hasOverlap}
                           />
                         )}
                       />
@@ -184,16 +204,22 @@ export default function EmployeeScheduleAddForm({
                 <Controller
                   control={control}
                   name={`schedules.${index}.startDate`}
-                  // rules={{ required: true }}
                   render={({ field }) => {
                     return (
                       <DateTimePicker
-                        minDate={dayjs()}
+                        minDate={dayjs(
+                          new Date(
+                            dayjs().year(),
+                            dayjs().month(),
+                            dayjs().date()
+                          )
+                        )}
                         slotProps={{
                           textField: {
                             error:
-                              !!errors.schedules &&
-                              !!errors.schedules[index]?.startDate,
+                              (!!errors.schedules &&
+                                !!errors.schedules[index]?.startDate) ||
+                              !!hasOverlap,
                             helperText: (
                               <FormHelperText sx={{ margin: 0 }}>
                                 {!!errors.schedules &&
@@ -223,12 +249,19 @@ export default function EmployeeScheduleAddForm({
                   render={({ field }) => {
                     return (
                       <DateTimePicker
-                        minDate={dayjs()}
+                        minDate={dayjs(
+                          new Date(
+                            dayjs().year(),
+                            dayjs().month(),
+                            dayjs().date()
+                          )
+                        )}
                         slotProps={{
                           textField: {
                             error:
-                              !!errors.schedules &&
-                              !!errors.schedules[index]?.endDate,
+                              (!!errors.schedules &&
+                                !!errors.schedules[index]?.endDate) ||
+                              !!hasOverlap,
                             helperText: (
                               <FormHelperText sx={{ margin: 0 }}>
                                 {!!errors.schedules &&
@@ -271,6 +304,11 @@ export default function EmployeeScheduleAddForm({
                     <DeleteOutlinedIcon color="error" />
                   </Button>
                 )}
+                {!!hasOverlap && (
+                  <Tooltip title="This schedule overlaps with other schedule(s)">
+                    <WarningIcon color="error" />
+                  </Tooltip>
+                )}
               </Stack>
             );
           })}
@@ -281,6 +319,7 @@ export default function EmployeeScheduleAddForm({
               projectId: "",
               userId: params.id as string,
               notes: "",
+              id: "",
               startDate: dayjs().toDate(),
               endDate: dayjs().add(8, "hour").toDate(),
             })
@@ -289,7 +328,6 @@ export default function EmployeeScheduleAddForm({
         >
           <AddOutlinedIcon />
         </Button>
-        {/* {error && <FormStatusText message={error} status="error" />} */}
         {errors &&
           errors.schedules &&
           errors.schedules.root &&
