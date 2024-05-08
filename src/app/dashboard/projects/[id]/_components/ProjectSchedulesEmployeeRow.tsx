@@ -102,26 +102,6 @@ export default async function ProjectSchedulesEmployeeRow({
       <TableCell align="left">
         <Stack sx={{ gap: 1 }}>
           {data
-            .map(({ startDate }) => (
-              <Stack
-                sx={{
-                  p: 1,
-                  flexDirection: "row",
-                  gap: 1,
-                  bgcolor: "rgba(166,174,255, 0.2)",
-                  borderRadius: 1,
-                }}
-              >
-                <Typography>{dayjs(startDate).format("hh:mm a")}</Typography>
-              </Stack>
-            ))
-            .reverse()}
-        </Stack>
-      </TableCell>
-
-      <TableCell align="left">
-        <Stack sx={{ gap: 1 }}>
-          {data
             .map(({ endDate }) => (
               <Stack
                 sx={{
@@ -133,6 +113,26 @@ export default async function ProjectSchedulesEmployeeRow({
                 }}
               >
                 <Typography>{dayjs(endDate).format("MMM DD, YYYY")}</Typography>
+              </Stack>
+            ))
+            .reverse()}
+        </Stack>
+      </TableCell>
+
+      <TableCell align="left">
+        <Stack sx={{ gap: 1 }}>
+          {data
+            .map(({ startDate }) => (
+              <Stack
+                sx={{
+                  p: 1,
+                  flexDirection: "row",
+                  gap: 1,
+                  bgcolor: "rgba(166,174,255, 0.2)",
+                  borderRadius: 1,
+                }}
+              >
+                <Typography>{dayjs(startDate).format("hh:mm a")}</Typography>
               </Stack>
             ))
             .reverse()}

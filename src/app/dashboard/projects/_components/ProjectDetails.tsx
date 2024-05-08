@@ -92,11 +92,12 @@ export default function ProjectDetails({ details }: Props) {
                 {`${building} ${street} ${barangay}, ${city}`}
               </Typography>
               <Typography>
-                <b>Start Date:</b>{" "}
+                <b>Projected Start Date:</b>{" "}
                 {dayjs(startDate).format("MMM DD, YYYY hh:mm a")}
               </Typography>
               <Typography>
-                <b>End Date:</b> {dayjs(endDate).format("MMM DD, YYYY hh:mm a")}
+                <b>Projected End Date:</b>{" "}
+                {dayjs(endDate).format("MMM DD, YYYY hh:mm a")}
               </Typography>
             </Grid2>
 
