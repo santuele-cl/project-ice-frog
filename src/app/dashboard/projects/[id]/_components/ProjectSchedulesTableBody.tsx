@@ -15,6 +15,7 @@ import ProjectSchedulesEmployeeRow from "./ProjectSchedulesEmployeeRow";
 import TableNoRecord from "@/app/_ui/TableNoRecord";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import ProjectsTablePagination from "../../_components/ProjectsTablePagination";
+import AddProjectSchedulesFormModal from "./AddProjectSchedulesFormModal";
 
 type Props = {
   employeeIds: { userId: string }[];
@@ -36,14 +37,17 @@ export default async function ProjectSchedulesTableBody({
         <ProjectsTablePagination
           pagination={{ totalCount: 0, totalPages: 0, itemsPerPage: 0 }}
         />
-        <Button
-          startIcon={<FileDownloadIcon />}
-          variant="outlined"
-          color="success"
-          // onClick={handleExport}
-        >
-          Export
-        </Button>
+        <Stack sx={{ flexDirection: "row", height: 40 }}>
+          <Button
+            startIcon={<FileDownloadIcon />}
+            variant="outlined"
+            color="success"
+            // onClick={handleExport}
+          >
+            Export
+          </Button>
+          <AddProjectSchedulesFormModal />
+        </Stack>
       </Stack>
       <Divider />
       <TableContainer sx={{ minHeight: "690px", position: "relative" }}>
