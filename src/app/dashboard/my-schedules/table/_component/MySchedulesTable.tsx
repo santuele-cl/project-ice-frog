@@ -76,7 +76,6 @@ export default function MySchedulesTable(props: Props) {
         ...(jobOrder && { jobOrder }),
       });
       if (response.data && response.pagination) {
-        // @ts-expect-error
         setData(response.data);
         setPagination(response.pagination);
       }

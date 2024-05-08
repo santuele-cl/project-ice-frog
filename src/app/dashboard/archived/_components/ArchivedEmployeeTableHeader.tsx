@@ -1,7 +1,4 @@
-import { Stack, Typography } from "@mui/material";
-import EmployeeSearch from "./ArchivedEmployeeSearch";
-import EmployeeAdd from "./ArchivedEmployeeAddFormModal";
-import React from "react";
+import { Stack } from "@mui/material";
 
 export default function ArchivedEmployeeTableHeader({
   children,

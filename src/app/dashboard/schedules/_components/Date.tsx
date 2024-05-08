@@ -35,9 +35,9 @@ export default async function Date({
                 fontSize: "0.8rem",
               }}
             >
-              <Typography sx={{ fontWeight: 600}}>{project?.name}</Typography>
+              <Typography sx={{ fontWeight: 600 }}>{project?.name}</Typography>
               <Typography sx={{ fontStyle: "italic" }} noWrap>
-                {project?.location}
+                {`${project?.building} ${project?.street} ${project?.barangay}, ${project?.city}`}
               </Typography>
               <Stack sx={{ flexDirection: "row", gap: 1 }}>
                 <Typography sx={{ fontWeight: 600 }}>

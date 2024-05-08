@@ -244,11 +244,14 @@ export async function getProjects({
   try {
     const session = await auth();
     if (!session) return { error: "Unauthorized" };
-    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+    if (session.user.id !== employeeId && session.user.role !== "ADMIN")
+      return { error: "Unauthorized" };
 
     const query = {
       where: {
-        ...(employeeId && { schedules: { some: { userId: employeeId } } }),
+        ...(employeeId && {
+          schedules: { some: { userId: { equals: employeeId } } },
+        }),
         ...(name && { name: { contains: name, mode: "insensitive" } }),
         ...(jobOrder && {
           jobOrder: { contains: jobOrder, mode: "insensitive" },
@@ -274,7 +277,7 @@ export async function getProjects({
       orderBy: { createdAt: "desc" },
       ...(page !== 0 && { take: ITEMS_PER_PAGE }),
       ...(page !== 0 && { skip: (Number(page) - 1) * ITEMS_PER_PAGE }),
-    } as Prisma.ProjectFindManyArgs;
+    } satisfies Prisma.ProjectFindManyArgs;
 
     const [projects, count] = await db.$transaction([
       db.project.findMany(query),
@@ -304,7 +307,7 @@ export async function getProjectScheduleGroupByUserId(projectId: string) {
 
     const projects = await db.schedule.groupBy({
       by: ["userId"],
-      where: { projectId },
+      where: { projectId, user: { isArchived: false } },
     });
 
     if (!projects) return { error: "Database error. Fetch unsuccessful!" };
