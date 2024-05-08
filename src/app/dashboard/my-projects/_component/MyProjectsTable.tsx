@@ -47,8 +47,9 @@ export default function MyProjectsTable(props: Props) {
 
   const handleExport = async () => {
     const projects = await getProjects({
-      page: 0,
+      employeeId,
       ...(name && { name }),
+      ...(page && { page }),
       ...(location && { location }),
       ...(jobOrder && { jobOrder }),
     });

@@ -419,6 +419,7 @@ export default function ProjectAddForm({
             append({
               userId: "",
               notes: "",
+              id: "",
               startDate: dayjs().toDate(),
               endDate: dayjs().add(8, "hour").toDate(),
             })
