@@ -5,7 +5,7 @@ import { EditProjectSchema, ProjectSchema } from "@/app/_schemas/zod/schema";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import { z } from "zod";
 import { getErrorMessage } from "../action-utils";
-import { Prisma } from "@prisma/client";
+import { Prisma, Schedule } from "@prisma/client";
 import { auth } from "@/auth";
 
 const ITEMS_PER_PAGE = 15;
@@ -27,7 +27,7 @@ export async function deleteProject(projectId: string) {
     const deletedProject = await db.project.delete({
       where: { id: projectId },
     });
-    
+
     if (!deletedProject) return { error: "Something went wrong" };
 
     revalidatePath("/dashboard/projects");
@@ -125,18 +125,59 @@ export async function editProject({
 
 export async function addProject(values: z.infer<typeof ProjectSchema>) {
   try {
+    /**
+     * Verify that user is authenticated
+     * and has the right permission to do this action
+     */
     const session = await auth();
     if (!session) return { error: "Unauthorized" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
+    if (!values) return { error: "Missing data." };
+
+    /**
+     * Parse the data passed using zod
+     * to check if valid
+     */
     const parse = ProjectSchema.safeParse(values);
     if (!parse.success) return { error: "Parse error. Invalid data input!" };
     const { schedules, ...otherFields } = parse.data;
 
-    if (schedules) {
-      const overlap = await Promise.all(
+    if (schedules && schedules.length > 0) {
+      /**Verify each employee schedule input(s)
+       * does not overlap with each other
+       * */
+      const overlaps: Partial<Schedule>[] = [];
+
+      schedules.forEach((scheduleA, i) => {
+        schedules.forEach((scheduleB, j) => {
+          if (i !== j) {
+            if (
+              scheduleA.userId === scheduleB.userId &&
+              scheduleA.startDate < scheduleB.endDate &&
+              scheduleA.endDate > scheduleB.startDate
+            )
+              overlaps.push(scheduleA);
+          }
+        });
+      });
+
+      if (overlaps && overlaps.length > 0)
+        return {
+          error:
+            "Input contains schedules that overlap with each other. Each employee's schedule must not overlap with their other schedules",
+          overlaps: overlaps,
+        };
+
+      /**
+       * Verify each employee schedule does not overlap with
+       * his or her existing schedule(s) in the database
+       * */
+      const overlapsFromDB: Partial<Schedule>[] = [];
+
+      await Promise.all(
         schedules.map(async (schedule) => {
-          const existingSchedules = await db.schedule.findFirst({
+          const existingSchedule = await db.schedule.findFirst({
             where: {
               userId: schedule.userId,
               AND: [
@@ -147,7 +188,8 @@ export async function addProject(values: z.infer<typeof ProjectSchema>) {
               ],
             },
           });
-          return existingSchedules;
+
+          if (existingSchedule) overlapsFromDB.push(schedule);
         })
       )
         .then((results) => {
@@ -155,14 +197,12 @@ export async function addProject(values: z.infer<typeof ProjectSchema>) {
         })
         .catch((e) => console.log(e));
 
-      if (
-        overlap &&
-        !!overlap.length &&
-        overlap.some((item) => {
-          return !!item;
-        })
-      )
-        return { error: "Schedule overlap. Schedules not saved.", overlap };
+      if (overlapsFromDB && !!overlapsFromDB.length)
+        return {
+          error:
+            "Input contains employee's schedules that overlap with their existing schedules.",
+          overlaps: overlapsFromDB,
+        };
     }
 
     const newProject = await db.project.create({

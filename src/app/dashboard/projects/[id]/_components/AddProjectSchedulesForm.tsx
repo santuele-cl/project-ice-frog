@@ -2,37 +2,29 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   Autocomplete,
-  Box,
   Button,
   Divider,
   FormHelperText,
-  IconButton,
   Paper,
-  Snackbar,
   Stack,
   TextField,
+  Tooltip,
   Typography,
-  formControlClasses,
 } from "@mui/material";
-import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import FormStatusText from "@/app/_ui/auth/FormStatusText";
 import dayjs from "dayjs";
-import { SchedulesSchema } from "@/app/_schemas/zod/schema";
+import { RefinedMultipleScheduleSchema } from "@/app/_schemas/zod/schema";
 import { useParams } from "next/navigation";
-import { Department, Prisma, Project, User } from "@prisma/client";
-import { getDepartments } from "@/actions/departments/department-action";
-import { getProjects } from "@/actions/projects/projects-action";
+import { Prisma, Schedule } from "@prisma/client";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { DateTimePicker } from "@mui/x-date-pickers";
-import {
-  addMultipleScheduleByEmployeeId,
-  addMultipleScheduleByProject,
-} from "@/actions/schedules/schedule-action";
+import { addMultipleScheduleByProject } from "@/actions/schedules/schedule-action";
 import { getEmployeeIds } from "@/actions/users/users-action";
+import WarningIcon from "@mui/icons-material/Warning";
 
 type UserWithName = Prisma.UserGetPayload<{
   select: {
@@ -50,6 +42,9 @@ export default function AddProjectSchedulesForm({
   const [pending, setPending] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [overlappingSchedules, setOverlappingSchedules] = useState<
+    Partial<Schedule>[]
+  >([]);
 
   const {
     register,
@@ -57,13 +52,15 @@ export default function AddProjectSchedulesForm({
     formState: { errors, isSubmitting },
     reset,
     control,
-  } = useForm<z.infer<typeof SchedulesSchema>>({
-    resolver: zodResolver(SchedulesSchema),
+    setValue,
+  } = useForm<z.infer<typeof RefinedMultipleScheduleSchema>>({
+    resolver: zodResolver(RefinedMultipleScheduleSchema),
     defaultValues: {
       schedules: [
         {
           projectId: params.id as string,
           userId: "",
+          id: "",
           startDate: dayjs().toDate(),
           endDate: dayjs().add(8, "hour").toDate(),
           notes: "",
@@ -77,22 +74,19 @@ export default function AddProjectSchedulesForm({
     name: "schedules",
   });
 
-  const onSubmit = async (data: z.infer<typeof SchedulesSchema>) => {
-    // console.log("data", data);
-    // const res = await addMultipleScheduleByEmployeeId(
-    //   params?.employeeId as string,
-    //   data
-    // );
-    // console.log(res);
-
+  const onSubmit = async (
+    data: z.infer<typeof RefinedMultipleScheduleSchema>
+  ) => {
     setPending(true);
     setError("");
     setSuccess("");
+    setOverlappingSchedules([]);
     try {
       const res = await addMultipleScheduleByProject(data);
-
+      console.log("res : ", res);
       if (res?.error) {
         setError(res.error);
+        if (res.overlaps) setOverlappingSchedules(res.overlaps);
       }
       if (res?.success) {
         reset();
@@ -131,154 +125,217 @@ export default function AddProjectSchedulesForm({
             sx={{ fontWeight: 700 }}
             color="secondary"
           >
-            {params?.employeeId}
+            New Schedules
           </Typography>
         </Typography>
-        {/* <IconButton onClick={() => setShow(false)} color="error" size="small">
-          <CloseOutlinedIcon fontSize="medium" />
-        </IconButton> */}
       </Stack>
 
       <Divider sx={{ my: 2 }} />
       <Stack component="form" onSubmit={handleSubmit(onSubmit)} sx={{ gap: 2 }}>
-        <Stack sx={{ maxHeight: 350, overflowY: "auto", gap: 2, p: 2 }}>
+        <Stack
+          sx={{
+            maxHeight: 350,
+            overflowY: "auto",
+            gap: 2,
+            p: 2,
+          }}
+        >
           {fields.map((field, index) => {
+            const hasOverlap = overlappingSchedules.find(
+              (sched) => sched.id === field.id
+            );
+
+            setValue(`schedules.${index}.id`, field.id);
+
             return (
               <Stack
-                direction="row"
-                sx={{ gap: 2, alignItems: "center" }}
-                key={index}
+                key={field.id}
+                sx={{ color: hasOverlap ? "error.main" : "inherit" }}
               >
-                <Typography
-                  variant="h6"
-                  sx={{ fontWeight: "bold", width: 30, textAlign: "center" }}
+                <Stack
+                  direction="row"
+                  sx={{ gap: 2, alignItems: "center" }}
+                  key={index}
                 >
-                  {index + 1}
-                </Typography>
-                <Controller
-                  control={control}
-                  name={`schedules.${index}.userId`}
-                  rules={{
-                    required: "required field",
-                  }}
-                  render={({ field, fieldState: { error } }) => {
-                    const { value, onChange, ref } = field;
-                    return (
-                      <Autocomplete
-                        // defaultValue={options.find(
-                        //   (option: any) =>
-                        //     option[valueIdentifier] === defaultValueId
-                        // )}
-                        sx={{ width: 250 }}
-                        getOptionLabel={(option) =>
-                          `${option.profile?.fname} ${option.profile?.lname}`
-                        }
-                        options={employees}
-                        value={
-                          value
-                            ? employees.find(
-                                (option: any) => option.id === value
-                              ) ?? null
-                            : null
-                        }
-                        onChange={(event: any, newValue) => {
-                          onChange(newValue ? newValue.id : null);
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Employee"
-                            inputRef={ref}
-                            helperText={error?.message}
-                            error={!!error}
-                          />
-                        )}
-                      />
-                    );
-                  }}
-                />
-                <Controller
-                  control={control}
-                  name={`schedules.${index}.startDate`}
-                  rules={{ required: true }}
-                  render={({ field }) => {
-                    return (
-                      <DateTimePicker
-                        slotProps={{
-                          textField: {
-                            error:
-                              !!errors.schedules &&
-                              !!errors.schedules[index]?.startDate,
-                            helperText: (
-                              <FormHelperText sx={{ margin: 0 }}>
-                                {!!errors.schedules &&
-                                  !!errors.schedules[index] &&
-                                  errors.schedules[index]!.startDate?.message}
-                              </FormHelperText>
-                            ),
-                          },
-                        }}
-                        label="Start Date"
-                        value={dayjs(field.value)}
-                        inputRef={field.ref}
-                        onChange={(date) => {
-                          field.onChange(date?.toDate());
-                        }}
-                      />
-                    );
-                  }}
-                />
-                <Controller
-                  control={control}
-                  name={`schedules.${index}.endDate`}
-                  rules={{ required: true }}
-                  render={({ field }) => {
-                    return (
-                      <DateTimePicker
-                        slotProps={{
-                          textField: {
-                            error:
-                              !!errors.schedules &&
-                              !!errors.schedules[index]?.endDate,
-                            helperText: (
-                              <FormHelperText sx={{ margin: 0 }}>
-                                {!!errors.schedules &&
-                                  !!errors.schedules[index] &&
-                                  errors.schedules[index]!.endDate?.message}
-                              </FormHelperText>
-                            ),
-                          },
-                        }}
-                        label="End Date"
-                        value={dayjs(field.value)}
-                        inputRef={field.ref}
-                        onChange={(date) => {
-                          field.onChange(date?.toDate());
-                        }}
-                      />
-                    );
-                  }}
-                />
-                <TextField
-                  label="Notes"
-                  {...register(`schedules.${index}.notes` as const)}
-                  error={
-                    !!errors.schedules && !!errors.schedules[index]?.notes
-                      ? true
-                      : false
-                  }
-                  helperText={
-                    !!errors.schedules &&
-                    !!errors.schedules[index] &&
-                    errors.schedules[index]!.notes?.message
-                  }
-                  disabled={isSubmitting}
-                />
-                {index !== 0 && (
-                  <Button onClick={() => remove(index)}>
-                    <DeleteOutlinedIcon color="error" />
-                  </Button>
-                )}
+                  <Typography
+                    variant="h6"
+                    sx={{ fontWeight: "bold", width: 30, textAlign: "center" }}
+                  >
+                    {index + 1}
+                  </Typography>
+
+                  <Controller
+                    control={control}
+                    name={`schedules.${index}.userId`}
+                    rules={{
+                      required: "required field",
+                    }}
+                    render={({ field, fieldState: { error } }) => {
+                      const { value, onChange, ref } = field;
+                      return (
+                        <Autocomplete
+                          // defaultValue={options.find(
+                          //   (option: any) =>
+                          //     option[valueIdentifier] === defaultValueId
+                          // )}
+                          sx={{ width: 250 }}
+                          getOptionLabel={(option) =>
+                            `${option.profile?.fname} ${option.profile?.lname}`
+                          }
+                          options={employees}
+                          value={
+                            value
+                              ? employees.find(
+                                  (option: any) => option.id === value
+                                ) ?? null
+                              : null
+                          }
+                          onChange={(event: any, newValue) => {
+                            onChange(newValue ? newValue.id : null);
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Employee"
+                              inputRef={ref}
+                              helperText={error?.message}
+                              error={!!error || !!hasOverlap}
+                            />
+                          )}
+                        />
+                      );
+                    }}
+                  />
+                  <Controller
+                    control={control}
+                    name={`schedules.${index}.startDate`}
+                    rules={{ required: true }}
+                    render={({ field }) => {
+                      return (
+                        <DateTimePicker
+                          minDate={dayjs(
+                            new Date(
+                              dayjs().year(),
+                              dayjs().month(),
+                              dayjs().date()
+                            )
+                          )}
+                          slotProps={{
+                            textField: {
+                              error:
+                                (!!errors.schedules &&
+                                  !!errors.schedules[index]?.startDate) ||
+                                !!hasOverlap,
+                              helperText: (
+                                <FormHelperText sx={{ margin: 0 }}>
+                                  {!!errors.schedules &&
+                                    !!errors.schedules[index] &&
+                                    errors.schedules[index]!.startDate?.message}
+                                </FormHelperText>
+                              ),
+                            },
+                          }}
+                          label="Start Date"
+                          value={dayjs(field.value)}
+                          inputRef={field.ref}
+                          onChange={(date) => {
+                            field.onChange(date?.toDate());
+                          }}
+                        />
+                      );
+                    }}
+                  />
+                  <Controller
+                    control={control}
+                    name={`schedules.${index}.endDate`}
+                    rules={{ required: true }}
+                    render={({ field }) => {
+                      return (
+                        <DateTimePicker
+                          minDate={dayjs(
+                            new Date(
+                              dayjs().year(),
+                              dayjs().month(),
+                              dayjs().date()
+                            )
+                          )}
+                          slotProps={{
+                            textField: {
+                              error:
+                                (!!errors.schedules &&
+                                  !!errors.schedules[index]?.endDate) ||
+                                !!hasOverlap,
+                              helperText: (
+                                <FormHelperText sx={{ margin: 0 }}>
+                                  {!!errors.schedules &&
+                                    !!errors.schedules[index] &&
+                                    errors.schedules[index]!.endDate?.message}
+                                </FormHelperText>
+                              ),
+                            },
+                          }}
+                          label="End Date"
+                          value={dayjs(field.value)}
+                          inputRef={field.ref}
+                          onChange={(date) => {
+                            field.onChange(date?.toDate());
+                          }}
+                        />
+                      );
+                    }}
+                  />
+                  <TextField
+                    label="Notes"
+                    {...register(`schedules.${index}.notes` as const)}
+                    error={
+                      (!!errors.schedules &&
+                        !!errors.schedules[index]?.notes) ||
+                      !!hasOverlap
+                        ? true
+                        : false
+                    }
+                    helperText={
+                      !!errors.schedules &&
+                      !!errors.schedules[index] &&
+                      errors.schedules[index]!.notes?.message
+                    }
+                    disabled={isSubmitting}
+                  />
+                  {fields.length > 1 && (
+                    <Button
+                      onClick={() => remove(index)}
+                      sx={{ color: "gray.main" }}
+                    >
+                      <DeleteOutlinedIcon color="inherit" />
+                    </Button>
+                  )}
+                  {!!hasOverlap && (
+                    <Tooltip title="This schedule overlaps with other schedule(s)">
+                      <WarningIcon color="error" />
+                    </Tooltip>
+                  )}
+
+                  {/* {((errors.schedules &&
+                    errors.schedules[index]?.root?.message?.startsWith(
+                      "Schedule overlap"
+                    )) ||
+                    (hasOverlap && hasOverlap.length > 0)) && (
+                    <Tooltip title="Overlapping schedule">
+                      <WarningIcon color="error" />
+                    </Tooltip>
+                  )} */}
+                </Stack>
+                {/* {hasOverlap && (
+                  <FormHelperText
+                    sx={{
+                      // margin: 0,
+                      ml: 3,
+                      color: "error.main",
+                    }}
+                  >
+                    This schedule overlaps with other schedule(s)
+                  </FormHelperText>
+                )} */}
               </Stack>
             );
           })}
@@ -289,6 +346,7 @@ export default function AddProjectSchedulesForm({
               projectId: params.id as string,
               userId: "",
               notes: "",
+              id: "",
               startDate: dayjs().toDate(),
               endDate: dayjs().add(8, "hour").toDate(),
             })
@@ -298,6 +356,17 @@ export default function AddProjectSchedulesForm({
           <AddOutlinedIcon />
         </Button>
         {error && <FormStatusText message={error} status="error" />}
+        {errors.root && errors.root.message && (
+          <FormStatusText message={errors.root.message} status="error" />
+        )}
+        {errors.schedules &&
+          errors.schedules.root &&
+          errors.schedules?.root.message && (
+            <FormStatusText
+              message={errors.schedules.root.message}
+              status="error"
+            />
+          )}
         {success && <FormStatusText message={success} status="success" />}
         <Stack
           sx={{ flexDirection: "row", gap: 2, justifyContent: "flex-end" }}
