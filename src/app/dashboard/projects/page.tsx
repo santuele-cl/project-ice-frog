@@ -24,10 +24,12 @@ export default async function page({
 
   return (
     <Stack sx={{ gap: 2 }}>
-      <Box>
-        <Typography variant="h5">List of Projects</Typography>
-      </Box>
       <Paper elevation={1} sx={{ p: 2 }}>
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+            LIST OF PROJECTS
+          </Typography>
+        </Box>
         <ProjectsTableHeader>
           <ProjectsSearch />
           <Button
@@ -39,7 +41,9 @@ export default async function page({
             Add Project
           </Button>
         </ProjectsTableHeader>
-        <Divider sx={{ my: 1 }} />
+      </Paper>
+
+      <Paper elevation={1} sx={{ p: 2 }}>
         <AdminProjectsTable
           name={name}
           page={Number(page)}

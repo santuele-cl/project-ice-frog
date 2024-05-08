@@ -105,14 +105,44 @@ export default function AdminProjectsTable(props: Props) {
           sx={{ minWidth: 650, overflow: "auto" }}
           aria-label="simple table"
         >
-          <TableHead>
-            <TableRow>
-              <TableCell align="left">Job Order</TableCell>
-              <TableCell align="left">Project</TableCell>
-              <TableCell align="left">Location</TableCell>
-              <TableCell align="left">Start Date</TableCell>
-              <TableCell align="left">End Date</TableCell>
-              <TableCell align="right">Action</TableCell>
+          <TableHead sx={{ color: "white" }}>
+            <TableRow sx={{ backgroundColor: "rgba(124,35,216,255)" }}>
+              <TableCell
+                sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+                align="left"
+              >
+                Job Order
+              </TableCell>
+              <TableCell
+                sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+                align="left"
+              >
+                Project
+              </TableCell>
+              <TableCell
+                sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+                align="left"
+              >
+                Location
+              </TableCell>
+              <TableCell
+                sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+                align="left"
+              >
+                Start Date
+              </TableCell>
+              <TableCell
+                sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+                align="left"
+              >
+                End Date
+              </TableCell>
+              <TableCell
+                sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+                align="right"
+              >
+                Action
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
