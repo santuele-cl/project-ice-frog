@@ -9,8 +9,83 @@ import {
 import { getErrorMessage } from "../action-utils";
 import { Prisma, Schedule } from "@prisma/client";
 import { auth } from "@/auth";
+import {
+  flattenObject,
+  flattenObjectWithoutPrefix,
+} from "@/app/_utils/flattenObject";
 
 const ITEMS_PER_PAGE = 1;
+
+export async function getProjectSchedulesForExport({
+  page = 1,
+  name,
+  jobOrder,
+  location,
+  date,
+  isCompleted = false,
+  projectId,
+}: {
+  isCompleted?: boolean;
+  page?: number;
+  name?: string;
+  jobOrder?: string;
+  location?: string;
+  date?: Date;
+  projectId?: string;
+}) {
+  noStore();
+
+  try {
+    const session = await auth();
+    if (!session) return { error: "Unauthorized" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
+    if (!projectId) return { error: "Missing ID" };
+
+    const project = await db.project.findUnique({
+      where: { id: projectId },
+      select: {
+        name: true,
+        jobOrder: true,
+        schedules: {
+          select: {
+            user: {
+              select: {
+                profile: {
+                  select: {
+                    fname: true,
+                    mname: true,
+                    lname: true,
+                  },
+                },
+              },
+            },
+            startDate: true,
+            endDate: true,
+            notes: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+      },
+    });
+
+    const flattenedSchedules = project?.schedules.map((sched) => {
+      const { user, ...rest } = sched;
+      const fullName = `${user.profile?.fname} ${user.profile?.mname} ${user.profile?.lname}`;
+      const newSched = { fullName, ...rest, lastUpdate: rest.updatedAt };
+
+      return flattenObjectWithoutPrefix(newSched);
+    });
+
+    return {
+      success: "Success",
+      data: { ...project, schedules: flattenedSchedules },
+    };
+  } catch (error: unknown) {
+    return { error: getErrorMessage(error) };
+  }
+}
 
 export async function getSchedulesByUserIdGroupByProject({
   page = 1,

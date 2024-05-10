@@ -1,3 +1,4 @@
+"use client";
 import {
   Box,
   Button,
@@ -16,20 +17,55 @@ import TableNoRecord from "@/app/_ui/TableNoRecord";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import ProjectsTablePagination from "../../_components/ProjectsTablePagination";
 import AddProjectSchedulesFormModal from "./AddProjectSchedulesFormModal";
+import { useEffect, useState } from "react";
+import { getProjectSchedulesForExport } from "@/actions/schedules/schedule-action";
+import * as XLSX from "xlsx";
 
 type Props = {
   employeeIds: { userId: string }[];
   projectId: string;
 };
 
-export default async function ProjectSchedulesTableBody({
+export default function ProjectSchedulesTableBody({
   employeeIds,
   projectId,
 }: Props) {
+  const [data, setData] = useState<any>();
+  console.log("data", data);
+
+  const handleExport = async () => {
+    const project = await getProjectSchedulesForExport({
+      projectId,
+    });
+
+    if (project.success && project.data.schedules) {
+      const validatedSchedules = project.data.schedules.map(sched => {
+        
+      })
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(project.data.schedules);
+
+      XLSX.utils.book_append_sheet(wb, ws, "sheet 1");
+      XLSX.writeFile(
+        wb,
+        `${project.data.jobOrder}-${project.data.name}-schedules.xlsx`
+      );
+    }
+  };
+
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      const res = await getProjectSchedulesForExport({ projectId });
+      if (res) setData(res);
+    };
+    fetchSchedules;
+  }, []);
+
   return (
     <Stack sx={{ gap: 1 }}>
       <Stack sx={{ justifyContent: "space-between", flexDirection: "row" }}>
         <Typography variant="h6">Employee Schedules</Typography>
+        <AddProjectSchedulesFormModal />
       </Stack>
       <Divider />
 
@@ -42,15 +78,14 @@ export default async function ProjectSchedulesTableBody({
             startIcon={<FileDownloadIcon />}
             variant="outlined"
             color="success"
-            // onClick={handleExport}
+            onClick={handleExport}
           >
             Export
           </Button>
-          <AddProjectSchedulesFormModal />
         </Stack>
       </Stack>
       <Divider />
-      <TableContainer sx={{ minHeight: "690px", position: "relative" }}>
+      {/* <TableContainer sx={{ minHeight: "690px", position: "relative" }}>
         <Table
           sx={{ minWidth: 650, overflow: "auto" }}
           aria-label="simple table"
@@ -81,7 +116,7 @@ export default async function ProjectSchedulesTableBody({
             )}
           </TableBody>
         </Table>
-      </TableContainer>
+      </TableContainer> */}
     </Stack>
   );
 }
