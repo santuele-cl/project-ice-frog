@@ -18,6 +18,7 @@ import { Suspense } from "react";
 import TableSkeleton from "@/app/_ui/TableSkeleton";
 import EmployeeDetails from "../../schedules/_components/EmployeeDetails";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import TablePagination from "@/app/_ui/TablePagination";
 
 export default async function EmployeeDetailsPage({
   params: { id },
@@ -25,6 +26,28 @@ export default async function EmployeeDetailsPage({
   params: { id: string };
 }) {
   const employee = await getEmployeeById(id);
+
+  // const handleExport = async () => {
+  //   const employees = await findUser({
+  //     page: 0,
+  //     ...(name && { name }),
+  //     ...(occupation && { occupation }),
+  //     ...(page && { page }),
+  //     ...(department && { department }),
+  //   });
+
+  //   if (employees.success && employees.data) {
+  //     const flattenedEmployees = employees.data.map((employee) =>
+  //       flattenObject(employee)
+  //     );
+
+  //     const wb = XLSX.utils.book_new();
+  //     const ws = XLSX.utils.json_to_sheet(flattenedEmployees);
+
+  //     XLSX.utils.book_append_sheet(wb, ws, "sheet 1");
+  //     XLSX.writeFile(wb, "book.xlsx");
+  //   }
+  // };
 
   if (employee.error || !employee.data)
     return (
@@ -44,15 +67,17 @@ export default async function EmployeeDetailsPage({
         {employee.data && <EmployeeDetails details={employee.data} />}
       </Paper>
       <Paper elevation={1} sx={{ p: 2 }}>
-        {" "}
+        <EmployeeScheduleTableHeader>
+          <EmployeeScheduleSearch />
+          <EmployeeScheduleAddFormModal />
+        </EmployeeScheduleTableHeader>
+        <Divider sx={{ my: 1 }} />
         <Stack
           sx={{ my: 1, flexDirection: "row", justifyContent: "space-between" }}
         >
-          {/* <ProjectsTablePagination
-            pagination={
-              pagination ?? { totalCount: 0, totalPages: 0, itemsPerPage: 0 }
-            }
-          /> */}
+          <TablePagination
+            pagination={{ totalCount: 0, totalPages: 0, itemsPerPage: 0 }}
+          />
           <Button
             startIcon={<FileDownloadIcon />}
             variant="outlined"
@@ -62,13 +87,6 @@ export default async function EmployeeDetailsPage({
             Export
           </Button>
         </Stack>
-        <Box sx={{ mb: 1 }}>
-          <Typography variant="h6">List of Employee Schedules</Typography>
-        </Box>
-        <EmployeeScheduleTableHeader>
-          <EmployeeScheduleSearch />
-          <EmployeeScheduleAddFormModal />
-        </EmployeeScheduleTableHeader>
         <Divider sx={{ my: 1 }} />
         <Suspense fallback={<TableSkeleton />}>
           <EmployeeSchedulesTable employeeId={employeeId} />

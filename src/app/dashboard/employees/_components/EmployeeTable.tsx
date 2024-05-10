@@ -20,14 +20,19 @@ import EmployeeArchiveButton from "./EmployeeArchiveButton";
 import { Fragment, useEffect, useState } from "react";
 import { Prisma } from "@prisma/client";
 import EmployeeTablePagination from "./EmployeeTablePagination";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import TableNoRecord from "@/app/_ui/TableNoRecord";
 import * as XLSX from "xlsx";
 import ProjectsTablePagination from "../../projects/_components/ProjectsTablePagination";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import { flattenObject } from "@/app/_utils/flattenObject";
 
 type UserWithDetails = Prisma.UserGetPayload<{
-  include: {
+  select: {
+    id: true;
+    email: true;
+    isActive: true;
+    role: true;
     profile: {
       select: {
         contactNumber: true;
@@ -60,6 +65,28 @@ export default function EmployeeTable(props: Props) {
   const [data, setData] = useState<UserWithDetails[]>();
   const [pagination, setPagination] = useState<PaginationProps>();
 
+  const handleExport = async () => {
+    const employees = await findUser({
+      page: 0,
+      ...(name && { name }),
+      ...(occupation && { occupation }),
+      ...(page && { page }),
+      ...(department && { department }),
+    });
+
+    if (employees.success && employees.data) {
+      const flattenedEmployees = employees.data.map((employee) =>
+        flattenObject(employee)
+      );
+
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(flattenedEmployees);
+
+      XLSX.utils.book_append_sheet(wb, ws, "sheet 1");
+      XLSX.writeFile(wb, "book.xlsx");
+    }
+  };
+
   useEffect(() => {
     const fetchEmployees = async () => {
       const response = await findUser({
@@ -91,7 +118,7 @@ export default function EmployeeTable(props: Props) {
             startIcon={<FileDownloadIcon />}
             variant="outlined"
             color="success"
-            // onClick={handleExport}
+            onClick={handleExport}
           >
             Export
           </Button>

@@ -62,19 +62,26 @@ export async function findUser({
         isActive: { equals: active },
       },
       orderBy: { createdAt: "desc" },
-      include: {
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        createdAt: true,
+        isActive: true,
+        isArchived: true,
+        consent: true,
         profile: {
           select: {
-            contactNumber: true,
-            department: true,
             fname: true,
             lname: true,
             occupation: true,
+            contactNumber: true,
+            department: true,
           },
         },
       },
-      take: ITEMS_PER_PAGE,
-      skip: (Number(page) - 1) * ITEMS_PER_PAGE,
+      ...(page !== 0 && { take: ITEMS_PER_PAGE }),
+      ...(page !== 0 && { skip: (Number(page) - 1) * ITEMS_PER_PAGE }),
     } satisfies Prisma.UserFindManyArgs;
 
     const [users, count] = await db.$transaction([
