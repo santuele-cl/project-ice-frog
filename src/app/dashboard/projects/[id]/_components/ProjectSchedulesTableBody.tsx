@@ -1,3 +1,4 @@
+"use client";
 import {
   Box,
   Button,
@@ -16,20 +17,56 @@ import TableNoRecord from "@/app/_ui/TableNoRecord";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import ProjectsTablePagination from "../../_components/ProjectsTablePagination";
 import AddProjectSchedulesFormModal from "./AddProjectSchedulesFormModal";
+import { useEffect, useState } from "react";
+import { getProjectSchedulesForExport } from "@/actions/schedules/schedule-action";
+import * as XLSX from "xlsx";
+import { enqueueSnackbar } from "notistack";
 
 type Props = {
   employeeIds: { userId: string }[];
   projectId: string;
 };
 
-export default async function ProjectSchedulesTableBody({
+export default function ProjectSchedulesTableBody({
   employeeIds,
   projectId,
 }: Props) {
+  const handleExport = async () => {
+    const response = await getProjectSchedulesForExport({
+      projectId,
+    });
+
+    if (response.success && response.data.schedules) {
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(response.data.schedules);
+
+      XLSX.utils.book_append_sheet(wb, ws, "sheet 1");
+      XLSX.writeFile(
+        wb,
+        `${response.data.jobOrder}-${response.data.name}-schedules.xlsx`
+      );
+
+      enqueueSnackbar("Export successful", {
+        variant: "success",
+      });
+    } else {
+      if (response?.error) {
+        enqueueSnackbar(`Export failed. ${response.error}`, {
+          variant: "error",
+        });
+      } else {
+        enqueueSnackbar("Something went wrong", {
+          variant: "error",
+        });
+      }
+    }
+  };
+
   return (
     <Stack sx={{ gap: 1 }}>
       <Stack sx={{ justifyContent: "space-between", flexDirection: "row" }}>
         <Typography variant="h6">Employee Schedules</Typography>
+        <AddProjectSchedulesFormModal />
       </Stack>
       <Divider />
 
@@ -42,11 +79,10 @@ export default async function ProjectSchedulesTableBody({
             startIcon={<FileDownloadIcon />}
             variant="outlined"
             color="success"
-            // onClick={handleExport}
+            onClick={handleExport}
           >
             Export
           </Button>
-          <AddProjectSchedulesFormModal />
         </Stack>
       </Stack>
       <Divider />

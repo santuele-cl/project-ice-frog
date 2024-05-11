@@ -6,6 +6,7 @@ import { Department } from "@prisma/client";
 import { unstable_noStore as noStore, revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getErrorMessage } from "../action-utils";
+import { auth } from "@/auth";
 
 type Sort = Record<keyof Department, "asc" | "desc">;
 
@@ -62,6 +63,22 @@ export async function getDepartments() {
   return { success: "Departments fetch successul!", data: departments };
 }
 
+export async function getDepartmentById(id: string) {
+  noStore();
+  try {
+    const session = await auth();
+    if (!session) return { error: "Unauthenticated" };
+
+    const department = await db.department.findUnique({ where: { id } });
+
+    if (!department) return { error: "Something went wrong" };
+
+    return { success: "Department fetch successul!", data: department };
+  } catch (error: unknown) {
+    return { error: getErrorMessage(error) };
+  }
+}
+
 export async function addDepartment({
   data,
 }: {
@@ -69,11 +86,14 @@ export async function addDepartment({
 }) {
   if (!data) return { error: "Missing data" };
 
-  const parse = DepartmentSchema.safeParse(data);
-
-  if (!parse.success) return { error: "Parse error!" };
-
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthenticated" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
+    const parse = DepartmentSchema.safeParse(data);
+    if (!parse.success) return { error: "Parse error!" };
+
     const newDeparment = await db.department.create({
       data,
     });
@@ -95,6 +115,10 @@ export async function deleteDepartment(departmentId: string) {
   if (!departmentId) return { error: "Department ID missing!" };
 
   try {
+    const session = await auth();
+    if (!session) return { error: "Unauthenticated" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
     const existingDepartment = await db.department.findUnique({
       where: { id: departmentId },
     });
@@ -114,6 +138,42 @@ export async function deleteDepartment(departmentId: string) {
       data: { id: deletedDepartment.id },
     };
   } catch (error) {
+    return { error: getErrorMessage(error) };
+  }
+}
+
+export async function editDepartment({
+  id,
+  data,
+}: {
+  id: string;
+  data: Partial<z.infer<typeof DepartmentSchema>>;
+}) {
+  if (!data) return { error: "Missing data" };
+  if (!id) return { error: "Missing ID" };
+
+  try {
+    const session = await auth();
+    if (!session) return { error: "Unauthenticated" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
+    const parse = DepartmentSchema.safeParse(data);
+    if (!parse.success) return { error: "Parse error!" };
+
+    const updatedDepartment = await db.department.update({
+      where: { id },
+      data,
+    });
+
+    if (!updatedDepartment) return { error: "Database error" };
+
+    revalidatePath("/dashboard/deparments");
+
+    return {
+      success: `${updatedDepartment.name} department has been updated!`,
+      data: updatedDepartment,
+    };
+  } catch (error: unknown) {
     return { error: getErrorMessage(error) };
   }
 }

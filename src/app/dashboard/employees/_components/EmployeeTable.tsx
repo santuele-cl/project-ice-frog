@@ -1,5 +1,5 @@
 "use client";
-import { findUser } from "@/actions/users/users";
+import { exportEmployees, findUser } from "@/actions/users/users";
 import {
   Button,
   Divider,
@@ -25,7 +25,6 @@ import TableNoRecord from "@/app/_ui/TableNoRecord";
 import * as XLSX from "xlsx";
 import ProjectsTablePagination from "../../projects/_components/ProjectsTablePagination";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import { flattenObject } from "@/app/_utils/flattenObject";
 
 type UserWithDetails = Prisma.UserGetPayload<{
   select: {
@@ -66,8 +65,7 @@ export default function EmployeeTable(props: Props) {
   const [pagination, setPagination] = useState<PaginationProps>();
 
   const handleExport = async () => {
-    const employees = await findUser({
-      page: 0,
+    const employees = await exportEmployees({
       ...(name && { name }),
       ...(occupation && { occupation }),
       ...(page && { page }),
@@ -75,15 +73,11 @@ export default function EmployeeTable(props: Props) {
     });
 
     if (employees.success && employees.data) {
-      const flattenedEmployees = employees.data.map((employee) =>
-        flattenObject(employee)
-      );
-
       const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.json_to_sheet(flattenedEmployees);
+      const ws = XLSX.utils.json_to_sheet(employees.data);
 
       XLSX.utils.book_append_sheet(wb, ws, "sheet 1");
-      XLSX.writeFile(wb, "book.xlsx");
+      XLSX.writeFile(wb, "employees.xlsx");
     }
   };
 

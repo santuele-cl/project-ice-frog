@@ -1,6 +1,10 @@
 "use client";
+import { Fragment, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import dayjs from "dayjs";
+import * as XLSX from "xlsx";
 import {
-  Box,
   Button,
   Divider,
   IconButton,
@@ -12,20 +16,17 @@ import {
   TableHead,
   TableRow,
   Tooltip,
-  Typography,
 } from "@mui/material";
-import Link from "next/link";
-import { getProjects } from "@/actions/projects/projects-action";
-import dayjs from "dayjs";
+import {
+  exportProjects,
+  getProjects,
+} from "@/actions/projects/projects-action";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import ProjectDeleteModal from "./ProjectDeleteModal";
 import ProjectsTablePagination from "./ProjectsTablePagination";
-import { Fragment, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { Project } from "@prisma/client";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import * as XLSX from "xlsx";
 import TableNoRecord from "@/app/_ui/TableNoRecord";
 
 type PaginationProps = {
@@ -48,8 +49,7 @@ export default function AdminProjectsTable(props: Props) {
   const [pagination, setPagination] = useState<PaginationProps>();
 
   const handleExport = async () => {
-    const projects = await getProjects({
-      page: 0,
+    const projects = await exportProjects({
       ...(name && { name }),
       ...(location && { location }),
       ...(jobOrder && { jobOrder }),
@@ -60,7 +60,7 @@ export default function AdminProjectsTable(props: Props) {
       const ws = XLSX.utils.json_to_sheet(projects.data);
 
       XLSX.utils.book_append_sheet(wb, ws, "sheet 1");
-      XLSX.writeFile(wb, "book.xlsx");
+      XLSX.writeFile(wb, "projects.xlsx");
     }
   };
 
