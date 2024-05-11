@@ -103,6 +103,101 @@ export async function findUser({
   }
 }
 
+export async function exportEmployees({
+  occupation,
+  name,
+  department,
+  active,
+  isArchived = false,
+}: {
+  occupation?: string;
+  name?: string;
+  department?: string;
+  active?: boolean;
+  isArchived?: boolean;
+}) {
+  noStore();
+  try {
+    const employees = await db.user.findMany({
+      where: {
+        isArchived: isArchived,
+        ...(name && {
+          OR: [
+            {
+              profile: {
+                fname: { contains: name, mode: "insensitive" },
+              },
+            },
+            {
+              profile: {
+                mname: { contains: name, mode: "insensitive" },
+              },
+            },
+            {
+              profile: {
+                lname: { contains: name, mode: "insensitive" },
+              },
+            },
+          ],
+        }),
+        profile: {
+          department: { name: { in: department?.split(",") } },
+          occupation: { contains: occupation, mode: "insensitive" },
+        },
+        isActive: { equals: active },
+      },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        profile: {
+          select: {
+            fname: true,
+            mname: true,
+            lname: true,
+            suffix: true,
+            bdate: true,
+            age: true,
+            gender: true,
+            occupation: true,
+            contactNumber: true,
+            department: true,
+          },
+        },
+        email: true,
+        isActive: true,
+      },
+    });
+
+    const processedEmployees = employees.map((employee) => {
+      const { profile, id, email, isActive } = employee;
+      const processedEmployee = {
+        id,
+        fname: profile?.fname,
+        mname: profile?.mname,
+        lname: profile?.lname,
+        suffix: profile?.suffix,
+        bdate: profile?.bdate,
+        age: profile?.age,
+        gender: profile?.gender,
+        email,
+        contactNumber: profile?.contactNumber,
+        occupation: profile?.occupation,
+        department: profile?.department?.name,
+        isActive,
+      };
+
+      return processedEmployee;
+    });
+
+    return {
+      success: "Success",
+      data: processedEmployees,
+    };
+  } catch (error) {
+    return { error: getErrorMessage(error) };
+  }
+}
+
 export async function getUserById(id: string) {
   noStore();
 

@@ -67,12 +67,16 @@ export default function EmployeeScheduleEditForm({
       const res = await editSchedule({ scheduleId: id, data: data });
 
       if (res?.error) {
-        enqueueSnackbar(res.error, { variant: "error" });
+        enqueueSnackbar(res.error, {
+          variant: "error",
+        });
         // setFormError("root", { type: "Custom", message: res.error });
       }
       if (res?.success) {
         // reset();
-        enqueueSnackbar(res.success, { variant: "success" });
+        enqueueSnackbar(res.success, {
+          variant: "success",
+        });
         // setShow(false);
         // setSuccess(res.success);
       }

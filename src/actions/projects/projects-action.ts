@@ -7,13 +7,14 @@ import { z } from "zod";
 import { getErrorMessage } from "../action-utils";
 import { Prisma, Schedule } from "@prisma/client";
 import { auth } from "@/auth";
+import prismaExclude from "@/app/_utils/prismaExclude";
 
 const ITEMS_PER_PAGE = 15;
 
 export async function deleteProject(projectId: string) {
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     if (!projectId) return { error: "Project ID missing!" };
@@ -45,7 +46,7 @@ export async function deleteProject(projectId: string) {
 export async function restoreProject(projectId: string) {
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     if (!projectId) return { error: "Project ID missing!" };
@@ -83,7 +84,7 @@ export async function editProject({
 }) {
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     if (!projectId || !data) return { error: "Missing data" };
@@ -130,7 +131,7 @@ export async function addProject(values: z.infer<typeof ProjectSchema>) {
      * and has the right permission to do this action
      */
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     if (!values) return { error: "Missing data." };
@@ -243,7 +244,7 @@ export async function getProjects({
 
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.id !== employeeId && session.user.role !== "ADMIN")
       return { error: "Unauthorized" };
 
@@ -298,11 +299,87 @@ export async function getProjects({
   }
 }
 
+export async function exportProjects({
+  name,
+  jobOrder,
+  location,
+  date,
+  isCompleted = false,
+  employeeId,
+}: {
+  isCompleted?: boolean;
+  page?: number;
+  name?: string;
+  jobOrder?: string;
+  location?: string;
+  date?: Date;
+  employeeId?: string;
+}) {
+  noStore();
+
+  try {
+    const session = await auth();
+    if (!session) return { error: "Unauthenticated" };
+    if (session.user.id !== employeeId && session.user.role !== "ADMIN")
+      return { error: "Unauthorized" };
+
+    const projects = await db.project.findMany({
+      where: {
+        ...(employeeId && {
+          schedules: { some: { userId: { equals: employeeId } } },
+        }),
+        ...(name && { name: { contains: name, mode: "insensitive" } }),
+        ...(jobOrder && {
+          jobOrder: { contains: jobOrder, mode: "insensitive" },
+        }),
+        ...(isCompleted && { isCompleted: isCompleted }),
+        ...(location && {
+          OR: [
+            {
+              barangay: { contains: location, mode: "insensitive" },
+            },
+            {
+              street: { contains: location, mode: "insensitive" },
+            },
+            {
+              city: { contains: location, mode: "insensitive" },
+            },
+            {
+              building: { contains: location, mode: "insensitive" },
+            },
+          ],
+        }),
+      },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        jobOrder: true,
+        name: true,
+        startDate: true,
+        endDate: true,
+        building: true,
+        street: true,
+        barangay: true,
+        city: true,
+        notes: true,
+        isCompleted: true,
+      },
+    });
+
+    return {
+      success: "Success",
+      data: projects,
+    };
+  } catch (error: unknown) {
+    return { error: getErrorMessage(error) };
+  }
+}
+
 export async function getProjectScheduleGroupByUserId(projectId: string) {
   noStore();
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     const projects = await db.schedule.groupBy({
@@ -323,7 +400,7 @@ export async function getProjectById(id: string) {
 
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     const project = await db.project.findUnique({

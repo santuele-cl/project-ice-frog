@@ -10,7 +10,7 @@ import { forwardRef } from "react";
 import shadows from "@mui/material/styles/shadows";
 
 const MAX_SNACK = 2;
-const AUTO_HIDE_DURATION = 2500;
+const AUTO_HIDE_DURATION = 2000;
 const POSITION: SnackbarOrigin = {
   vertical: "top",
   horizontal: "center",

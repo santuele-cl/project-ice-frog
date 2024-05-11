@@ -20,7 +20,7 @@ export async function updateEmployeeDetails({
 }) {
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     const user = await db.user.findUnique({ where: { id: employeeId } });
@@ -57,7 +57,7 @@ export async function createUserByAdminAcc(
 ) {
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     if (!registerData) return { error: "Missing data" };
@@ -115,7 +115,7 @@ export async function getEmployeeIds() {
 
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     const user = await db.user.findMany({
@@ -138,7 +138,7 @@ export async function getCompleteEmployeeDetailsById(id: string) {
   noStore();
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     const user = await db.user.findUnique({
@@ -160,7 +160,7 @@ export async function getEmployeeById(id: string) {
   noStore();
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     const user = await db.user.findUnique({
@@ -189,7 +189,7 @@ export async function getEmployeesByDepartment() {
   noStore();
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     const users = await db.user.findMany({
@@ -210,7 +210,7 @@ export async function getEmployeesByDepartment() {
 export async function EmployeeArchive(employeeId: string) {
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     if (!employeeId) return { error: "Employee ID missing!" };
@@ -239,7 +239,7 @@ export async function EmployeeArchive(employeeId: string) {
 export async function EmployeeRestore(employeeId: string) {
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     if (!employeeId) return { error: "Employee ID missing!" };

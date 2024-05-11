@@ -19,6 +19,8 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DepartmentDeleteForm from "./DepartmentDeleteForm";
+import DepartmentEditFormModal from "./DepartmentEditFormModal";
+import TableNoRecord from "@/app/_ui/TableNoRecord";
 
 export default async function DepartmentTable({
   email,
@@ -110,47 +112,15 @@ export default async function DepartmentTable({
                       sx={{ width: "100%" }}
                     >
                       <DepartmentDeleteForm id={id} />
-
-                      <Tooltip title="Edit Details">
-                        <IconButton component={Link} href="#edit">
-                          <BorderColorIcon fontSize="medium" />
-                        </IconButton>
-                      </Tooltip>
+                      <DepartmentEditFormModal department={department} />
                     </Stack>
                   </TableCell>
                 </TableRow>
               );
             })
           ) : (
-            <TableRow
-              sx={{
-                "&:last-child td, &:last-child th": { border: 0 },
-              }}
-            >
-              <TableCell component="th" scope="row">
-                -
-              </TableCell>
-              <TableCell align="left">-</TableCell>
-              <TableCell align="left">-</TableCell>
-              <TableCell align="left">-</TableCell>
-              <TableCell align="left">-</TableCell>
-              <TableCell align="left">-</TableCell>
-            </TableRow>
+            <TableNoRecord />
           )}
-          {/* <TableRow
-            sx={{
-              "&:last-child td, &:last-child th": { border: 0 },
-            }}
-          >
-            <TableCell component="th" scope="row">
-              -
-            </TableCell>
-            <TableCell align="left">-</TableCell>
-            <TableCell align="left">-</TableCell>
-            <TableCell align="left">-</TableCell>
-            <TableCell align="left">-</TableCell>
-            <TableCell align="left">-</TableCell>
-          </TableRow> */}
         </TableBody>
       </Table>
     </TableContainer>

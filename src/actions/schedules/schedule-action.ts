@@ -9,15 +9,10 @@ import {
 import { getErrorMessage } from "../action-utils";
 import { Prisma, Schedule } from "@prisma/client";
 import { auth } from "@/auth";
-import {
-  flattenObject,
-  flattenObjectWithoutPrefix,
-} from "@/app/_utils/flattenObject";
 
 const ITEMS_PER_PAGE = 1;
 
 export async function getProjectSchedulesForExport({
-  page = 1,
   name,
   jobOrder,
   location,
@@ -37,7 +32,7 @@ export async function getProjectSchedulesForExport({
 
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     if (!projectId) return { error: "Missing ID" };
@@ -49,6 +44,8 @@ export async function getProjectSchedulesForExport({
         jobOrder: true,
         schedules: {
           select: {
+            id: true,
+            userId: true,
             user: {
               select: {
                 profile: {
@@ -66,21 +63,46 @@ export async function getProjectSchedulesForExport({
             createdAt: true,
             updatedAt: true,
           },
+          orderBy: { user: { profile: { fname: "asc" } } },
         },
       },
     });
 
-    const flattenedSchedules = project?.schedules.map((sched) => {
-      const { user, ...rest } = sched;
-      const fullName = `${user.profile?.fname} ${user.profile?.mname} ${user.profile?.lname}`;
-      const newSched = { fullName, ...rest, lastUpdate: rest.updatedAt };
+    const processedProjectSchedules = project?.schedules.map((schedule) => {
+      const {
+        user,
+        createdAt,
+        endDate,
+        notes,
+        startDate,
+        updatedAt,
+        id,
+        userId,
+      } = schedule;
 
-      return flattenObjectWithoutPrefix(newSched);
+      const processedSchedule = {
+        id,
+        userId,
+        fname: user?.profile?.fname,
+        mname: user?.profile?.mname,
+        lname: user?.profile?.lname,
+        startDate,
+        endDate,
+        notes,
+        createdAt,
+        updatedAt,
+      };
+
+      return processedSchedule;
     });
 
     return {
       success: "Success",
-      data: { ...project, schedules: flattenedSchedules },
+      data: {
+        name: project?.name,
+        jobOrder: project?.jobOrder,
+        schedules: processedProjectSchedules,
+      },
     };
   } catch (error: unknown) {
     return { error: getErrorMessage(error) };
@@ -108,7 +130,7 @@ export async function getSchedulesByUserIdGroupByProject({
 
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.id !== employeeId && session.user.role !== "ADMIN")
       return { error: "Unauthorized" };
 
@@ -157,7 +179,7 @@ export async function getSchedulesByUserIdAndProjectId({
 
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     const schedules = await db.schedule.findMany({
@@ -195,7 +217,7 @@ export async function addMultipleScheduleByProject(
      * and has the right permission to do this action
      */
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     if (!schedules) return { error: "Missing data." };
@@ -300,7 +322,7 @@ export async function addMultipleScheduleByEmployeeId(
      * and has the right permission to call this action
      */
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     if (!data) return { error: "Missing data." };
@@ -396,7 +418,7 @@ export async function getScheduleByEmployeeId(employeeId: string) {
   noStore();
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     const isExisting = await db.user.findUnique({ where: { id: employeeId } });
@@ -423,7 +445,7 @@ export async function getScheduleById(id: string) {
   noStore();
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     if (!id) return { error: "Missing ID" };
@@ -447,7 +469,7 @@ export async function getSchedulesByDate(
 
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     const schedules = await db.schedule.findMany({
@@ -482,7 +504,7 @@ export async function editSchedule({
      * and has the right permission to call this action
      */
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     /**
@@ -541,7 +563,7 @@ export async function editSchedule({
 export async function deleteSchedule(scheduleId: string) {
   try {
     const session = await auth();
-    if (!session) return { error: "Unauthorized" };
+    if (!session) return { error: "Unauthenticated" };
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     if (!scheduleId) return { error: "Missing schedule ID" };
