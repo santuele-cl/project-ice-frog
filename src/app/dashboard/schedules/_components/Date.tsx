@@ -1,56 +1,122 @@
+"use client";
 import { getSchedulesByDate } from "@/actions/schedules/schedule-action";
-import { IconButton, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  ButtonBase,
+  IconButton,
+  Stack,
+  Typography,
+  getAccordionSummaryUtilityClass,
+} from "@mui/material";
 import dayjs from "dayjs";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 import AddIcon from "@mui/icons-material/Add";
 import AddScheduleFormModal from "./AddScheduleFormModal";
+import { useEffect, useState } from "react";
+import { Prisma } from "@prisma/client";
+import { useRouter } from "next/navigation";
+
+type ScheduleWithProject = Prisma.ScheduleGetPayload<{
+  include: { project: true };
+}>;
+
 interface DateProps {
   employeeId: string;
   endDate: Date;
   startDate: Date;
 }
 
-export default async function Date({
-  employeeId,
-  startDate,
-  endDate,
-}: DateProps) {
-  const schedules = await getSchedulesByDate(employeeId, startDate, endDate);
+const style = {
+  position: "absolute",
+  top: "50%",
+  right: "50%",
+  transform: "translate(-50%, -50%)",
+  bgcolor: "background.paper",
+  p: 1,
+};
+
+const style2 = {
+  position: "absolute",
+  top: 0,
+  right: 0,
+  p: 1,
+};
+
+export default function Date({ employeeId, startDate, endDate }: DateProps) {
+  const router = useRouter();
+  const [employeeSchedules, setEmployeeSchedules] = useState<
+    ScheduleWithProject[]
+  >([]);
+
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      const response = await getSchedulesByDate(employeeId, startDate, endDate);
+      if (response.data) setEmployeeSchedules(response.data);
+    };
+    fetchSchedules();
+  }, []);
 
   return (
-    <Stack sx={{ justifyContent: "center", alignItems: "center" }}>
-      {!schedules.data && <AddScheduleFormModal />}
-      {schedules.data &&
-        schedules.data.map((schedule) => {
+    <Stack
+      sx={{
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      {employeeSchedules &&
+        employeeSchedules.map((schedule) => {
           const { startDate, endDate, project } = schedule;
           return (
             <Stack
               sx={{
-                p: 2,
-                minHeight: 100,
-                minWidth: 210,
+                p: 1,
+                // minHeight: 100,
+                // maxWidth: 210,
+                // minWidth: 100,
+                // width: 100,
                 bgcolor: "rgba(255, 255, 0, 0.4)",
                 borderRadius: 2,
                 marginBottom: "5px",
                 fontSize: "0.8rem",
+                overflow: "auto",
               }}
             >
-              <Typography sx={{ fontWeight: 600 }}>{project?.name}</Typography>
-              <Typography sx={{ fontStyle: "italic" }} noWrap>
-                {`${project?.building} ${project?.street} ${project?.barangay}, ${project?.city}`}
-              </Typography>
+              <ButtonBase
+                onClick={() => router.push(`/dashboard/projects/${project.id}`)}
+                sx={{
+                  textAlign: "left",
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  maxWidth: 210,
+                  // fontWeight: 600,
+                  color: "rgba(0,0,255,0.8)",
+                  whiteSpace: "nowrap",
+                  fontSize: "1rem",
+                }}
+              >
+                {project?.name}
+              </ButtonBase>
+
               <Stack sx={{ flexDirection: "row", gap: 1 }}>
-                <Typography sx={{ fontWeight: 600 }}>
-                  {dayjs(startDate).format("hh:mm a")}
+                <Typography sx={{}}>
+                  {dayjs(startDate).format("hh:mm")}
                 </Typography>{" "}
                 -{" "}
-                <Typography sx={{ fontWeight: 600 }}>
-                  {dayjs(endDate).format("hh:mm a")}
+                <Typography sx={{}}>
+                  {dayjs(endDate).format("hh:mm")}
                 </Typography>
               </Stack>
             </Stack>
           );
         })}
+      <Box
+        sx={{
+          ...(employeeId && employeeSchedules.length < 0 ? style : style2),
+        }}
+      >
+        <AddScheduleFormModal />
+      </Box>
     </Stack>
   );
 }

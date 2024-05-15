@@ -24,9 +24,11 @@ interface ScheduleTableProps {
   week: string;
 }
 
-export default async function ScheduleTable({ week }: ScheduleTableProps) {
+export default function ScheduleTable({ week }: ScheduleTableProps) {
   const employees = await getEmployeesByDepartment();
   const weekDates = getWeek(Number(week));
+
+  useEffect(,[])
 
   return (
     <Stack sx={{ p: 2 }}>
@@ -91,7 +93,13 @@ export default async function ScheduleTable({ week }: ScheduleTableProps) {
                       <Typography>{`${profile?.fname} ${profile?.lname}`}</Typography>
                     </TableCell>
                     {weekDates.map((date) => (
-                      <TableCell align="left" height={150} width={220}>
+                      <TableCell
+                        align="left"
+                        sx={{
+                          borderRight: "1px solid rgba(0,0,0,0.2)",
+                          position: "relative",
+                        }}
+                      >
                         <Date
                           employeeId={id}
                           endDate={date.utcOffset(0).endOf("date").toDate()}
