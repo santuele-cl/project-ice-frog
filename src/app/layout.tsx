@@ -10,6 +10,7 @@ import { auth } from "@/auth";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import MuiXDateProvider from "@/app/_context/MuiXDateProvider";
 import SnackbarContextProvider from "@/app/_context/SnackbarProvider";
+import TanstackProvider from "./_context/TanstackProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,18 +28,20 @@ export default async function RootLayout({
 
   return (
     <SessionProvider session={session}>
-      <html lang="en">
-        <AppRouterCacheProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <MuiXDateProvider>
-              <body className={inter.className}>
-                <SnackbarContextProvider>{children}</SnackbarContextProvider>
-              </body>
-            </MuiXDateProvider>
-          </ThemeProvider>
-        </AppRouterCacheProvider>
-      </html>
+      <TanstackProvider>
+        <html lang="en">
+          <AppRouterCacheProvider>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <MuiXDateProvider>
+                <body className={inter.className}>
+                  <SnackbarContextProvider>{children}</SnackbarContextProvider>
+                </body>
+              </MuiXDateProvider>
+            </ThemeProvider>
+          </AppRouterCacheProvider>
+        </html>
+      </TanstackProvider>
     </SessionProvider>
   );
 }

@@ -476,14 +476,14 @@ export async function getSchedulesByDate(
       where: {
         userId: employeeId,
         startDate: { gte: startDate },
-        endDate: { lt: endDate },
+        endDate: { lte: endDate },
       },
       include: { project: true },
     });
 
     if (!schedules) return { error: "Something went wrong" };
 
-    if (schedules.length < 1) return { error: "Empty" };
+    // if (schedules.length < 1) return { error: "Empty" };
 
     return { success: "Schedules fetch successul!", data: schedules };
   } catch (error: unknown) {

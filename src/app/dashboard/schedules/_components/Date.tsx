@@ -1,28 +1,55 @@
+"use client";
 import { getSchedulesByDate } from "@/actions/schedules/schedule-action";
 import { IconButton, Stack, Typography } from "@mui/material";
 import dayjs from "dayjs";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 import AddIcon from "@mui/icons-material/Add";
 import AddScheduleFormModal from "./AddScheduleFormModal";
+import { useEffect, useState } from "react";
+import { Prisma } from "@prisma/client";
+
 interface DateProps {
   employeeId: string;
   endDate: Date;
   startDate: Date;
 }
 
-export default async function Date({
-  employeeId,
-  startDate,
-  endDate,
-}: DateProps) {
-  const schedules = await getSchedulesByDate(employeeId, startDate, endDate);
+type UserWithProject = Prisma.ScheduleGetPayload<{
+  include: { project: true };
+}>;
+
+export default function Date({ employeeId, startDate, endDate }: DateProps) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [schedules, setSchedules] = useState<UserWithProject[]>([]);
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      const response = await getSchedulesByDate(employeeId, startDate, endDate);
+      if (response && response.data && response.data.length > 0) {
+        setSchedules(response.data);
+        console.log(schedules);
+      } else {
+        setSchedules([]);
+      }
+      setIsLoading(false);
+    };
+    fetchEmployees();
+  }, [employeeId, startDate, endDate]);
+
+  if (isLoading) {
+    return (
+      <Stack sx={{ justifyContent: "center", alignItems: "center" }}>
+        <Typography>Loading...</Typography>
+      </Stack>
+    );
+  }
 
   return (
     <Stack sx={{ justifyContent: "center", alignItems: "center" }}>
-      {!schedules.data && <AddScheduleFormModal />}
-      {schedules.data &&
-        schedules.data.map((schedule) => {
-          const { startDate, endDate, project } = schedule;
+      {(!schedules || schedules.length < 1) && <AddScheduleFormModal />}
+      {schedules &&
+        schedules.length > 0 &&
+        schedules.map((schedule) => {
           return (
             <Stack
               sx={{
@@ -35,17 +62,21 @@ export default async function Date({
                 fontSize: "0.8rem",
               }}
             >
-              <Typography sx={{ fontWeight: 600 }}>{project?.name}</Typography>
+              <Typography sx={{ fontWeight: 600 }}>
+                {schedule.project?.name}
+              </Typography>
               <Typography sx={{ fontStyle: "italic" }} noWrap>
-                {`${project?.building} ${project?.street} ${project?.barangay}, ${project?.city}`}
+                {`${schedule.project?.building} ${schedule.project?.street} ${schedule.project?.barangay}, ${schedule.project?.city}`}
               </Typography>
               <Stack sx={{ flexDirection: "row", gap: 1 }}>
                 <Typography sx={{ fontWeight: 600 }}>
-                  {dayjs(startDate).format("hh:mm a")}
+                  {schedule?.startDate &&
+                    dayjs(schedule?.startDate).format("hh:mm a")}
                 </Typography>{" "}
                 -{" "}
                 <Typography sx={{ fontWeight: 600 }}>
-                  {dayjs(endDate).format("hh:mm a")}
+                  {schedule?.endDate &&
+                    dayjs(schedule?.endDate).format("hh:mm a")}
                 </Typography>
               </Stack>
             </Stack>

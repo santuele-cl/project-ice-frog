@@ -4,7 +4,7 @@ import AddScheduleFormModal from "./AddScheduleFormModal";
 import AddMultipleScheduleModal from "./AddMultipleScheduleModal";
 
 interface ScheduleTableHeaderProps {
-  week: string;
+  week: number;
 }
 
 export default function ScheduleTableHeader({

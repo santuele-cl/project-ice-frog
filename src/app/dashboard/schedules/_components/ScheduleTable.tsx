@@ -1,3 +1,4 @@
+"use client";
 import {
   Button,
   ButtonGroup,
@@ -17,17 +18,23 @@ import { getEmployeesByDepartment } from "@/actions/users/users-action";
 import Date from "./Date";
 import ScheduleTableHeader from "./ScheduleTableHeader";
 import { getWeek } from "@/app/_utils/days";
+import { useEffect, useState } from "react";
+import { Prisma } from "@prisma/client";
+import { useSearchParams } from "next/navigation";
 
 dayjs.extend(utc);
 
-interface ScheduleTableProps {
-  week: string;
+type UserWithProfileAndSchedules = Prisma.UserGetPayload<{
+  include: { schedules: true; profile: true };
+}>;
+
+interface Props {
+  employees: UserWithProfileAndSchedules[];
+  week: number;
+  weekDates: dayjs.Dayjs[];
 }
 
-export default async function ScheduleTable({ week }: ScheduleTableProps) {
-  const employees = await getEmployeesByDepartment();
-  const weekDates = getWeek(Number(week));
-
+export default function ScheduleTable({ employees, week, weekDates }: Props) {
   return (
     <Stack sx={{ p: 2 }}>
       <ScheduleTableHeader week={week} />
@@ -73,9 +80,9 @@ export default async function ScheduleTable({ week }: ScheduleTableProps) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {employees && employees.data && employees.data.length ? (
-              employees.data.map((employee, i) => {
-                const { id, email, schedules, profile } = employee;
+            {employees && employees.length ? (
+              employees.map((employee, i) => {
+                const { id, profile } = employee;
                 return (
                   <TableRow
                     key={id}
@@ -90,15 +97,25 @@ export default async function ScheduleTable({ week }: ScheduleTableProps) {
                     <TableCell component="th" scope="row">
                       <Typography>{`${profile?.fname} ${profile?.lname}`}</Typography>
                     </TableCell>
-                    {weekDates.map((date) => (
-                      <TableCell align="left" height={150} width={220}>
-                        <Date
-                          employeeId={id}
-                          endDate={date.utcOffset(0).endOf("date").toDate()}
-                          startDate={date.utcOffset(0).startOf("date").toDate()}
-                        />
-                      </TableCell>
-                    ))}
+                    {weekDates &&
+                      weekDates.length > 0 &&
+                      weekDates.map((date, index) => (
+                        <TableCell
+                          align="left"
+                          height={150}
+                          width={220}
+                          key={index}
+                        >
+                          <Date
+                            employeeId={id}
+                            endDate={date.utcOffset(0).endOf("date").toDate()}
+                            startDate={date
+                              .utcOffset(0)
+                              .startOf("date")
+                              .toDate()}
+                          />
+                        </TableCell>
+                      ))}
                   </TableRow>
                 );
               })
