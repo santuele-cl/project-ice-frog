@@ -49,13 +49,19 @@ export default function Date({ employeeId, startDate, endDate }: DateProps) {
     ScheduleWithProject[]
   >([]);
 
+  console.log("emp sched", employeeSchedules);
+
   useEffect(() => {
+    console.log("startDate : ", startDate);
+    console.log("endDate : ", endDate);
     const fetchSchedules = async () => {
       const response = await getSchedulesByDate(employeeId, startDate, endDate);
-      if (response.data) setEmployeeSchedules(response.data);
+      if (response.data && response.data.length > 0)
+        setEmployeeSchedules(response.data);
+      // else setEmployeeSchedules([]);
     };
     fetchSchedules();
-  }, []);
+  }, [employeeId, startDate, endDate]);
 
   return (
     <Stack
@@ -83,7 +89,7 @@ export default function Date({ employeeId, startDate, endDate }: DateProps) {
               }}
             >
               <ButtonBase
-                onClick={() => router.push(`/dashboard/projects/${project.id}`)}
+                // onClick={() => router.push(`/dashboard/projects/${project.id}`)}
                 sx={{
                   textAlign: "left",
                   textOverflow: "ellipsis",

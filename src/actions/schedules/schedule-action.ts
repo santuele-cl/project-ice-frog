@@ -476,7 +476,7 @@ export async function getSchedulesByDate(
       where: {
         userId: employeeId,
         startDate: { gte: startDate },
-        endDate: { lt: endDate },
+        endDate: { lte: endDate },
       },
       include: { project: true },
     });

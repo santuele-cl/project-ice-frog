@@ -1,3 +1,4 @@
+"use client";
 import {
   Button,
   ButtonGroup,
@@ -17,18 +18,77 @@ import { getEmployeesByDepartment } from "@/actions/users/users-action";
 import Date from "./Date";
 import ScheduleTableHeader from "./ScheduleTableHeader";
 import { getWeek } from "@/app/_utils/days";
+import { useEffect, useState } from "react";
+import { Prisma } from "@prisma/client";
+import { findUser } from "@/actions/users/users";
+import { useParams, useSearchParams } from "next/navigation";
+import weekOfTheYear from "dayjs/plugin/weekOfYear";
 
 dayjs.extend(utc);
+dayjs.extend(weekOfTheYear);
 
-interface ScheduleTableProps {
-  week: string;
-}
+type UserWithDetails = Prisma.UserGetPayload<{
+  select: {
+    id: true;
+    email: true;
+    isActive: true;
+    role: true;
+    profile: {
+      select: {
+        contactNumber: true;
+        department: true;
+        fname: true;
+        lname: true;
+        occupation: true;
+      };
+    };
+  };
+}>;
 
-export default function ScheduleTable({ week }: ScheduleTableProps) {
-  const employees = await getEmployeesByDepartment();
-  const weekDates = getWeek(Number(week));
+type PaginationProps = {
+  totalCount: number;
+  itemsPerPage: number;
+  totalPages: number;
+};
 
-  useEffect(,[])
+export default function ScheduleTable() {
+  const searchParams = useSearchParams();
+  const week = searchParams.get("week") ?? dayjs().week().toString();
+  const [employees, setEmployees] = useState<UserWithDetails[]>();
+  const [pagination, setPagination] = useState<PaginationProps>();
+  const [weekDates, setWeekDates] = useState<dayjs.Dayjs[]>([]);
+  // const weekDates = getWeek(Number(week));
+  console.log("weekDates: ", weekDates);
+  console.log("week: ", week);
+
+  useEffect(() => {
+    setWeekDates(getWeek(Number(week)));
+  }, [week]);
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      const response = await findUser({
+        ...(searchParams.get("name") && {
+          name: searchParams.get("name") as string,
+        }),
+        ...(searchParams.get("occupation") && {
+          occupation: searchParams.get("occupation") as string,
+        }),
+        ...(searchParams.get("page") && {
+          page: Number(searchParams.get("page")),
+        }),
+        ...(searchParams.get("department") && {
+          department: searchParams.get("department") as string,
+        }),
+      });
+      if (response.data && response.pagination) {
+        console.log("response data : ", response.data);
+        setEmployees(response.data);
+        setPagination(response.pagination);
+      }
+    };
+    fetchEmployees();
+  }, []);
 
   return (
     <Stack sx={{ p: 2 }}>
@@ -59,25 +119,27 @@ export default function ScheduleTable({ week }: ScheduleTableProps) {
               >
                 Employee
               </TableCell>
-              {weekDates.map((date) => (
-                <TableCell
-                  sx={{
-                    fontSize: "0.8rem",
-                    textAlign: "center",
-                    minWidth: 220,
-                    minHeight: 150,
-                  }}
-                  key={date.toString()}
-                >
-                  {date.format("ddd, MMM D")}
-                </TableCell>
-              ))}
+              {weekDates &&
+                weekDates.length > 0 &&
+                weekDates.map((date) => (
+                  <TableCell
+                    sx={{
+                      fontSize: "0.8rem",
+                      textAlign: "center",
+                      minWidth: 220,
+                      minHeight: 150,
+                    }}
+                    key={date.toString()}
+                  >
+                    {date.format("ddd, MMM D")}
+                  </TableCell>
+                ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {employees && employees.data && employees.data.length ? (
-              employees.data.map((employee, i) => {
-                const { id, email, schedules, profile } = employee;
+            {employees && employees.length > 0 ? (
+              employees.map((employee, i) => {
+                const { id, profile } = employee;
                 return (
                   <TableRow
                     key={id}
@@ -92,21 +154,27 @@ export default function ScheduleTable({ week }: ScheduleTableProps) {
                     <TableCell component="th" scope="row">
                       <Typography>{`${profile?.fname} ${profile?.lname}`}</Typography>
                     </TableCell>
-                    {weekDates.map((date) => (
-                      <TableCell
-                        align="left"
-                        sx={{
-                          borderRight: "1px solid rgba(0,0,0,0.2)",
-                          position: "relative",
-                        }}
-                      >
-                        <Date
-                          employeeId={id}
-                          endDate={date.utcOffset(0).endOf("date").toDate()}
-                          startDate={date.utcOffset(0).startOf("date").toDate()}
-                        />
-                      </TableCell>
-                    ))}
+                    {weekDates &&
+                      weekDates.length > 0 &&
+                      weekDates.map((date, index) => (
+                        <TableCell
+                          key={index}
+                          align="left"
+                          sx={{
+                            borderRight: "1px solid rgba(0,0,0,0.2)",
+                            position: "relative",
+                          }}
+                        >
+                          <Date
+                            employeeId={id}
+                            endDate={date.utcOffset(0).endOf("date").toDate()}
+                            startDate={date
+                              .utcOffset(0)
+                              .startOf("date")
+                              .toDate()}
+                          />
+                        </TableCell>
+                      ))}
                   </TableRow>
                 );
               })
