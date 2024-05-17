@@ -22,15 +22,19 @@ dayjs.extend(utc);
 
 interface ScheduleTableProps {
   week: string;
+  department?: string;
 }
 
-export default async function ScheduleTable({ week }: ScheduleTableProps) {
-  const employees = await getEmployeesByDepartment();
+export default async function ScheduleTable({
+  week,
+  department,
+}: ScheduleTableProps) {
+  const employees = await getEmployeesByDepartment(department);
   const weekDates = getWeek(Number(week));
 
   return (
     <Stack sx={{ p: 2 }}>
-      <ScheduleTableHeader week={week} />
+      <ScheduleTableHeader week={week} weekDates={weekDates} />
       <Divider sx={{ my: 2 }} />
       <TableContainer sx={{ height: "750px" }}>
         <Table

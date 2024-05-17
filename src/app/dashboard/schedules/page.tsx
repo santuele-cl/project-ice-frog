@@ -5,10 +5,11 @@ import ScheduleTable from "./_components/ScheduleTable";
 import Search from "@mui/icons-material/Search";
 
 export default function AppointmentPage({
-  searchParams: { week },
+  searchParams: { week, department },
 }: {
   searchParams: {
     week?: string;
+    department?: string;
   };
 }) {
   if (week) {
@@ -24,7 +25,10 @@ export default function AppointmentPage({
     <Fragment>
       <Paper>
         <Suspense key={"schedules"} fallback={<h1>Loading</h1>}>
-          <ScheduleTable week={week ? week : dayjs().week().toString()} />
+          <ScheduleTable
+            week={week ? week : dayjs().week().toString()}
+            department={department}
+          />
         </Suspense>
       </Paper>
     </Fragment>

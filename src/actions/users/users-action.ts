@@ -185,7 +185,7 @@ export async function getEmployeeById(id: string) {
   }
 }
 
-export async function getEmployeesByDepartment() {
+export async function getEmployeesByDepartment(department?: string) {
   noStore();
   try {
     const session = await auth();
@@ -193,7 +193,10 @@ export async function getEmployeesByDepartment() {
     if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
 
     const users = await db.user.findMany({
-      where: { isArchived: false },
+      where: {
+        isArchived: false,
+        ...(department && { profile: { department: { name: department } } }),
+      },
       include: { schedules: true, profile: true },
     });
     if (!users) {

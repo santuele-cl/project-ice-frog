@@ -16,6 +16,9 @@ export const getUserById = async (id: string) => {
   try {
     const user = await db.user.findUnique({
       where: { id, isArchived: false },
+      include: {
+        profile: { select: { department: { select: { name: true } } } },
+      },
     });
 
     return user;

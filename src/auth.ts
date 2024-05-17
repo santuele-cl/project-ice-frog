@@ -68,6 +68,10 @@ export const {
         session.user.email = token.email;
       }
 
+      if (token.department && session.user) {
+        session.user.department = token.department as string;
+      }
+
       return session;
     },
 
@@ -84,6 +88,7 @@ export const {
       token.email = existingUser.email;
       token.role = existingUser.role;
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
+      token.department = existingUser.profile?.department.name!;
 
       return token;
     },
