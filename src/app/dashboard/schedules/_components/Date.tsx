@@ -26,9 +26,9 @@ export default async function Date({
           return (
             <Stack
               sx={{
-                p: 2,
-                minHeight: 100,
-                minWidth: 210,
+                p: 1,
+                // minHeight: 100,
+                // minWidth: 210,
                 bgcolor: "rgba(255, 255, 0, 0.4)",
                 borderRadius: 2,
                 marginBottom: "5px",
@@ -36,9 +36,9 @@ export default async function Date({
               }}
             >
               <Typography sx={{ fontWeight: 600 }}>{project?.name}</Typography>
-              <Typography sx={{ fontStyle: "italic" }} noWrap>
+              {/* <Typography sx={{ fontStyle: "italic" }} noWrap>
                 {`${project?.building} ${project?.street} ${project?.barangay}, ${project?.city}`}
-              </Typography>
+              </Typography> */}
               <Stack sx={{ flexDirection: "row", gap: 1 }}>
                 <Typography sx={{ fontWeight: 600 }}>
                   {dayjs(startDate).format("hh:mm a")}

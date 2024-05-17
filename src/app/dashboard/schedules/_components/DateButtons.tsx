@@ -18,22 +18,34 @@ import { useEffect, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
 export default function DateButtons() {
-  const [week, setWeek] = useState(dayjs().week());
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   const pathname = usePathname();
   const params = new URLSearchParams(searchParams);
 
-  useEffect(() => {
-    params.set("week", week.toString());
+  const week = Number(searchParams.get("week")) || dayjs().week();
+
+  const handlePrev = () => {
+    const newWeek = week - 1;
+    params.set("week", newWeek.toString());
     replace(`${pathname}?${params.toString()}`);
-  }, [week]);
+  };
+  const handleNext = () => {
+    const newWeek = week + 1;
+    params.set("week", newWeek.toString());
+    replace(`${pathname}?${params.toString()}`);
+  };
+
+  const handleToday = () => {
+    params.set("week", dayjs().week().toString());
+    replace(`${pathname}?${params.toString()}`);
+  };
 
   return (
     <ButtonGroup>
-      <Button onClick={() => setWeek((prev) => prev - 1)}>Prev</Button>
-      <Button onClick={() => setWeek(dayjs().week())}>Today</Button>
-      <Button onClick={() => setWeek((prev) => prev + 1)}>Next</Button>
+      <Button onClick={handlePrev}>Prev</Button>
+      <Button onClick={handleToday}>Today</Button>
+      <Button onClick={handleNext}>Next</Button>
     </ButtonGroup>
   );
 }
