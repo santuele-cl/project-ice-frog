@@ -26,8 +26,8 @@ export default function AddScheduleFormModal() {
           <AddScheduleForm />
         </Box>
       </Modal>
-      <IconButton onClick={() => setShowAddScheduleModal(true)}>
-        <AddIcon sx={{ color: "rgba(0,0,0,0.2)" }} />
+      <IconButton onClick={() => setShowAddScheduleModal(true)} size="small">
+        <AddIcon sx={{ color: "rgba(0,0,0,0.2)" }} fontSize="small" />
       </IconButton>
     </Box>
   );

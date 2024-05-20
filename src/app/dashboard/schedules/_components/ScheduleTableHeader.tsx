@@ -1,4 +1,4 @@
-import { Stack, Typography } from "@mui/material";
+import { Divider, Stack, Typography } from "@mui/material";
 import DateButtons from "./DateButtons";
 import AddScheduleFormModal from "./AddScheduleFormModal";
 import AddMultipleScheduleModal from "./AddMultipleScheduleModal";
@@ -15,23 +15,38 @@ export default function ScheduleTableHeader({
   weekDates,
 }: ScheduleTableHeaderProps) {
   return (
-    <Stack
-      sx={{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
-      <Typography
-        sx={{ fontWeight: 600 }}
-      >{`Week ${week} : ${weekDates[0]?.format("MMM DD")} - ${weekDates[
-        weekDates.length - 1
-      ]?.format("MMM DD YYYY")}`}</Typography>
-
-      <Stack sx={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+    <Stack>
+      <Stack
+        sx={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography
+          sx={{ fontWeight: 600 }}
+        >{`Week ${week} : ${weekDates[0]?.format("MMM DD")} - ${weekDates[
+          weekDates.length - 1
+        ]?.format("MMM DD YYYY")}`}</Typography>
+        <Stack sx={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+          <DateButtons />
+        </Stack>
+      </Stack>
+      <Divider sx={{ my: 1 }} />
+      <Stack
+        sx={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 2,
+        }}
+      >
         <SchedulesDepartmentSelect />
-        <DateButtons />
-        <AddMultipleScheduleModal />
+
+        <Stack sx={{ flexDirection: "row", gap: 1 }}>
+          <AddMultipleScheduleModal />
+          <AddMultipleScheduleModal />
+        </Stack>
       </Stack>
     </Stack>
   );

@@ -35,12 +35,12 @@ export default async function ScheduleTable({
   return (
     <Stack sx={{ p: 2 }}>
       <ScheduleTableHeader week={week} weekDates={weekDates} />
-      <Divider sx={{ my: 2 }} />
+      <Divider sx={{ mb: 2, mt: 1 }} />
       <TableContainer sx={{ height: "750px" }}>
         <Table
-          sx={{ minWidth: 650, overflow: "auto" }}
+          sx={{ minWidth: 650, overflow: "auto", "& table ": {} }}
           aria-label="simple table"
-          padding="normal"
+          padding="checkbox"
         >
           <TableHead>
             <TableRow>
