@@ -1,12 +1,11 @@
 import { getSchedulesByDate } from "@/actions/schedules/schedule-action";
 import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import dayjs from "dayjs";
-import EventBusyIcon from "@mui/icons-material/EventBusy";
-import AddIcon from "@mui/icons-material/Add";
-import AddScheduleFormModal from "./AddScheduleFormModal";
-import DeleteIcon from "@mui/icons-material/Delete";
+import AddScheduleFormModal from "./AddSchedule";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import DeleteSchedule from "./DeleteSchedule";
+import AddOvertime from "./AddOvertime";
+import AddSchedule from "./AddSchedule";
 
 interface DateProps {
   employeeId: string;
@@ -23,10 +22,10 @@ export default async function Date({
 
   return (
     <Stack sx={{ justifyContent: "center", alignItems: "center" }}>
-      {!schedules.data && <AddScheduleFormModal />}
+      {!schedules.data && <AddSchedule date={startDate} />}
       {schedules.data &&
         schedules.data.map((schedule) => {
-          const { startDate, endDate, project } = schedule;
+          const { startDate, endDate, project, id } = schedule;
           return (
             <Stack
               sx={{
@@ -55,26 +54,15 @@ export default async function Date({
                 <Typography sx={{ fontSize: "0.825rem" }}>
                   Project Manager
                 </Typography>
-                {/* <Typography sx={{ fontSize: "0.825rem" }}>
-                  Project Manager
-                </Typography> */}
               </Stack>
               <Stack sx={{ alignSelf: "flex-start", gap: "5px" }}>
-                <Tooltip title="Delete schedule" placement="right">
-                  <IconButton size="small">
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
+                <DeleteSchedule scheduleId={id} />
                 <Tooltip title="Edit schedule" placement="right">
                   <IconButton size="small">
                     <EditOutlinedIcon fontSize="small" />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Add overtime" placement="right">
-                  <IconButton size="small">
-                    <AddOutlinedIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
+                <AddOvertime scheduleId={id} />
               </Stack>
             </Stack>
           );

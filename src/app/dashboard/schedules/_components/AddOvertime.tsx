@@ -21,6 +21,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { enqueueSnackbar } from "notistack";
 import { deleteSchedule } from "@/actions/schedules/schedule-action";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 
 const style: SxProps = {
   position: "absolute",
@@ -36,7 +37,7 @@ type Props = {
   scheduleId: string;
 };
 
-export default function DeleteSchedule({ scheduleId }: Props) {
+export default function AddOvertime({ scheduleId }: Props) {
   const [open, setOpen] = useState(false);
 
   const handleClose = () => {
@@ -44,17 +45,18 @@ export default function DeleteSchedule({ scheduleId }: Props) {
   };
 
   const handleSubmit = async () => {
-    try {
-      const res = await deleteSchedule(scheduleId);
+    console.log("add schedule submit button clicked");
+    // try {
+    //   const res = await deleteSchedule(scheduleId);
 
-      if (res?.error) enqueueSnackbar(res.error, { variant: "error" });
-      if (res?.success) {
-        handleClose();
-        enqueueSnackbar(res.success, { variant: "success" });
-      }
-    } catch (error) {
-      enqueueSnackbar(JSON.stringify(error), { variant: "error" });
-    }
+    //   if (res?.error) enqueueSnackbar(res.error, { variant: "error" });
+    //   if (res?.success) {
+    //     handleClose();
+    //     enqueueSnackbar(res.success, { variant: "success" });
+    //   }
+    // } catch (error) {
+    //   enqueueSnackbar(JSON.stringify(error), { variant: "error" });
+    // }
   };
 
   return (
@@ -67,15 +69,13 @@ export default function DeleteSchedule({ scheduleId }: Props) {
         hideBackdrop
         open={open}
         onClose={handleClose}
-        aria-labelledby="schedule-delete-prompt"
-        aria-describedby="schedule-delete-prompt-description"
+        aria-labelledby="overtime-add-prompt"
+        aria-describedby="overtime-add-prompt-description"
       >
-        <DialogTitle id="schedule-delete-prompt">
-          {"Schedule Delete Prompt"}
-        </DialogTitle>
+        <DialogTitle id="overtime-add-prompt">Add Overtime Prompt</DialogTitle>
         <DialogContent>
-          <DialogContentText id="schedule-delete-prompt-description">
-            Are you sure you want to delete this schedule?
+          <DialogContentText id="overtime-add-prompt-description">
+            Are you sure you want to add a overtime?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -83,7 +83,7 @@ export default function DeleteSchedule({ scheduleId }: Props) {
             Cancel
           </Button>
           <Button onClick={handleSubmit} color="error">
-            Confirm
+            Add
           </Button>
         </DialogActions>
       </Dialog>
@@ -141,9 +141,9 @@ export default function DeleteSchedule({ scheduleId }: Props) {
           </Stack>
         </Box>
       </Modal> */}
-      <Tooltip title="Delete schedule" placement="right">
+      <Tooltip title="Add overtime" placement="right">
         <IconButton onClick={() => setOpen(true)} size="small">
-          <DeleteIcon fontSize="small" />
+          <AddOutlinedIcon fontSize="small" />
         </IconButton>
       </Tooltip>
     </Box>

@@ -21,6 +21,8 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { enqueueSnackbar } from "notistack";
 import { deleteSchedule } from "@/actions/schedules/schedule-action";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import { Dayjs } from "dayjs";
 
 const style: SxProps = {
   position: "absolute",
@@ -33,10 +35,10 @@ const style: SxProps = {
 };
 
 type Props = {
-  scheduleId: string;
+  date: Date;
 };
 
-export default function DeleteSchedule({ scheduleId }: Props) {
+export default function AddSchedule({ date }: Props) {
   const [open, setOpen] = useState(false);
 
   const handleClose = () => {
@@ -44,17 +46,18 @@ export default function DeleteSchedule({ scheduleId }: Props) {
   };
 
   const handleSubmit = async () => {
-    try {
-      const res = await deleteSchedule(scheduleId);
+    console.log("add schedule submit button clicked");
+    // try {
+    //   const res = await deleteSchedule(scheduleId);
 
-      if (res?.error) enqueueSnackbar(res.error, { variant: "error" });
-      if (res?.success) {
-        handleClose();
-        enqueueSnackbar(res.success, { variant: "success" });
-      }
-    } catch (error) {
-      enqueueSnackbar(JSON.stringify(error), { variant: "error" });
-    }
+    //   if (res?.error) enqueueSnackbar(res.error, { variant: "error" });
+    //   if (res?.success) {
+    //     handleClose();
+    //     enqueueSnackbar(res.success, { variant: "success" });
+    //   }
+    // } catch (error) {
+    //   enqueueSnackbar(JSON.stringify(error), { variant: "error" });
+    // }
   };
 
   return (
@@ -67,15 +70,13 @@ export default function DeleteSchedule({ scheduleId }: Props) {
         hideBackdrop
         open={open}
         onClose={handleClose}
-        aria-labelledby="schedule-delete-prompt"
-        aria-describedby="schedule-delete-prompt-description"
+        aria-labelledby="schedule-add-prompt"
+        aria-describedby="schedule-add-prompt-description"
       >
-        <DialogTitle id="schedule-delete-prompt">
-          {"Schedule Delete Prompt"}
-        </DialogTitle>
+        <DialogTitle id="schedule-add-prompt">Schedule Add Prompt</DialogTitle>
         <DialogContent>
-          <DialogContentText id="schedule-delete-prompt-description">
-            Are you sure you want to delete this schedule?
+          <DialogContentText id="schedule-add-prompt-description">
+            Are you sure you want to add a schedule? {`${JSON.stringify(date)}`}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -83,7 +84,7 @@ export default function DeleteSchedule({ scheduleId }: Props) {
             Cancel
           </Button>
           <Button onClick={handleSubmit} color="error">
-            Confirm
+            Add
           </Button>
         </DialogActions>
       </Dialog>
@@ -141,9 +142,9 @@ export default function DeleteSchedule({ scheduleId }: Props) {
           </Stack>
         </Box>
       </Modal> */}
-      <Tooltip title="Delete schedule" placement="right">
+      <Tooltip title="Add schedule" placement="right">
         <IconButton onClick={() => setOpen(true)} size="small">
-          <DeleteIcon fontSize="small" />
+          <AddOutlinedIcon fontSize="small" sx={{ color: "rgba(0,0,0,0.2)" }} />
         </IconButton>
       </Tooltip>
     </Box>

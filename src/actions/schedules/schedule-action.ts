@@ -581,6 +581,7 @@ export async function deleteSchedule(scheduleId: string) {
     if (!deletedSchedule) return { error: "Something went wrong" };
 
     revalidatePath(`/dashboard/projects/${deletedSchedule.projectId}`);
+    revalidatePath(`/dashboard/schedules`);
 
     return { success: "Success!", data: deletedSchedule };
   } catch (error) {

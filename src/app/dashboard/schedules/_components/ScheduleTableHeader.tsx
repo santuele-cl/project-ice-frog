@@ -1,6 +1,6 @@
 import { Divider, Stack, Typography } from "@mui/material";
 import DateButtons from "./DateButtons";
-import AddScheduleFormModal from "./AddScheduleFormModal";
+import AddScheduleFormModal from "./AddSchedule";
 import AddMultipleScheduleModal from "./AddMultipleScheduleModal";
 import SchedulesDepartmentSelect from "./SchedulesDepartmentSelect";
 import dayjs from "dayjs";
