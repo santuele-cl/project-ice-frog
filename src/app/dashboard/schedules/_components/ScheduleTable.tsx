@@ -99,6 +99,7 @@ export default async function ScheduleTable({
                     {weekDates.map((date) => (
                       <TableCell align="left">
                         <Date
+                          name={`${profile?.fname} ${profile?.lname}`}
                           employeeId={id}
                           endDate={date.utcOffset(0).endOf("date").toDate()}
                           startDate={date.utcOffset(0).startOf("date").toDate()}

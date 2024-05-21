@@ -6,14 +6,17 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteSchedule from "./DeleteSchedule";
 import AddOvertime from "./AddOvertime";
 import AddSchedule from "./AddSchedule";
+import EditSchedule from "./EditSchedule";
 
 interface DateProps {
   employeeId: string;
   endDate: Date;
   startDate: Date;
+  name: string;
 }
 
 export default async function Date({
+  name,
   employeeId,
   startDate,
   endDate,
@@ -22,7 +25,9 @@ export default async function Date({
 
   return (
     <Stack sx={{ justifyContent: "center", alignItems: "center" }}>
-      {!schedules.data && <AddSchedule date={startDate} />}
+      {!schedules.data && (
+        <AddSchedule date={startDate} userId={employeeId} name={name} />
+      )}
       {schedules.data &&
         schedules.data.map((schedule) => {
           const { startDate, endDate, project, id } = schedule;
@@ -57,11 +62,7 @@ export default async function Date({
               </Stack>
               <Stack sx={{ alignSelf: "flex-start", gap: "5px" }}>
                 <DeleteSchedule scheduleId={id} />
-                <Tooltip title="Edit schedule" placement="right">
-                  <IconButton size="small">
-                    <EditOutlinedIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
+                <EditSchedule schedule={schedule} name={name}/>
                 <AddOvertime scheduleId={id} />
               </Stack>
             </Stack>

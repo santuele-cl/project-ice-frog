@@ -165,11 +165,35 @@ export const ScheduleSchema = z.object({
   id: z.string().min(1, "Required field"),
 });
 
+export const DailyScheduleSchema = ScheduleSchema.pick({
+  userId: true,
+  projectId: true,
+  startDate: true,
+  endDate: true,
+  notes: true,
+})
+  .extend({ hours: z.number().optional() })
+  .refine(
+    (data) => {
+      if (data.hours) {
+        return data.hours > 0;
+      } else {
+        return true;
+      }
+    },
+    { message: "Invalid input", path: ["hours"] }
+  )
+  .refine(
+    EndDateMustBeGreaterThanStartDate,
+    ErrorEndDateMustBeGreaterThanStartDate
+  );
+
 export const EditScheduleSchema = ScheduleSchema.pick({
   userId: true,
   projectId: true,
   startDate: true,
   endDate: true,
+  notes: true,
 }).refine(
   EndDateMustBeGreaterThanStartDate,
   ErrorEndDateMustBeGreaterThanStartDate

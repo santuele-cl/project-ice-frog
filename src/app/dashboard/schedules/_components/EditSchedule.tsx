@@ -23,6 +23,9 @@ import { enqueueSnackbar } from "notistack";
 import { deleteSchedule } from "@/actions/schedules/schedule-action";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import dayjs, { Dayjs } from "dayjs";
+import EditScheduleForm from "./EditScheduleForm";
+import { Schedule } from "@prisma/client";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 
 const style: SxProps = {
   position: "absolute",
@@ -35,31 +38,15 @@ const style: SxProps = {
 };
 
 type Props = {
-  date: Date;
-  userId: string;
+  schedule: Schedule;
   name: string;
 };
 
-export default function AddSchedule({ date, userId, name }: Props) {
+export default function EditSchedule({ schedule, name }: Props) {
   const [open, setOpen] = useState(false);
 
   const handleClose = () => {
     setOpen(false);
-  };
-
-  const handleSubmit = async () => {
-    console.log("add schedule submit button clicked");
-    // try {
-    //   const res = await deleteSchedule(scheduleId);
-
-    //   if (res?.error) enqueueSnackbar(res.error, { variant: "error" });
-    //   if (res?.success) {
-    //     handleClose();
-    //     enqueueSnackbar(res.success, { variant: "success" });
-    //   }
-    // } catch (error) {
-    //   enqueueSnackbar(JSON.stringify(error), { variant: "error" });
-    // }
   };
 
   return (
@@ -72,25 +59,20 @@ export default function AddSchedule({ date, userId, name }: Props) {
         hideBackdrop
         open={open}
         onClose={handleClose}
-        aria-labelledby="schedule-add-prompt"
-        aria-describedby="schedule-add-prompt-description"
+        aria-labelledby="schedule-edit-prompt"
+        aria-describedby="schedule-edit-prompt-description"
       >
-        <DialogTitle id="schedule-add-prompt">{`${dayjs(date).format(
-          "MMM DD, YYYY"
-        )} Schedule`}</DialogTitle>
+        <DialogTitle id="schedule-edit-prompt">{`${dayjs(
+          schedule.startDate
+        ).format("MMM DD, YYYY")} Schedule`}</DialogTitle>
         <DialogContent>
-          <AddScheduleForm
-            setOpen={setOpen}
-            date={date}
-            name={name}
-            userId={userId}
-          />
+          <EditScheduleForm setOpen={setOpen} schedule={schedule} name={name} />
         </DialogContent>
       </Dialog>
 
-      <Tooltip title="Add schedule" placement="right">
+      <Tooltip title="Edit schedule" placement="right">
         <IconButton onClick={() => setOpen(true)} size="small">
-          <AddOutlinedIcon fontSize="small" sx={{ color: "rgba(0,0,0,0.2)" }} />
+          <EditOutlinedIcon fontSize="small" />
         </IconButton>
       </Tooltip>
     </Box>

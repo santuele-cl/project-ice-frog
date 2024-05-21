@@ -21,38 +21,29 @@ import { TimePicker } from "@mui/x-date-pickers";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 
-import { DailyScheduleSchema } from "@/app/_schemas/zod/schema";
+import { EditScheduleSchema } from "@/app/_schemas/zod/schema";
 import { Project, Schedule } from "@prisma/client";
 
 import { getProjects } from "@/actions/projects/projects-action";
 import {
   addMultipleScheduleByEmployeeId,
   addSchedule,
+  editSchedule,
 } from "@/actions/schedules/schedule-action";
 import FormStatusText from "@/app/_ui/auth/FormStatusText";
 import WarningIcon from "@mui/icons-material/Warning";
 import { enqueueSnackbar } from "notistack";
 import { getClientError } from "@/app/_utils/getClientError";
 
-export default function AddScheduleForm({
+export default function EditScheduleForm({
   setOpen,
-  date,
-  userId,
+  schedule,
   name,
 }: {
   name: string;
-  date: Date;
-  userId: string;
+  schedule: Schedule;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) {
-  const params = useParams();
-  const [pending, setPending] = useState(false);
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
-  const [overlappingSchedules, setOverlappingSchedules] = useState<
-    Partial<Schedule>[]
-  >([]);
-
   const {
     register,
     handleSubmit,
@@ -62,44 +53,53 @@ export default function AddScheduleForm({
     trigger,
     setError: setFormError,
     setValue,
-  } = useForm<z.infer<typeof DailyScheduleSchema>>({
-    resolver: zodResolver(DailyScheduleSchema),
+  } = useForm<z.infer<typeof EditScheduleSchema>>({
+    resolver: zodResolver(EditScheduleSchema),
     defaultValues: {
-      userId,
-      startDate: dayjs(date).toDate(),
-      endDate: dayjs(date).add(9, "hour").toDate(),
+      userId: schedule.userId,
+      startDate: schedule.startDate,
+      endDate: schedule.endDate,
+      projectId: schedule.projectId,
+      notes: schedule.notes ?? "",
     },
   });
 
-  console.log("form errors : ", errors);
-  const onSubmit = async (data: z.infer<typeof DailyScheduleSchema>) => {
-    setPending(true);
-    setError("");
-    setSuccess("");
-    setOverlappingSchedules([]);
+  const onSubmit = async (data: z.infer<typeof EditScheduleSchema>) => {
+    const hasNoChanges =
+      data.endDate === schedule.endDate &&
+      data.startDate === schedule.startDate &&
+      // data.notes === schedule.notes &&
+      data.projectId === schedule.id;
 
-    try {
-      const res = await addSchedule(data);
+    console.log("sched : ", schedule);
+    console.log("data : ", data);
 
-      if (res?.error) {
-        enqueueSnackbar(res?.error, {
+    if (!hasNoChanges) {
+      try {
+        const res = await editSchedule({ scheduleId: schedule.id, data });
+
+        if (res?.error) {
+          enqueueSnackbar(res?.error, {
+            variant: "error",
+          });
+        }
+
+        if (res?.success) {
+          reset();
+          setOpen(false);
+          enqueueSnackbar(res.success, {
+            variant: "success",
+          });
+        }
+      } catch (error) {
+        enqueueSnackbar(getClientError(error), {
           variant: "error",
         });
       }
-
-      if (res?.success) {
-        reset();
-        setOpen(false);
-        enqueueSnackbar(res.success, {
-          variant: "success",
-        });
-      }
-    } catch (error) {
-      enqueueSnackbar(getClientError(error), {
-        variant: "error",
+    } else {
+      enqueueSnackbar("No changes made", {
+        variant: "info",
       });
-    } finally {
-      setPending(false);
     }
   };
 
@@ -256,7 +256,7 @@ export default function AddScheduleForm({
           Close
         </Button>
         <Button type="submit" disabled={isSubmitting} color="success">
-          Add
+          Save
         </Button>
       </Stack>
     </Stack>

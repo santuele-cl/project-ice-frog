@@ -3,6 +3,7 @@ import { z } from "zod";
 import { unstable_noStore as noStore, revalidatePath } from "next/cache";
 import { db } from "@/app/_lib/db";
 import {
+  DailyScheduleSchema,
   EditScheduleSchema,
   RefinedMultipleScheduleSchema,
 } from "@/app/_schemas/zod/schema";
@@ -475,8 +476,14 @@ export async function getSchedulesByDate(
     const schedules = await db.schedule.findMany({
       where: {
         userId: employeeId,
-        startDate: { gte: startDate },
-        endDate: { lt: endDate },
+        AND: [
+          {
+            startDate: { gte: startDate },
+          },
+          {
+            endDate: { lt: endDate },
+          },
+        ],
       },
       include: { project: true },
     });
@@ -529,7 +536,7 @@ export async function editSchedule({
      * */
     const overlap = await db.schedule.findFirst({
       where: {
-        id: { not: schedule.id },
+        id: { not: scheduleId },
         userId: parsedDate.userId,
         AND: [
           {
@@ -585,6 +592,74 @@ export async function deleteSchedule(scheduleId: string) {
 
     return { success: "Success!", data: deletedSchedule };
   } catch (error) {
+    return { error: getErrorMessage(error) };
+  }
+}
+
+export async function addSchedule(
+  // employeeId: string,
+  data: z.infer<typeof DailyScheduleSchema>
+) {
+  try {
+    /**
+     * Verify that user is authenticated
+     * and has the right permission to call this action
+     */
+    const session = await auth();
+    if (!session) return { error: "Unauthenticated" };
+    if (session.user.role !== "ADMIN") return { error: "Unauthorized" };
+
+    if (!data) return { error: "Missing data." };
+
+    const parse = DailyScheduleSchema.safeParse(data);
+    if (!parse.success) return { error: "Parse error. Invalid data input!" };
+
+    const parsedData = parse.data;
+
+    /**
+     * Verify if the employeeId exist
+     */
+    const isExisting = await db.user.findUnique({
+      where: { id: parsedData.userId },
+    });
+    if (!isExisting) return { error: "Employee does not exist." };
+
+    /**
+     * Verify each employee schedule does not overlap with
+     * his or her existing schedule(s) in the database
+     * */
+    const existingSchedule = await db.schedule.findFirst({
+      where: {
+        userId: parsedData.userId,
+        AND: [
+          {
+            startDate: { lt: parsedData.endDate },
+            endDate: { gt: parsedData.startDate },
+          },
+        ],
+      },
+    });
+
+    if (existingSchedule) {
+      return {
+        error:
+          "Selected date overlaps with existing schedule(s) of the employee",
+      };
+    }
+
+    /**
+     * Schedule(s) creation
+     * */
+    const createdSchedules = await db.schedule.create({
+      data: parsedData,
+    });
+
+    if (!createdSchedules) return { error: "Something went wrong" };
+
+    revalidatePath("/dashboard/schedules");
+
+    return { success: "Schedule(s) added!", data: createdSchedules };
+  } catch (error: unknown) {
     return { error: getErrorMessage(error) };
   }
 }
