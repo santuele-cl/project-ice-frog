@@ -275,6 +275,11 @@ export async function getProjects({
           ],
         }),
       },
+      include: {
+        projectManager: {
+          select: { profile: { select: { lname: true, fname: true } } },
+        },
+      },
       orderBy: { createdAt: "desc" },
       ...(page !== 0 && { take: ITEMS_PER_PAGE }),
       ...(page !== 0 && { skip: (Number(page) - 1) * ITEMS_PER_PAGE }),
@@ -354,6 +359,7 @@ export async function exportProjects({
       select: {
         id: true,
         jobOrder: true,
+        projectManager: true,
         name: true,
         startDate: true,
         endDate: true,
@@ -405,6 +411,14 @@ export async function getProjectById(id: string) {
 
     const project = await db.project.findUnique({
       where: { id },
+      include: {
+        projectManager: {
+          select: {
+            id: true,
+            profile: { select: { fname: true, lname: true } },
+          },
+        },
+      },
     });
     if (!project) return { error: "Project does not exist!" };
     return { success: "Success!", data: project };

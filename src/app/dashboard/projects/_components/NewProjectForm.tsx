@@ -31,6 +31,7 @@ import { enqueueSnackbar } from "notistack";
 import AutoComplete from "@/app/_ui/AutoComplete";
 import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
 import WarningIcon from "@mui/icons-material/Warning";
+import ProjectManagerSelect from "./ProjectManagerSelect";
 
 type UserWithName = Prisma.UserGetPayload<{
   select: {
@@ -52,7 +53,14 @@ const fieldsArr: FieldType[] = [
   { id: "name", label: "Project Name" },
   { id: "building", label: "Building No.", required: false },
   { id: "jobOrder", label: "Job order Number" },
+
   { id: "street", label: "Street", required: false },
+  {
+    id: "projectManagerId",
+    label: "Project Manager",
+    type: "select",
+    options: [],
+  },
   { id: "startDate", label: "Projected Start Date", type: "date" },
   { id: "barangay", label: "Barangay" },
   { id: "endDate", label: "Projected End Date", type: "date" },
@@ -84,6 +92,7 @@ export default function NewProjectForm() {
     defaultValues: {
       name: "",
       jobOrder: "",
+      projectManagerId: "",
       street: "",
       building: "",
       city: "",
@@ -138,20 +147,28 @@ export default function NewProjectForm() {
         {fieldsArr.map((field, index) => {
           const { type, required, label, id } = field;
           if (type === "select") {
-            const { options } = field;
-            return (
-              <Grid2 xs={12} sm={6} key={id}>
-                <AutoComplete
-                  required={required}
-                  control={control}
-                  name={id}
-                  options={options}
-                  labelIdentifier="label"
-                  valueIdentifier="value"
-                  fieldLabel={label}
-                />
-              </Grid2>
-            );
+            if (id === "projectManagerId") {
+              return (
+                <Grid2 xs={12} sm={6} key={id}>
+                  <ProjectManagerSelect control={control} required={true} />
+                </Grid2>
+              );
+            } else {
+              const { options } = field;
+              return (
+                <Grid2 xs={12} sm={6} key={id}>
+                  <AutoComplete
+                    required={required}
+                    control={control}
+                    name={id}
+                    options={options}
+                    labelIdentifier="label"
+                    valueIdentifier="value"
+                    fieldLabel={label}
+                  />
+                </Grid2>
+              );
+            }
           } else if (type === "date") {
             return (
               <Grid2 xs={12} sm={6} key={id}>

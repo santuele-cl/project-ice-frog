@@ -130,6 +130,7 @@ const seed = async () => {
         startDate: dayjs().toDate(),
         endDate: dayjs().add(2, "day").toDate(),
         notes: "Client wants a modern and responsive design.",
+        projectManagerId: "ADMIN1",
       },
       {
         id: "p2",
@@ -142,6 +143,7 @@ const seed = async () => {
         startDate: dayjs().toDate(),
         endDate: dayjs().add(2, "day").toDate(),
         notes: "Building a cross-platform app for iOS and Android.",
+        projectManagerId: "ADMIN1",
       },
     ],
   });

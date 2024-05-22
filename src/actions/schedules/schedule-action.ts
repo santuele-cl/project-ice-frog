@@ -485,7 +485,15 @@ export async function getSchedulesByDate(
           },
         ],
       },
-      include: { project: true },
+      include: {
+        project: {
+          include: {
+            projectManager: {
+              select: { profile: { select: { fname: true, lname: true } } },
+            },
+          },
+        },
+      },
     });
 
     if (!schedules) return { error: "Something went wrong" };

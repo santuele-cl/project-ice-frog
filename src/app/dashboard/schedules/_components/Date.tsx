@@ -1,5 +1,5 @@
 import { getSchedulesByDate } from "@/actions/schedules/schedule-action";
-import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import dayjs from "dayjs";
 import AddScheduleFormModal from "./AddSchedule";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
@@ -7,6 +7,7 @@ import DeleteSchedule from "./DeleteSchedule";
 import AddOvertime from "./AddOvertime";
 import AddSchedule from "./AddSchedule";
 import EditSchedule from "./EditSchedule";
+import Link from "next/link";
 
 interface DateProps {
   employeeId: string;
@@ -54,15 +55,21 @@ export default async function Date({
                   </Typography>
                 </Stack>
                 <Typography sx={{ fontSize: "0.825rem" }}>
-                  {project?.name}
+                  <Link href={`/dashboard/projects/${project.id}`}>
+                    {project?.name}
+                  </Link>
                 </Typography>
                 <Typography sx={{ fontSize: "0.825rem" }}>
-                  Project Manager
+                  <Link
+                    href={`/dashboard/employees/${project.projectManagerId}`}
+                  >
+                    {`PM: ${project.projectManager.profile?.fname} ${project.projectManager.profile?.lname}`}
+                  </Link>
                 </Typography>
               </Stack>
               <Stack sx={{ alignSelf: "flex-start", gap: "5px" }}>
                 <DeleteSchedule scheduleId={id} />
-                <EditSchedule schedule={schedule} name={name}/>
+                <EditSchedule schedule={schedule} name={name} />
                 <AddOvertime scheduleId={id} />
               </Stack>
             </Stack>

@@ -294,3 +294,29 @@ export async function EmployeeDelete(employeeId: string) {
     return { error: getErrorMessage(error) };
   }
 }
+
+export async function getProjectManagers() {
+  noStore();
+
+  const projectManagers = await db.user.findMany({
+    where: { role: "ADMIN" },
+    select: { id: true, profile: { select: { fname: true, lname: true } } },
+  });
+
+  if (!projectManagers) {
+    const error = "Database error. Project managers fetch unsuccessful!";
+    return { error };
+  }
+
+  const processedProjecManagers = projectManagers.map((manager) => {
+    return {
+      id: manager.id,
+      name: `${manager.profile?.fname} ${manager.profile?.lname}`,
+    };
+  });
+
+  return {
+    success: "Project managers fetch successul!",
+    data: processedProjecManagers,
+  };
+}

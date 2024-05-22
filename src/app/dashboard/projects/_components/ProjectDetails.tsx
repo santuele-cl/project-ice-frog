@@ -1,5 +1,5 @@
 "use client";
-import { Profile, Project } from "@prisma/client";
+import { Prisma, Profile, Project } from "@prisma/client";
 import { useState } from "react";
 
 import {
@@ -20,8 +20,21 @@ import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
 import dayjs from "dayjs";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
+import Link from "next/link";
+
+type ProjectWithProjectManager = Prisma.ProjectGetPayload<{
+  include: {
+    projectManager: {
+      select: {
+        id: true;
+        profile: { select: { fname: true; lname: true } };
+      };
+    };
+  };
+}>;
+
 type Props = {
-  details: Project;
+  details: ProjectWithProjectManager;
 };
 
 const SectionHeaderStyle: SxProps = {
@@ -102,6 +115,13 @@ export default function ProjectDetails({ details }: Props) {
             </Grid2>
 
             <Grid2 xs={6}>
+              <Typography>
+                <b>Project Manager:</b>{" "}
+                <Link href={`/dashboard/employees/${details.projectManagerId}`}>
+                  {`${details.projectManager.profile?.fname} ${details.projectManager.profile?.lname}`}
+                </Link>
+              </Typography>
+
               <Typography>
                 <b>Date Created:</b>{" "}
                 {dayjs(createdAt).format("MMM DD, YYYY hh:mm a")}

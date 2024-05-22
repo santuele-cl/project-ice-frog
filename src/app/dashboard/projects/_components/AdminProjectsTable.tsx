@@ -25,7 +25,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import ProjectDeleteModal from "./ProjectDeleteModal";
 import ProjectsTablePagination from "./ProjectsTablePagination";
-import { Project } from "@prisma/client";
+import { Prisma, Project } from "@prisma/client";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import TableNoRecord from "@/app/_ui/TableNoRecord";
 
@@ -42,10 +42,18 @@ type Props = {
   jobOrder: string;
 };
 
+type ProjectWithProjectManager = Prisma.ProjectGetPayload<{
+  include: {
+    projectManager: {
+      select: { profile: { select: { lname: true; fname: true } } };
+    };
+  };
+}>;
+
 export default function AdminProjectsTable(props: Props) {
   const { name, page, location, jobOrder } = props;
   const params = useSearchParams();
-  const [data, setData] = useState<Project[]>([]);
+  const [data, setData] = useState<ProjectWithProjectManager[]>([]);
   const [pagination, setPagination] = useState<PaginationProps>();
 
   const handleExport = async () => {
@@ -123,6 +131,12 @@ export default function AdminProjectsTable(props: Props) {
                 sx={{ fontWeight: "bold", color: "#F5F6FA" }}
                 align="left"
               >
+                Project Manager
+              </TableCell>
+              <TableCell
+                sx={{ fontWeight: "bold", color: "#F5F6FA" }}
+                align="left"
+              >
                 Location
               </TableCell>
               <TableCell
@@ -172,6 +186,7 @@ export default function AdminProjectsTable(props: Props) {
                       {jobOrder}
                     </TableCell>
                     <TableCell align="left">{name}</TableCell>
+                    <TableCell align="left">{`${project.projectManager.profile?.fname} ${project.projectManager.profile?.lname}`}</TableCell>
                     <TableCell align="left">{`${building} ${street} ${barangay}, ${city}`}</TableCell>
                     <TableCell>
                       {dayjs(startDate).format("MMM DD, YYYY")}

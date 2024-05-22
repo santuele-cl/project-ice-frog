@@ -30,6 +30,7 @@ model User {
   updatedAt             DateTime               @updatedAt
   profile               Profile?
   schedules             Schedule[]
+  projects              Project[]
 }
 
 enum Gender {
@@ -66,21 +67,23 @@ model Profile {
 }
 
 model Project {
-  id          String     @id @default(nanoid(8))
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  name        String
-  jobOrder    String
-  street      String?
-  building    String?
-  city        String
-  barangay    String
-  startDate   DateTime
-  endDate     DateTime
-  notes       String?
-  isArchived  Boolean    @default(false)
-  isCompleted Boolean    @default(false)
-  schedules   Schedule[]
+  id               String     @id @default(nanoid(8))
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  name             String
+  jobOrder         String
+  projectManager   User       @relation(fields: [projectManagerId], references: [id], onDelete: Cascade)
+  projectManagerId String
+  street           String?
+  building         String?
+  city             String
+  barangay         String
+  startDate        DateTime
+  endDate          DateTime
+  notes            String?
+  isArchived       Boolean    @default(false)
+  isCompleted      Boolean    @default(false)
+  schedules        Schedule[]
 }
 
 model Schedule {
