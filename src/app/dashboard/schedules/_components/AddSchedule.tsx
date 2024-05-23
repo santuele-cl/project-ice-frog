@@ -38,9 +38,10 @@ type Props = {
   date: Date;
   userId: string;
   name: string;
+  variant: "contained" | "normal";
 };
 
-export default function AddSchedule({ date, userId, name }: Props) {
+export default function AddSchedule({ date, userId, name, variant }: Props) {
   const [open, setOpen] = useState(false);
 
   const handleClose = () => {
@@ -67,7 +68,7 @@ export default function AddSchedule({ date, userId, name }: Props) {
       <Dialog
         PaperProps={{
           elevation: 15,
-          sx: { border: "1px solid rgba(0,0,0,0.2)" },
+          sx: { border: "1px solid rgba(0,0,0,0.4)" },
         }}
         hideBackdrop
         open={open}
@@ -89,9 +90,21 @@ export default function AddSchedule({ date, userId, name }: Props) {
       </Dialog>
 
       <Tooltip title="Add schedule" placement="right">
-        <IconButton onClick={() => setOpen(true)} size="small">
-          <AddOutlinedIcon fontSize="small" sx={{ color: "rgba(0,0,0,0.2)" }} />
-        </IconButton>
+        {variant === "contained" ? (
+          <IconButton onClick={() => setOpen(true)} size="small">
+            <AddOutlinedIcon
+              fontSize="small"
+              sx={{ color: "rgba(0,0,0,0.2)" }}
+            />
+          </IconButton>
+        ) : (
+          <IconButton onClick={() => setOpen(true)} size="small">
+            <AddOutlinedIcon
+              fontSize="small"
+              sx={{ color: "rgba(0,0,0,0.2)" }}
+            />
+          </IconButton>
+        )}
       </Tooltip>
     </Box>
   );

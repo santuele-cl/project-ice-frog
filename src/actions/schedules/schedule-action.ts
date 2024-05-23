@@ -303,6 +303,7 @@ export async function addMultipleScheduleByProject(
 
     revalidatePath("/dashboard/schedules");
     revalidatePath("/dashboard/projects");
+    revalidatePath(`/dashboard/projects/${parse.data.schedules[0].projectId}`);
 
     return {
       success: "Schedule(s) has successfully been created.",
@@ -650,8 +651,7 @@ export async function addSchedule(
 
     if (existingSchedule) {
       return {
-        error:
-          "Selected date overlaps with existing schedule(s) of the employee",
+        error: "Selected date overlaps with existing schedule of the employee",
       };
     }
 

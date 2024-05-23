@@ -1,5 +1,5 @@
 "use client";
-import { Button, Stack } from "@mui/material";
+import { Button, Checkbox, FormControlLabel, Stack } from "@mui/material";
 import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import Loading from "../_ui/Loading";
@@ -94,6 +94,17 @@ export default function Test() {
 
   return (
     <Stack>
+      <FormControlLabel
+        control={
+          <Checkbox
+            value={true}
+            onChange={(e) => {
+              console.log(e.target.value);
+            }}
+          />
+        }
+        label="OT"
+      />
       <RootLoadingPage />
       <Loading />
       <div>

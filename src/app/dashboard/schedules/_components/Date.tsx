@@ -25,56 +25,76 @@ export default async function Date({
   const schedules = await getSchedulesByDate(employeeId, startDate, endDate);
 
   return (
-    <Stack sx={{ justifyContent: "center", alignItems: "center" }}>
-      {!schedules.data && (
-        <AddSchedule date={startDate} userId={employeeId} name={name} />
+    <Stack sx={{ gap: 1, flexDirection: "row" }}>
+      {schedules.data && (
+        <AddSchedule
+          date={startDate}
+          userId={employeeId}
+          name={name}
+          variant="contained"
+        />
       )}
-      {schedules.data &&
-        schedules.data.map((schedule) => {
-          const { startDate, endDate, project, id } = schedule;
-          return (
-            <Stack
-              sx={{
-                p: 1,
-                bgcolor: "rgba(255, 255, 0, 0.4)",
-                borderRadius: 2,
-                marginBottom: "5px",
-                fontSize: "0.8rem",
-                flexDirection: "row",
-                gap: 1,
-              }}
-            >
-              <Stack>
-                <Stack sx={{ flexDirection: "row", gap: 1 }}>
-                  <Typography sx={{ fontWeight: 600, fontSize: "0.825rem" }}>
-                    {dayjs(startDate).format("hh:mm a")}
-                  </Typography>{" "}
-                  -{" "}
-                  <Typography sx={{ fontWeight: 600, fontSize: "0.825rem" }}>
-                    {dayjs(endDate).format("hh:mm a")}
+      <Stack
+        sx={{ justifyContent: "center", alignItems: "center", flexGrow: 1 }}
+      >
+        {!schedules.data && (
+          <AddSchedule
+            date={startDate}
+            userId={employeeId}
+            name={name}
+            variant="normal"
+          />
+        )}
+
+        {schedules.data &&
+          schedules.data.map((schedule) => {
+            const { startDate, endDate, project, id, isOvertime } = schedule;
+            return (
+              <Stack
+                sx={{
+                  p: 1,
+                  bgcolor: isOvertime
+                    ? "rgba(255, 148, 112, 0.45)"
+                    : "rgba(255, 255, 0, 0.4)",
+                  borderRadius: 2,
+                  marginBottom: "5px",
+                  fontSize: "0.8rem",
+                  flexDirection: "row",
+                  gap: 1,
+                }}
+              >
+                <Stack>
+                  <Stack sx={{ flexDirection: "row", gap: 1 }}>
+                    <Typography sx={{ fontWeight: 600, fontSize: "0.825rem" }}>
+                      {dayjs(startDate).format("hh:mm a")}
+                    </Typography>{" "}
+                    -{" "}
+                    <Typography sx={{ fontWeight: 600, fontSize: "0.825rem" }}>
+                      {dayjs(endDate).format("hh:mm a")}
+                    </Typography>
+                  </Stack>
+                  <Typography sx={{ fontSize: "0.825rem" }}>
+                    <Link href={`/dashboard/projects/${project.id}`}>
+                      {project?.name}
+                    </Link>
+                  </Typography>
+                  <Typography sx={{ fontSize: "0.825rem" }}>
+                    <Link
+                      href={`/dashboard/employees/${project.projectManagerId}`}
+                    >
+                      {`PM: ${project.projectManager.profile?.fname} ${project.projectManager.profile?.lname}`}
+                    </Link>
                   </Typography>
                 </Stack>
-                <Typography sx={{ fontSize: "0.825rem" }}>
-                  <Link href={`/dashboard/projects/${project.id}`}>
-                    {project?.name}
-                  </Link>
-                </Typography>
-                <Typography sx={{ fontSize: "0.825rem" }}>
-                  <Link
-                    href={`/dashboard/employees/${project.projectManagerId}`}
-                  >
-                    {`PM: ${project.projectManager.profile?.fname} ${project.projectManager.profile?.lname}`}
-                  </Link>
-                </Typography>
+                <Stack sx={{ alignSelf: "flex-start", gap: "5px" }}>
+                  <DeleteSchedule scheduleId={id} />
+                  <EditSchedule schedule={schedule} name={name} />
+                  {/* <AddOvertime scheduleId={id} /> */}
+                </Stack>
               </Stack>
-              <Stack sx={{ alignSelf: "flex-start", gap: "5px" }}>
-                <DeleteSchedule scheduleId={id} />
-                <EditSchedule schedule={schedule} name={name} />
-                <AddOvertime scheduleId={id} />
-              </Stack>
-            </Stack>
-          );
-        })}
+            );
+          })}
+      </Stack>
     </Stack>
   );
 }

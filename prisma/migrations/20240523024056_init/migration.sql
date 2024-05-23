@@ -81,6 +81,7 @@ CREATE TABLE "Schedule" (
     "projectId" TEXT NOT NULL,
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3) NOT NULL,
+    "isOvertime" BOOLEAN NOT NULL DEFAULT false,
     "userId" TEXT NOT NULL,
     "notes" TEXT,
 

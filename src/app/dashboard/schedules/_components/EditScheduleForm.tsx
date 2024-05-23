@@ -9,7 +9,9 @@ import dayjs from "dayjs";
 import {
   Autocomplete,
   Button,
+  Checkbox,
   Divider,
+  FormControlLabel,
   FormHelperText,
   Paper,
   Stack,
@@ -61,6 +63,7 @@ export default function EditScheduleForm({
       endDate: schedule.endDate,
       projectId: schedule.projectId,
       notes: schedule.notes ?? "",
+      isOvertime: schedule.isOvertime,
     },
   });
 
@@ -233,6 +236,27 @@ export default function EditScheduleForm({
                   trigger(`endDate`);
                   trigger(`startDate`);
                 }}
+              />
+            );
+          }}
+        />
+        <Controller
+          name="isOvertime"
+          control={control}
+          render={({ field }) => {
+            return (
+              <FormControlLabel
+                sx={{ ml: "3px" }}
+                control={
+                  <Checkbox
+                    disableRipple
+                    checked={field.value}
+                    onChange={(e) => {
+                      field.onChange(e.target.checked);
+                    }}
+                  />
+                }
+                label="OT"
               />
             );
           }}

@@ -13,12 +13,14 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import isToday from "dayjs/plugin/isToday";
 import { getEmployeesByDepartment } from "@/actions/users/users-action";
 import Date from "./Date";
 import ScheduleTableHeader from "./ScheduleTableHeader";
 import { getWeek } from "@/app/_utils/days";
 
 dayjs.extend(utc);
+dayjs.extend(isToday);
 
 interface ScheduleTableProps {
   week: string;
@@ -36,9 +38,16 @@ export default async function ScheduleTable({
     <Stack sx={{ p: 2 }}>
       <ScheduleTableHeader week={week} weekDates={weekDates} />
       <Divider sx={{ mb: 2, mt: 1 }} />
-      <TableContainer sx={{ height: "750px" }}>
+      <TableContainer sx={{ minHeight: "450px", maxHeight: "900px" }}>
         <Table
-          sx={{ minWidth: 650, overflow: "auto", "& table ": {} }}
+          sx={{
+            minWidth: 650,
+            overflow: "auto",
+            "& table ": {},
+            "& td, & th": {
+              border: "1px solid rgba(0,0,0,0.1)",
+            },
+          }}
           aria-label="simple table"
           padding="checkbox"
         >
@@ -66,9 +75,15 @@ export default async function ScheduleTable({
               {weekDates.map((date) => (
                 <TableCell
                   sx={{
+                    color: dayjs(date).isToday() ? "white" : "black",
+                    backgroundColor: dayjs(date).isToday()
+                      ? "rgba(124,35,216,1)"
+                      : "transparent",
+                    fontWeight: dayjs(date).isToday() ? 700 : 400,
                     fontSize: "0.8rem",
                     textAlign: "center",
-                    minWidth: 220,
+                    minWidth: 300,
+                    border: "1px solid rgba(0,0,0,0.1)",
                     // minHeight: 150,
                   }}
                   key={date.toString()}
@@ -85,10 +100,12 @@ export default async function ScheduleTable({
                 return (
                   <TableRow
                     key={id}
-                    sx={{
-                      "&:last-child td, &:last-child th": { border: 0 },
-                      // minHeight: 150,
-                    }}
+                    sx={
+                      {
+                        // "&:last-child td, &:last-child th": { border: 0 },
+                        // minHeight: 150,
+                      }
+                    }
                   >
                     <TableCell component="th" scope="row">
                       {i + 1}
@@ -97,7 +114,15 @@ export default async function ScheduleTable({
                       <Typography>{`${profile?.fname} ${profile?.lname}`}</Typography>
                     </TableCell>
                     {weekDates.map((date) => (
-                      <TableCell align="left">
+                      <TableCell
+                        align="left"
+                        sx={{
+                          // border: "1px solid rgba(0,0,0,0.1)",
+                          backgroundColor: dayjs(date).isToday()
+                            ? "rgba(0,0,255,0.025)"
+                            : "transparent",
+                        }}
+                      >
                         <Date
                           name={`${profile?.fname} ${profile?.lname}`}
                           employeeId={id}

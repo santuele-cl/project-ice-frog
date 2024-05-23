@@ -162,6 +162,7 @@ export const ScheduleSchema = z.object({
   notes: z.string().optional(),
   startDate: z.date(),
   endDate: z.date(),
+  isOvertime: z.boolean().optional(),
   id: z.string().min(1, "Required field"),
 });
 
@@ -171,6 +172,7 @@ export const DailyScheduleSchema = ScheduleSchema.pick({
   startDate: true,
   endDate: true,
   notes: true,
+  isOvertime: true,
 })
   .extend({ hours: z.number().optional() })
   .refine(
@@ -194,6 +196,7 @@ export const EditScheduleSchema = ScheduleSchema.pick({
   startDate: true,
   endDate: true,
   notes: true,
+  isOvertime: true,
 }).refine(
   EndDateMustBeGreaterThanStartDate,
   ErrorEndDateMustBeGreaterThanStartDate

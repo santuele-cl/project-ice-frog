@@ -10,7 +10,9 @@ import { Prisma, Schedule } from "@prisma/client";
 import {
   Autocomplete,
   Button,
+  Checkbox,
   Divider,
+  FormControlLabel,
   FormHelperText,
   IconButton,
   Stack,
@@ -415,6 +417,26 @@ export default function NewProjectForm() {
                   }
                   disabled={isSubmitting}
                 />
+                <Controller
+                  name={`schedules.${index}.isOvertime`}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            disableRipple
+                            checked={field.value}
+                            onChange={(e) => {
+                              field.onChange(e.target.checked);
+                            }}
+                          />
+                        }
+                        label="OT"
+                      />
+                    );
+                  }}
+                />
                 <Button onClick={() => remove(index)}>
                   <DeleteOutlinedIcon color="error" />
                 </Button>
@@ -431,7 +453,7 @@ export default function NewProjectForm() {
                     color: "error.main",
                   }}
                 >
-                  This schedule overlaps with other schedule(s)
+                  This schedule overlaps with another schedule
                 </FormHelperText>
               )}
             </Stack>
@@ -446,6 +468,7 @@ export default function NewProjectForm() {
             id: "",
             startDate: dayjs().toDate(),
             endDate: dayjs().add(8, "hour").toDate(),
+            isOvertime: false,
           })
         }
         sx={{ bgcolor: "rgba(0,0,255,0.1)", fontSize: 14 }}

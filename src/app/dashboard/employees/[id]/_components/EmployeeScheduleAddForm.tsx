@@ -9,7 +9,9 @@ import dayjs from "dayjs";
 import {
   Autocomplete,
   Button,
+  Checkbox,
   Divider,
+  FormControlLabel,
   FormHelperText,
   Paper,
   Stack,
@@ -62,6 +64,7 @@ export default function EmployeeScheduleAddForm({
           startDate: dayjs().toDate(),
           endDate: dayjs().add(8, "hour").toDate(),
           notes: "",
+          isOvertime: false,
         },
       ],
     },
@@ -299,13 +302,33 @@ export default function EmployeeScheduleAddForm({
                   }
                   disabled={isSubmitting}
                 />
+                <Controller
+                  name={`schedules.${index}.isOvertime`}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            disableRipple
+                            checked={field.value}
+                            onChange={(e) => {
+                              field.onChange(e.target.checked);
+                            }}
+                          />
+                        }
+                        label="OT"
+                      />
+                    );
+                  }}
+                />
                 {fields.length > 1 && (
                   <Button onClick={() => remove(index)}>
                     <DeleteOutlinedIcon color="error" />
                   </Button>
                 )}
                 {!!hasOverlap && (
-                  <Tooltip title="This schedule overlaps with other schedule(s)">
+                  <Tooltip title="This schedule overlaps with another schedule">
                     <WarningIcon color="error" />
                   </Tooltip>
                 )}
@@ -322,6 +345,7 @@ export default function EmployeeScheduleAddForm({
               id: "",
               startDate: dayjs().toDate(),
               endDate: dayjs().add(8, "hour").toDate(),
+              isOvertime: false,
             })
           }
           sx={{ bgcolor: "rgba(0,0,255,0.1)" }}
