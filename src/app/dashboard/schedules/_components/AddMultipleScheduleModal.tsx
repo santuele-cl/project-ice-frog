@@ -1,8 +1,28 @@
 "use client";
 
-import { Box, Button, IconButton, Modal, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Modal,
+  Typography,
+  Tooltip,
+  Stack,
+  SxProps,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContentText,
+  DialogContent,
+} from "@mui/material";
 import { useState } from "react";
-import AddMultipleScheduleForm from "./AddMultipleScheduleForm";
+import AddScheduleForm from "./AddScheduleForm";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { enqueueSnackbar } from "notistack";
+import { deleteSchedule } from "@/actions/schedules/schedule-action";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import dayjs, { Dayjs } from "dayjs";
 
 const style = {
   position: "absolute",
@@ -14,18 +34,50 @@ const style = {
 };
 
 export default function AddMultipleScheduleModal() {
-  const [showAddScheduleModal, setShowAddScheduleModal] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleSubmit = async () => {
+    // console.log("add schedule submit button clicked");
+    // try {
+    //   const res = await deleteSchedule(scheduleId);
+    //   if (res?.error) enqueueSnackbar(res.error, { variant: "error" });
+    //   if (res?.success) {
+    //     handleClose();
+    //     enqueueSnackbar(res.success, { variant: "success" });
+    //   }
+    // } catch (error) {
+    //   enqueueSnackbar(JSON.stringify(error), { variant: "error" });
+    // }
+  };
+
   return (
     <Box>
-      <Modal
-        open={showAddScheduleModal}
-        onClose={() => setShowAddScheduleModal(false)}
+      <Dialog
+        PaperProps={{
+          elevation: 15,
+          sx: { border: "1px solid rgba(0,0,0,0.4)" },
+        }}
+        hideBackdrop
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="schedule-add-prompt"
+        aria-describedby="schedule-add-prompt-description"
       >
-        <Box sx={style}>
-          <AddMultipleScheduleForm />
-        </Box>
-      </Modal>
-      <Button variant="contained" onClick={() => setShowAddScheduleModal(true)}>
+        <DialogTitle id="schedule-add-prompt">New Schedule</DialogTitle>
+        <DialogContent>
+          <AddScheduleForm setOpen={setOpen} />
+        </DialogContent>
+      </Dialog>
+
+      <Button
+        onClick={() => setOpen(true)}
+        variant="contained"
+        startIcon={<AddOutlinedIcon />}
+      >
         Add Schedule
       </Button>
     </Box>

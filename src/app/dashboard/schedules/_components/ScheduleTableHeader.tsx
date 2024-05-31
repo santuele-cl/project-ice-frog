@@ -1,9 +1,11 @@
-import { Divider, Stack, Typography } from "@mui/material";
+import { Button, Divider, Stack, Typography } from "@mui/material";
 import DateButtons from "./DateButtons";
 import AddScheduleFormModal from "./AddSchedule";
 import AddMultipleScheduleModal from "./AddMultipleScheduleModal";
 import SchedulesDepartmentSelect from "./SchedulesDepartmentSelect";
 import dayjs from "dayjs";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import Link from "next/link";
 
 interface ScheduleTableHeaderProps {
   week: string;
@@ -44,7 +46,22 @@ export default function ScheduleTableHeader({
         <SchedulesDepartmentSelect />
 
         <Stack sx={{ flexDirection: "row", gap: 1 }}>
-          <AddMultipleScheduleModal />
+          <Button
+            LinkComponent={Link}
+            href="/dashboard/projects/add"
+            variant="contained"
+            startIcon={<AddOutlinedIcon />}
+          >
+            Add Project
+          </Button>
+          <Button
+            LinkComponent={Link}
+            href="/dashboard/employees/add"
+            variant="contained"
+            startIcon={<AddOutlinedIcon />}
+          >
+            Add employee
+          </Button>
           <AddMultipleScheduleModal />
         </Stack>
       </Stack>

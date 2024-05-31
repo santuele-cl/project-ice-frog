@@ -24,7 +24,7 @@ import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 
 import { DailyScheduleSchema } from "@/app/_schemas/zod/schema";
-import { Project, Schedule } from "@prisma/client";
+import { Prisma, Project, Schedule } from "@prisma/client";
 
 import { getProjects } from "@/actions/projects/projects-action";
 import {
@@ -35,6 +35,14 @@ import FormStatusText from "@/app/_ui/auth/FormStatusText";
 import WarningIcon from "@mui/icons-material/Warning";
 import { enqueueSnackbar } from "notistack";
 import { getClientError } from "@/app/_utils/getClientError";
+import { getEmployeeIds } from "@/actions/users/users-action";
+
+type UserWithName = Prisma.UserGetPayload<{
+  select: {
+    id: true;
+    profile: { select: { fname: true; lname: true } };
+  };
+}>;
 
 export default function AddScheduleForm({
   setOpen,
@@ -42,9 +50,9 @@ export default function AddScheduleForm({
   userId,
   name,
 }: {
-  name: string;
-  date: Date;
-  userId: string;
+  name?: string;
+  date?: Date;
+  userId?: string;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) {
   const params = useParams();
@@ -67,9 +75,10 @@ export default function AddScheduleForm({
   } = useForm<z.infer<typeof DailyScheduleSchema>>({
     resolver: zodResolver(DailyScheduleSchema),
     defaultValues: {
-      userId,
-      startDate: dayjs(date).toDate(),
-      endDate: dayjs(date).add(9, "hour").toDate(),
+      userId: userId ?? "",
+      startDate: dayjs(date)?.toDate() ?? dayjs().startOf("day").hour(8),
+      endDate:
+        dayjs(date).add(9, "hour").toDate() ?? dayjs().startOf("day").hour(17),
       isOvertime: false,
     },
   });
@@ -116,17 +125,68 @@ export default function AddScheduleForm({
     fetchProjects();
   }, []);
 
+  const [employees, setEmployees] = useState<UserWithName[]>([]);
+
+  useEffect(() => {
+    async function fetchEmployees() {
+      const res = await getEmployeeIds();
+      if (res?.data) setEmployees(res.data);
+    }
+    fetchEmployees();
+  }, []);
+
   return (
     <Stack
       component="form"
       onSubmit={handleSubmit(onSubmit)}
       sx={{ gap: 2, pt: 1 }}
     >
-      <TextField
+      {/* <TextField
         value={name}
         InputProps={{ readOnly: true, disabled: true }}
         label="Name"
         size="small"
+      /> */}
+      <Controller
+        control={control}
+        name="userId"
+        rules={{
+          required: "required field",
+        }}
+        render={({ field, fieldState: { error } }) => {
+          const { value, onChange, ref } = field;
+          return (
+            <Autocomplete
+              // defaultValue={options.find(
+              //   (option: any) =>
+              //     option[valueIdentifier] === defaultValueId
+              // )}
+              // sx={{ width: 250 }}
+              getOptionLabel={(option) =>
+                `${option.profile?.fname} ${option.profile?.lname}`
+              }
+              options={employees}
+              value={
+                value
+                  ? employees.find((option: any) => option.id === value) ?? null
+                  : null
+              }
+              onChange={(event: any, newValue) => {
+                onChange(newValue ? newValue.id : null);
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Employee"
+                  inputRef={ref}
+                  helperText={error?.message}
+                  error={!!error}
+                  fullWidth
+                />
+              )}
+            />
+          );
+        }}
       />
       <Controller
         control={control}
