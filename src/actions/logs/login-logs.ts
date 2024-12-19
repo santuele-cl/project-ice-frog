@@ -15,7 +15,7 @@ export async function getLoginLogs({
   userId?: string;
 }) {
   noStore();
-  console.log("quqery", query);
+  // console.log("quqery", query);
   const logs = await db.loginLogs.findMany({
     where: {
       ...(userId && { userId }),

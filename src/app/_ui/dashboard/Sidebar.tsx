@@ -18,7 +18,7 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { toKebabCase } from "@/app/_utils/utils";
-
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 type SidebarLink = {
   label: string;
   path?: string;
@@ -75,8 +75,14 @@ const sidebarLinks: SidebarLinks[] = [
         path: "settings",
         icon: () => <SettingsIcon />,
       },
+      {
+        label: "Archived",
+        path: "archived",
+        icon: () => <DeleteForeverOutlinedIcon />,
+      },
     ],
   },
+  
 ];
 
 export default function Sidebar({ children }: { children?: React.ReactNode }) {
@@ -86,7 +92,7 @@ export default function Sidebar({ children }: { children?: React.ReactNode }) {
     <List
       sx={{
         height: "100%",
-        width: 330,
+        width: 250,
 
         p: 2,
       }}

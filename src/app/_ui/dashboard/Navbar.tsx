@@ -78,7 +78,7 @@ export default function Navbar({
                 sx={{ textDecoration: "none", color: "common.black" }}
                 fontWeight={900}
               >
-                Salus
+                Synx
               </Typography>
             </Grow>
           )}

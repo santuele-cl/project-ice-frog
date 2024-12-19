@@ -5,9 +5,6 @@ import {
   authRoutes,
   apiRoutePrefix,
   publicRoutes,
-  DEFAULT_EMPLOYEE_LOGIN_REDIRECT,
-  DEFAULT_PATIENT_LOGIN_REDIRECT,
-  roleRoute,
 } from "./routes";
 import { getToken } from "next-auth/jwt";
 
@@ -31,27 +28,14 @@ export default auth(async (req) => {
   if (isApiAuthRoute) return;
 
   if (isAuthRoute) {
-    if (isLoggedIn) {
-      // Pass nextUrl as 2nd argument to make an absolute url
-      if (user?.role) {
-        if (user.role === "EMPLOYEE") {
-          return Response.redirect(
-            new URL(DEFAULT_EMPLOYEE_LOGIN_REDIRECT, nextUrl)
-          );
-        } else {
-          return Response.redirect(
-            new URL(DEFAULT_PATIENT_LOGIN_REDIRECT, nextUrl)
-          );
-        }
-      } else {
-        return Response.redirect(new URL("/", nextUrl));
-      }
-    }
+    if (isLoggedIn)
+      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+
     return;
   }
 
   if (!isLoggedIn && !isPublicRoute) {
-    return Response.redirect(new URL(`/auth/login`, nextUrl));
+    return Response.redirect(new URL(`/`, nextUrl));
 
     // let callbackUrl = nextUrl.pathname;
     // if (nextUrl.search) {

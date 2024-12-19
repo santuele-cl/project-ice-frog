@@ -23,7 +23,7 @@ export async function createAppointment(values: z.infer<typeof AppointmentSchema
     if(!parsedFields.success) return { error: "Parse Error!"}
     
     const data = parsedFields.data
-    console.log(data)
+    // console.log(data)
 
     try {
         const newAppointment = await db.appointments.create({data})
@@ -37,7 +37,7 @@ export async function createAppointment(values: z.infer<typeof AppointmentSchema
 
 export async function updateAppointment(values: Partial<z.infer<typeof AppointmentSchema>>, id: string) {
     const parsedFields = AppointmentSchema.partial().safeParse(values)
-    console.log(parsedFields)
+    // console.log(parsedFields)
     if(!parsedFields.success) return { error: "Parse Error!"}
     
     const data = parsedFields.data

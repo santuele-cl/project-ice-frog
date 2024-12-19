@@ -152,7 +152,7 @@ export async function logout() {
 }
 
 export async function createUser(registerData: z.infer<typeof RegisterSchema>) {
-  console.log(registerData);
+  // console.log(registerData);
   const validatedData = RegisterSchema.safeParse(registerData);
 
   if (!validatedData.success) {
